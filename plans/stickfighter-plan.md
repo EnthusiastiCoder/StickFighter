@@ -16,3 +16,5 @@ menus, shop) is a consumer of that core, never a participant in it.
 **Confirmed choices:** Python + pygame · pymunk for ragdolls · real-time duel with free
 movement · scripted ballistic bot first, then PPO self-play. All remaining design decisions
 were delegated to me and are recorded below as decisions, not options.
+
+---
