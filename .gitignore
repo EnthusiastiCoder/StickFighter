@@ -1,0 +1,5 @@
+# Claude Code workspace config (local-only, not shared)
+CLAUDE.md
+.claude/
+.mcp.json
+prompts/
