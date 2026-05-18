@@ -3,3 +3,15 @@ CLAUDE.md
 .claude/
 .mcp.json
 prompts/
+
+# StickFighter
+__pycache__/
+*.pyc
+runs/
+saves/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+*.mp4
+*.gif
+frame*.png
