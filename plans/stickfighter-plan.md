@@ -20,3 +20,7 @@ were delegated to me and are recorded below as decisions, not options.
 ---
 
 ## Environment (decided)
+
+Use the **global Python 3.12** (`C:\Python312`, invoked as `py -3.12`). It is the shared
+interpreter every project venv was seeded from (`home = C:\Python312`) and already contains
+everything expensive:
