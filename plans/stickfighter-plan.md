@@ -18,3 +18,5 @@ movement · scripted ballistic bot first, then PPO self-play. All remaining desi
 were delegated to me and are recorded below as decisions, not options.
 
 ---
+
+## Environment (decided)
