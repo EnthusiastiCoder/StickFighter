@@ -37,3 +37,6 @@ everything expensive:
 I checked every venv under `Projects\`: none has the full combo (`Machine Learning\Simulations`
 has pygame+pymunk but no torch; `Voice Moduler\.venv` has torch but no pygame/pymunk). The
 global env is the only one that is one package away from complete.
+
+**Only install: `pygame-ce`** (maintained drop-in fork; it is what your frozen requirements
+already used). One package, used by no other project → negligible blast radius on the shared env.
