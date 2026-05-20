@@ -44,3 +44,8 @@ already used). One package, used by no other project → negligible blast radius
 **Deliberately NOT installing `stable-baselines3`** — `sb3[extra]` would drag opencv/pandas and
 could bump `gymnasium`/`numpy` inside a *shared* interpreter, and SB3's VecEnv API fights
 self-play leagues. We write our own PPO (~350 lines, full control over hybrid actions + league).
+
+Hardware notes that constrain defaults: 8 cores, RTX 4050 **6 GB**. Your Mario project recorded
+`--n-envs 11` blowing up OpenBLAS on this exact box → **default `--n-envs 8`**. The policy is a
+tiny MLP, so **default `--device cpu`** (GPU offload for 2×256 MLPs is usually a net loss);
+`--device auto` available and benchmarked.
