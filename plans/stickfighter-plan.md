@@ -33,3 +33,7 @@ everything expensive:
 | numpy / scipy / matplotlib | 2.4.6 / 1.17.1 / 3.10.3 |
 | numba, tensorboardX, imageio, tqdm, rich | ✓ |
 | pytest, pytest-cov, ruff | ✓ |
+
+I checked every venv under `Projects\`: none has the full combo (`Machine Learning\Simulations`
+has pygame+pymunk but no torch; `Voice Moduler\.venv` has torch but no pygame/pymunk). The
+global env is the only one that is one package away from complete.
