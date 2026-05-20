@@ -92,3 +92,5 @@ Crucially this is **not** a two-tier "fast sim vs pretty sim" split (the option 
 risky). Training and playing run *the same* `MatchSim` code. The ragdoll only ever animates an
 archer that is already dead, so it cannot influence any outcome. Note pymunk 7 renamed the
 callback API to `space.on_collision(a, b, begin=…)` — verified on the installed 7.2.0.
+
+### Control scheme (decided) — one primitive for human and AI
