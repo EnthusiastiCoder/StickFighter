@@ -80,3 +80,5 @@ stickfighter/
   tests/
 plans/    research/    runs/ (gitignored)
 ```
+
+### Why pymunk is render-only
