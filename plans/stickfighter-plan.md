@@ -51,3 +51,5 @@ tiny MLP, so **default `--device cpu`** (GPU offload for 2×256 MLPs is usually 
 `--device auto` available and benchmarked.
 
 ---
+
+## Architecture
