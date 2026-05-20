@@ -40,3 +40,7 @@ global env is the only one that is one package away from complete.
 
 **Only install: `pygame-ce`** (maintained drop-in fork; it is what your frozen requirements
 already used). One package, used by no other project → negligible blast radius on the shared env.
+
+**Deliberately NOT installing `stable-baselines3`** — `sb3[extra]` would drag opencv/pandas and
+could bump `gymnasium`/`numpy` inside a *shared* interpreter, and SB3's VecEnv API fights
+self-play leagues. We write our own PPO (~350 lines, full control over hybrid actions + league).
