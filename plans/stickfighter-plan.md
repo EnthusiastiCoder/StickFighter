@@ -87,3 +87,8 @@ pymunk earns its keep for exactly one thing: the **death ragdoll** (6 bodies + `
 with arrows welded in). Using it for gameplay would make character control mushy and slower.
 So gameplay is hand-rolled — a kinematic character controller and swept-segment arrow
 raycasts — which is crisper, ~10× faster, and bit-deterministic.
+
+Crucially this is **not** a two-tier "fast sim vs pretty sim" split (the option flagged as
+risky). Training and playing run *the same* `MatchSim` code. The ragdoll only ever animates an
+archer that is already dead, so it cannot influence any outcome. Note pymunk 7 renamed the
+callback API to `space.on_collision(a, b, begin=…)` — verified on the installed 7.2.0.
