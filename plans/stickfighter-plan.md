@@ -55,3 +55,28 @@ tiny MLP, so **default `--device cpu`** (GPU offload for 2×256 MLPs is usually 
 ## Architecture
 
 The single most important rule: **`core/` never imports pygame, torch, or gymnasium.**
+
+```
+stickfighter/
+  core/                  # PURE SIM — deterministic, headless, no rendering deps
+    constants.py         # dt=1/60, gravity, speeds, damage table, arena 960x540
+    events.py            # ArrowFired, ArrowHit, Damage, Death, RoundOver, CoinEarned
+    actions.py           # Action dataclass  <->  np.float32[5]
+    entities.py          # ArcherState, ArrowState, hitbox layout (head/torso/arms/legs)
+    arena.py             # Arena (platform AABBs, ground, spawns) + 8 layouts + random_arena(rng)
+    character.py         # kinematic platformer controller (accel, jump, AABB resolution)
+    ballistics.py        # arrow integration + swept-segment collision + solve_launch_angle()
+    rules.py             # damage/HP/headshot, coins, round & match state machine, timeout
+    match.py             # MatchSim.reset(seed) / .step(a0, a1) -> list[Event] / .snapshot()
+  render/                # pygame; READS snapshots, never mutates sim
+    theme.py draw.py effects.py hud.py ragdoll.py
+  game/                  # human-facing app
+    input.py app.py scenes/{menu,duel,practice,spectate,shop,results,settings}.py
+  ai/
+    obs.py reward.py seeding.py
+    bots/{base,ballistic,idle,wanderer}.py
+    envs/{duel_env,vec}.py
+    ppo/{policy,ppo,league,curriculum,logging,train,evaluate}.py
+  tests/
+plans/    research/    runs/ (gitignored)
+```
