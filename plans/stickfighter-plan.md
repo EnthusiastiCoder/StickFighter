@@ -24,3 +24,12 @@ were delegated to me and are recorded below as decisions, not options.
 Use the **global Python 3.12** (`C:\Python312`, invoked as `py -3.12`). It is the shared
 interpreter every project venv was seeded from (`home = C:\Python312`) and already contains
 everything expensive:
+
+| Present | Version |
+|---|---|
+| torch (CUDA working) | 2.6.0+cu124, `cuda.is_available() == True` |
+| gymnasium | 1.3.0 |
+| pymunk | 7.2.0 |
+| numpy / scipy / matplotlib | 2.4.6 / 1.17.1 / 3.10.3 |
+| numba, tensorboardX, imageio, tqdm, rich | ✓ |
+| pytest, pytest-cov, ruff | ✓ |
