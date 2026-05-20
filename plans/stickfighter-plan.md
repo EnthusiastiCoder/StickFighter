@@ -49,3 +49,5 @@ Hardware notes that constrain defaults: 8 cores, RTX 4050 **6 GB**. Your Mario p
 `--n-envs 11` blowing up OpenBLAS on this exact box → **default `--n-envs 8`**. The policy is a
 tiny MLP, so **default `--device cpu`** (GPU offload for 2×256 MLPs is usually a net loss);
 `--device auto` available and benchmarked.
+
+---
