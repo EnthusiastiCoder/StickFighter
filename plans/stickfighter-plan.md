@@ -53,3 +53,5 @@ tiny MLP, so **default `--device cpu`** (GPU offload for 2×256 MLPs is usually 
 ---
 
 ## Architecture
+
+The single most important rule: **`core/` never imports pygame, torch, or gymnasium.**
