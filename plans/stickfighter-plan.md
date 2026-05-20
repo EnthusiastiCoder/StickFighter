@@ -82,3 +82,8 @@ plans/    research/    runs/ (gitignored)
 ```
 
 ### Why pymunk is render-only
+
+pymunk earns its keep for exactly one thing: the **death ragdoll** (6 bodies + `PivotJoint`s,
+with arrows welded in). Using it for gameplay would make character control mushy and slower.
+So gameplay is hand-rolled — a kinematic character controller and swept-segment arrow
+raycasts — which is crisper, ~10× faster, and bit-deterministic.
