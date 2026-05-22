@@ -143,3 +143,6 @@ Windows: env factory closures only (pymunk objects constructed *inside* workers,
 ---
 
 ## Milestones & commits
+
+Branch per milestone off `main` (currently clean on `main`; never commit to it directly).
+One file per commit unless files are inseparable.
