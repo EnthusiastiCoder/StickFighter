@@ -107,3 +107,8 @@ Pure `Box` (thresholded binaries) keeps a single Gaussian head — far simpler a
 than a `Dict`/`Tuple` hybrid distribution, with no loss of expressiveness.
 
 ### Observation (decided) — compact egocentric vector
+
+~56 float32, **mirrored** so one policy plays both sides (left/right symmetry ⇒ 2× data):
+self (pos, vel, grounded, facing, hp, draw, reload) · enemy (relative pos/vel, hp, facing,
+is_drawing) · up to 4 in-flight arrows (relative pos/vel, owner, est. time-to-impact) ·
+wind · arena descriptor (6 platforms as relative x/y/half-width) · clock + score diff.
