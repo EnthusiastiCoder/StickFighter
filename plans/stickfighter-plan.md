@@ -121,3 +121,7 @@ encoder is a single seam (`ai/obs.py::encode_obs`), so a pixel path stays possib
 `+1` win · `-1` death · `±0.5 × damage/100` · `+0.15` headshot · `-0.001`/step ·
 **annealed** near-miss bonus (rewards arrows passing close to the enemy) to bootstrap the
 sparse early phase.
+
+Curriculum, auto-advancing on win-rate threshold:
+**S0** static target practice → **S1** noisy ballistic bot → **S2** sharp bot → **S3** self-play
+league (PFSP sampling over frozen checkpoints + Elo). The near-miss bonus decays to 0 by S2.
