@@ -117,3 +117,7 @@ Vector obs over pixels because it trains 100–1000× faster and fits a 6 GB lap
 encoder is a single seam (`ai/obs.py::encode_obs`), so a pixel path stays possible later.
 
 ### Reward + curriculum (this is what makes it actually converge)
+
+`+1` win · `-1` death · `±0.5 × damage/100` · `+0.15` headshot · `-0.001`/step ·
+**annealed** near-miss bonus (rewards arrows passing close to the enemy) to bootstrap the
+sparse early phase.
