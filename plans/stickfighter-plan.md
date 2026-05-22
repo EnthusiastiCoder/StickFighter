@@ -102,3 +102,6 @@ bends); release → fire. Reload cooldown ~0.45 s.
 This maps 1:1 onto the AI action space, so the AI plays the *exact* game a human does:
 
 `Box(5) = [move ∈ [-1,1], jump (>0 fires), aim_angle ∈ [-1,1] → [-π,π], draw ∈ [0,1], release (>0 fires)]`
+
+Pure `Box` (thresholded binaries) keeps a single Gaussian head — far simpler and more stable
+than a `Dict`/`Tuple` hybrid distribution, with no loss of expressiveness.
