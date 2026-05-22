@@ -112,3 +112,6 @@ than a `Dict`/`Tuple` hybrid distribution, with no loss of expressiveness.
 self (pos, vel, grounded, facing, hp, draw, reload) · enemy (relative pos/vel, hp, facing,
 is_drawing) · up to 4 in-flight arrows (relative pos/vel, owner, est. time-to-impact) ·
 wind · arena descriptor (6 platforms as relative x/y/half-width) · clock + score diff.
+
+Vector obs over pixels because it trains 100–1000× faster and fits a 6 GB laptop GPU. The obs
+encoder is a single seam (`ai/obs.py::encode_obs`), so a pixel path stays possible later.
