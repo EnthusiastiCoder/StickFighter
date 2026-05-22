@@ -100,3 +100,5 @@ direction from the archer sets **angle**, its distance sets **draw power** (capp
 bends); release → fire. Reload cooldown ~0.45 s.
 
 This maps 1:1 onto the AI action space, so the AI plays the *exact* game a human does:
+
+`Box(5) = [move ∈ [-1,1], jump (>0 fires), aim_angle ∈ [-1,1] → [-π,π], draw ∈ [0,1], release (>0 fires)]`
