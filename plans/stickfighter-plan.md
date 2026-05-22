@@ -94,3 +94,7 @@ archer that is already dead, so it cannot influence any outcome. Note pymunk 7 r
 callback API to `space.on_collision(a, b, begin=…)` — verified on the installed 7.2.0.
 
 ### Control scheme (decided) — one primitive for human and AI
+
+**Drag-to-aim**, faithful to the reference: hold mouse → the archer draws the bow; the cursor's
+direction from the archer sets **angle**, its distance sets **draw power** (capped, bow visibly
+bends); release → fire. Reload cooldown ~0.45 s.
