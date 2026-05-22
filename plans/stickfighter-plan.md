@@ -125,3 +125,5 @@ sparse early phase.
 Curriculum, auto-advancing on win-rate threshold:
 **S0** static target practice → **S1** noisy ballistic bot → **S2** sharp bot → **S3** self-play
 league (PFSP sampling over frozen checkpoints + Elo). The near-miss bonus decays to 0 by S2.
+
+### Reuse from `PlayerAI\Mario\FreshGame` (surveyed)
