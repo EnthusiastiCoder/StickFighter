@@ -127,3 +127,9 @@ Curriculum, auto-advancing on win-rate threshold:
 league (PFSP sampling over frozen checkpoints + Elo). The near-miss bonus decays to 0 by S2.
 
 ### Reuse from `PlayerAI\Mario\FreshGame` (surveyed)
+
+Adapt: `callbacks.py` logging (episode stats, behavioural action entropy, per-param grad norms
+via `param.register_hook`, advantage stats) · `profiling.py` (rollout vs train time split) ·
+the `runs/<timestamp>/{checkpoints,logs,eval,best,recordings}/` layout + multi-format logger +
+`--resume` · the `--target-score/--target-streak` chunked-learn loop · `benchmark()` steps/sec
+sweep · the "cheap sim trains, pretty renderer records" eval-video split.
