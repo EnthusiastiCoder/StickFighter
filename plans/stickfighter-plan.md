@@ -105,3 +105,5 @@ This maps 1:1 onto the AI action space, so the AI plays the *exact* game a human
 
 Pure `Box` (thresholded binaries) keeps a single Gaussian head — far simpler and more stable
 than a `Dict`/`Tuple` hybrid distribution, with no loss of expressiveness.
+
+### Observation (decided) — compact egocentric vector
