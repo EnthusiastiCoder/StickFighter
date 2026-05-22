@@ -115,3 +115,5 @@ wind · arena descriptor (6 platforms as relative x/y/half-width) · clock + sco
 
 Vector obs over pixels because it trains 100–1000× faster and fits a 6 GB laptop GPU. The obs
 encoder is a single seam (`ai/obs.py::encode_obs`), so a pixel path stays possible later.
+
+### Reward + curriculum (this is what makes it actually converge)
