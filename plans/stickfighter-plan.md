@@ -133,3 +133,9 @@ via `param.register_hook`, advantage stats) · `profiling.py` (rollout vs train 
 the `runs/<timestamp>/{checkpoints,logs,eval,best,recordings}/` layout + multi-format logger +
 `--resume` · the `--target-score/--target-streak` chunked-learn loop · `benchmark()` steps/sec
 sweep · the "cheap sim trains, pretty renderer records" eval-video split.
+
+Do **not** reuse `research_ppo_flappy/train_ppo_good.py` — it has no vectorization, no entropy
+bonus, no advantage normalization, and a broken frame-stack (same frame ×4). Nothing in that
+project has self-play, curriculum, seeding, continuous actions, or tests; all written fresh here.
+Windows: env factory closures only (pymunk objects constructed *inside* workers, never pickled),
+`if __name__ == "__main__"` guards, central `set_seed()` with per-worker offsets.
