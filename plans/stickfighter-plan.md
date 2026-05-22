@@ -139,3 +139,5 @@ bonus, no advantage normalization, and a broken frame-stack (same frame ×4). No
 project has self-play, curriculum, seeding, continuous actions, or tests; all written fresh here.
 Windows: env factory closures only (pymunk objects constructed *inside* workers, never pickled),
 `if __name__ == "__main__"` guards, central `set_seed()` with per-worker offsets.
+
+---
