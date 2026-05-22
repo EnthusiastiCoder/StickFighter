@@ -141,3 +141,5 @@ Windows: env factory closures only (pymunk objects constructed *inside* workers,
 `if __name__ == "__main__"` guards, central `set_seed()` with per-worker offsets.
 
 ---
+
+## Milestones & commits
