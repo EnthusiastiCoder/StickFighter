@@ -185,3 +185,6 @@ decisions) · `envs/vec.py` (SubprocVecEnv + `benchmark()`).
 
 **Tests:** `gymnasium.utils.env_checker` passes; **mirror symmetry** (P1's obs of a mirrored
 state ≡ P0's obs); reward-term sanity; bot beats `idle` > 95 %.
+
+**Acceptance:** `--benchmark` reports ≥ 8 000 env-steps/s aggregate at 8 workers; the sharp
+ballistic bot is a genuinely hard human opponent.
