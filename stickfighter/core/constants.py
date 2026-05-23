@@ -17,3 +17,13 @@ CHAR_MOVE_SPEED = 220.0  # px/s
 CHAR_JUMP_SPEED = 520.0  # px/s, upward (negative vy)
 CHAR_MAX_FALL_SPEED = 900.0
 CHAR_MAX_HP = 100.0
+
+# Bow / arrows. Draw fraction (0..1) maps linearly onto arrow launch speed.
+RELOAD_TIME = 0.45  # seconds of cooldown after releasing before another shot can fire
+MIN_DRAW = 0.15  # draw fractions below this do not release a shot
+ARROW_SPEED_MIN = 380.0  # px/s at draw == MIN_DRAW
+ARROW_SPEED_MAX = 980.0  # px/s at draw == 1.0
+ARROW_LENGTH = 34.0
+ARROW_COLLIDE_RADIUS = 4.0  # thickness used for swept-segment collision tests
+BOW_FORWARD_OFFSET = 18.0  # arrow spawns this far ahead of the archer, along facing
+BOW_HEIGHT_OFFSET = 24.0  # arrow spawns this far above the archer's feet
