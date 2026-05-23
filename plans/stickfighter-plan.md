@@ -176,3 +176,9 @@ accumulator) · one commit per scene.
 
 **Acceptance:** playable human-vs-idle duel at 60 fps; a rendered frame is visually faithful to
 the reference screenshot; renderer mutates no sim state (asserted by a snapshot-hash test).
+
+### M3 — Bots + Gym env · `feat/ai-env`
+`bots/base.py` (Policy protocol) · `bots/ballistic.py` (analytic solver + target-lead
+prediction + aim-noise/reaction-delay/dodge knobs → difficulty tiers) · `bots/idle.py` ·
+`bots/wanderer.py` · `obs.py` · `reward.py` · `envs/duel_env.py` (frame-skip 2 ⇒ 30 Hz
+decisions) · `envs/vec.py` (SubprocVecEnv + `benchmark()`).
