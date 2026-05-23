@@ -231,3 +231,10 @@ iterating on `render/`. I will also record short match GIFs to confirm the arrow
 and ragdolls read like the reference.
 
 ## Risks
+
+- **Throughput** — if pymunk-free core still under-delivers, the lever is frame-skip and worker
+  count, *never* a second physics model (that would break train/play parity).
+- **Sparse reward** — mitigated by the S0→S3 curriculum and the annealed near-miss bonus; if
+  self-play stalls, fall back to longer S2 and a wider league.
+- **Shared global env** — one install (`pygame-ce`) only; `requirements.txt` pins the versions
+  actually present so drift is detectable.
