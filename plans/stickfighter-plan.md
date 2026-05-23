@@ -229,3 +229,5 @@ Visual fidelity is checked by dumping a frame (`--screenshot frame.png`) and run
 **UI Critique MCP** (`critique_ui`) against it alongside the reference screenshot, then
 iterating on `render/`. I will also record short match GIFs to confirm the arrow arcs, trails,
 and ragdolls read like the reference.
+
+## Risks
