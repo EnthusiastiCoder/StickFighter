@@ -165,3 +165,11 @@ spawns not intersecting geometry.
 
 **Acceptance:** `MatchSim` plays a full match headless with zero rendering imports;
 `pytest` green; a 10 000-step determinism replay is bit-identical; ≥ 20 000 sim steps/s single core.
+
+### M2 — Renderer + playable game · `feat/renderer`
+`theme.py` (BG `#EFC94C`, ink `#111`, blood `#8B1A1A`, white HUD) · `draw.py` (stick figure with
+run cycle, bow bending with draw, nocked arrow, fletched arrows, dotted white trail) ·
+`effects.py` (blood spray, floating `+1 💀`, screen shake, hit flash, stuck-arrow decals) ·
+`hud.py` (coins, centred kill counter, wind indicator, draw-power arc, pause) · `ragdoll.py`
+(pymunk) · `input.py` (drag→Action, WASD/arrows) · `app.py` (scene stack, fixed-timestep
+accumulator) · one commit per scene.
