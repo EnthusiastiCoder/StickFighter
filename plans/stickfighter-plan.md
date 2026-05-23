@@ -202,3 +202,10 @@ round-trip reproduces identical actions.
 
 **Acceptance:** trained policy beats the sharp ballistic bot > 60 % over 500 matches; Elo rises
 monotonically across the league; tensorboard shows entropy not collapsing.
+
+### M5 — Content + polish · `feat/content`
+Difficulty ladder wired **to real training checkpoints** (Bronze/Silver/Gold/Legend = early →
+late snapshots) — the game's difficulty curve literally *is* the training history. Plus:
+Survival (waves), Target Practice, local 2P hotseat, AI-vs-AI Spectate (pick two checkpoints),
+coin shop (cosmetics + bow tiers, JSON save), wind, multiple arenas, settings (gore toggle),
+optional SFX.
