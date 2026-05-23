@@ -27,3 +27,11 @@ ARROW_LENGTH = 34.0
 ARROW_COLLIDE_RADIUS = 4.0  # thickness used for swept-segment collision tests
 BOW_FORWARD_OFFSET = 18.0  # arrow spawns this far ahead of the archer, along facing
 BOW_HEIGHT_OFFSET = 24.0  # arrow spawns this far above the archer's feet
+
+# Hitbox layout, measured downward from the top of the character's bounding box
+# (top = feet_y - CHAR_HEIGHT). A headshot is an instant kill; torso/limb chip HP.
+HEAD_RADIUS = 9.0
+HEAD_CENTER_Y = 9.0
+TORSO_TOP_Y = 18.0
+TORSO_BOTTOM_Y = 46.0
+LIMB_BOTTOM_Y = CHAR_HEIGHT
