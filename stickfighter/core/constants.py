@@ -7,3 +7,5 @@ DT = 1.0 / FPS
 ARENA_WIDTH = 960.0
 ARENA_HEIGHT = 540.0
 GROUND_Y = ARENA_HEIGHT - 40.0
+
+GRAVITY = 1400.0  # px/s^2, downward. Tuned for ~1-1.5s arrow arcs across the arena.
