@@ -188,3 +188,10 @@ state ≡ P0's obs); reward-term sanity; bot beats `idle` > 95 %.
 
 **Acceptance:** `--benchmark` reports ≥ 8 000 env-steps/s aggregate at 8 workers; the sharp
 ballistic bot is a genuinely hard human opponent.
+
+### M4 — PPO + self-play · `feat/ppo-selfplay`
+`seeding.py` · `policy.py` (2×256 tanh actor-critic, state-independent `log_std`, orthogonal
+init, running obs normalization) · `ppo.py` (GAE, clip, value clip, adv norm, grad clip, lr +
+entropy schedules, checkpoint/resume with step counter) · `league.py` (snapshot pool, PFSP,
+Elo) · `curriculum.py` · `logging.py` · `train.py` (CLI + `runs/<ts>/…` + `--resume`) ·
+`evaluate.py` (win-rate vs bot ladder & past checkpoints, Elo table, GIF/MP4 via the real renderer).
