@@ -182,3 +182,6 @@ the reference screenshot; renderer mutates no sim state (asserted by a snapshot-
 prediction + aim-noise/reaction-delay/dodge knobs → difficulty tiers) · `bots/idle.py` ·
 `bots/wanderer.py` · `obs.py` · `reward.py` · `envs/duel_env.py` (frame-skip 2 ⇒ 30 Hz
 decisions) · `envs/vec.py` (SubprocVecEnv + `benchmark()`).
+
+**Tests:** `gymnasium.utils.env_checker` passes; **mirror symmetry** (P1's obs of a mirrored
+state ≡ P0's obs); reward-term sanity; bot beats `idle` > 95 %.
