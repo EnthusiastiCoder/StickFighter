@@ -213,3 +213,14 @@ optional SFX.
 ---
 
 ## Verification (end-to-end)
+
+```powershell
+py -3.12 -m pip install pygame-ce            # the only install
+py -3.12 -m pytest -q                        # unit + integration suite
+py -3.12 -m stickfighter.core.match --selftest        # headless match + determinism replay
+py -3.12 -m stickfighter.game.app                    # play it
+py -3.12 -m stickfighter.ai.envs.vec --benchmark     # steps/s sweep [1,2,4,8,12]
+py -3.12 -m stickfighter.ai.ppo.train --stage 0 --total-steps 200000 --n-envs 8
+py -3.12 -m stickfighter.ai.ppo.evaluate --ckpt runs/<ts>/best --episodes 500 --record
+tensorboard --logdir runs/
+```
