@@ -224,3 +224,8 @@ py -3.12 -m stickfighter.ai.ppo.train --stage 0 --total-steps 200000 --n-envs 8
 py -3.12 -m stickfighter.ai.ppo.evaluate --ckpt runs/<ts>/best --episodes 500 --record
 tensorboard --logdir runs/
 ```
+
+Visual fidelity is checked by dumping a frame (`--screenshot frame.png`) and running the
+**UI Critique MCP** (`critique_ui`) against it alongside the reference screenshot, then
+iterating on `render/`. I will also record short match GIFs to confirm the arrow arcs, trails,
+and ragdolls read like the reference.
