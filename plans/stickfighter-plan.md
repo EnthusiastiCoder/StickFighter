@@ -173,3 +173,6 @@ run cycle, bow bending with draw, nocked arrow, fletched arrows, dotted white tr
 `hud.py` (coins, centred kill counter, wind indicator, draw-power arc, pause) · `ragdoll.py`
 (pymunk) · `input.py` (drag→Action, WASD/arrows) · `app.py` (scene stack, fixed-timestep
 accumulator) · one commit per scene.
+
+**Acceptance:** playable human-vs-idle duel at 60 fps; a rendered frame is visually faithful to
+the reference screenshot; renderer mutates no sim state (asserted by a snapshot-hash test).
