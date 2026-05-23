@@ -211,3 +211,5 @@ coin shop (cosmetics + bow tiers, JSON save), wind, multiple arenas, settings (g
 optional SFX.
 
 ---
+
+## Verification (end-to-end)
