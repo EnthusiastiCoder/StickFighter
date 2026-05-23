@@ -209,3 +209,5 @@ late snapshots) — the game's difficulty curve literally *is* the training hist
 Survival (waves), Target Practice, local 2P hotseat, AI-vs-AI Spectate (pick two checkpoints),
 coin shop (cosmetics + bow tiers, JSON save), wind, multiple arenas, settings (gore toggle),
 optional SFX.
+
+---
