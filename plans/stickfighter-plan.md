@@ -162,3 +162,6 @@ forward, lands within ε of target (with and without wind); no tunnelling at max
 `test_match.py` — **determinism** (same seed + action tape ⇒ identical state hash), headshot
 instakill, damage falloff by speed, timeout ends round. `test_arena.py` — all 8 layouts valid,
 spawns not intersecting geometry.
+
+**Acceptance:** `MatchSim` plays a full match headless with zero rendering imports;
+`pytest` green; a 10 000-step determinism replay is bit-identical; ≥ 20 000 sim steps/s single core.
