@@ -199,3 +199,6 @@ Elo) · `curriculum.py` · `logging.py` · `train.py` (CLI + `runs/<ts>/…` + `
 **Tests:** GAE against hand-computed values; PPO solves S0 target practice to a known reward
 threshold in < 100 k steps (fast integration test, marked `slow`); checkpoint save/load
 round-trip reproduces identical actions.
+
+**Acceptance:** trained policy beats the sharp ballistic bot > 60 % over 500 matches; Elo rises
+monotonically across the league; tensorboard shows entropy not collapsing.
