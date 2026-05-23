@@ -146,3 +146,8 @@ Windows: env factory closures only (pymunk objects constructed *inside* workers,
 
 Branch per milestone off `main` (currently clean on `main`; never commit to it directly).
 One file per commit unless files are inseparable.
+
+### M0 — Scaffolding · `chore/scaffolding`
+1. `.gitignore` (runs/, __pycache__, *.png dumps, saves/) 2. `pyproject.toml` (ruff + pytest cfg)
+3. `requirements.txt` (pinned to installed versions; pygame-ce added) 4. `README.md`
+5. `plans/stickfighter-plan.md` (this plan, per CLAUDE.md) 6. `stickfighter/__init__.py` packages
