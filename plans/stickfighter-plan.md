@@ -155,3 +155,10 @@ One file per commit unless files are inseparable.
 ### M1 — Core sim · `feat/core-sim`  ← the load-bearing milestone
 One commit each: `constants.py` · `events.py` · `actions.py` · `entities.py` · `arena.py` ·
 `character.py` · `ballistics.py` · `rules.py` · `match.py`, then one per test file.
+
+**Tests:** `test_ballistics.py` — `solve_launch_angle()` round-trip: solved angle, simulated
+forward, lands within ε of target (with and without wind); no tunnelling at max arrow speed.
+`test_character.py` — jump apex height, platform landing, wall/ledge resolution.
+`test_match.py` — **determinism** (same seed + action tape ⇒ identical state hash), headshot
+instakill, damage falloff by speed, timeout ends round. `test_arena.py` — all 8 layouts valid,
+spawns not intersecting geometry.
