@@ -195,3 +195,7 @@ init, running obs normalization) · `ppo.py` (GAE, clip, value clip, adv norm, g
 entropy schedules, checkpoint/resume with step counter) · `league.py` (snapshot pool, PFSP,
 Elo) · `curriculum.py` · `logging.py` · `train.py` (CLI + `runs/<ts>/…` + `--resume`) ·
 `evaluate.py` (win-rate vs bot ladder & past checkpoints, Elo table, GIF/MP4 via the real renderer).
+
+**Tests:** GAE against hand-computed values; PPO solves S0 target practice to a known reward
+threshold in < 100 k steps (fast integration test, marked `slow`); checkpoint save/load
+round-trip reproduces identical actions.
