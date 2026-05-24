@@ -13,3 +13,13 @@ class ArrowFired:
     y: float
     vx: float
     vy: float
+
+
+@dataclass(frozen=True)
+class ArrowHit:
+    owner: int  # archer who fired the arrow
+    target: int  # archer who was hit
+    part: Part
+    damage: float
+    x: float
+    y: float
