@@ -53,3 +53,6 @@ WIND_MAX = 60.0
 ROUND_TIME_LIMIT = 30.0  # seconds before a round times out
 WIN_ROUNDS = 3  # first archer to this many round wins takes the match
 MAX_ARROWS_TRACKED = 4  # cap used by observation encoding
+
+# Arrows that travel beyond the arena by this margin are culled as misses.
+OUT_OF_BOUNDS_MARGIN = 80.0
