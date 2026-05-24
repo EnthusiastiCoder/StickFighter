@@ -23,3 +23,10 @@ class ArrowHit:
     damage: float
     x: float
     y: float
+
+
+@dataclass(frozen=True)
+class ArrowMiss:
+    owner: int
+    x: float
+    y: float
