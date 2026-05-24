@@ -40,3 +40,8 @@ LIMB_BOTTOM_Y = CHAR_HEIGHT
 DAMAGE_HEAD = 9999.0  # instakill, well above CHAR_MAX_HP
 DAMAGE_TORSO = 34.0
 DAMAGE_LIMB = 16.0
+
+# Coins awarded on a landed hit
+COINS_TORSO = 1
+COINS_LIMB = 1
+COINS_HEADSHOT = 3
