@@ -45,3 +45,6 @@ DAMAGE_LIMB = 16.0
 COINS_TORSO = 1
 COINS_LIMB = 1
 COINS_HEADSHOT = 3
+
+# Wind: sampled once per round, applied as constant lateral accel (px/s^2) on arrows.
+WIND_MAX = 60.0
