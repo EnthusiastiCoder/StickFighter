@@ -48,3 +48,8 @@ COINS_HEADSHOT = 3
 
 # Wind: sampled once per round, applied as constant lateral accel (px/s^2) on arrows.
 WIND_MAX = 60.0
+
+# Match rules
+ROUND_TIME_LIMIT = 30.0  # seconds before a round times out
+WIN_ROUNDS = 3  # first archer to this many round wins takes the match
+MAX_ARROWS_TRACKED = 4  # cap used by observation encoding
