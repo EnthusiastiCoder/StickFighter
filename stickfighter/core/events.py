@@ -37,3 +37,9 @@ class Death:
     who: int
     killer: int
     headshot: bool
+
+
+@dataclass(frozen=True)
+class CoinEarned:
+    who: int
+    amount: int
