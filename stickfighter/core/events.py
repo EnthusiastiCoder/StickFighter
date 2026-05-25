@@ -43,3 +43,10 @@ class Death:
 class CoinEarned:
     who: int
     amount: int
+
+
+@dataclass(frozen=True)
+class RoundOver:
+    winner: int | None  # None on a timeout draw
+    p0_rounds: int
+    p1_rounds: int
