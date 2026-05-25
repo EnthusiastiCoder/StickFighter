@@ -30,3 +30,10 @@ class ArrowMiss:
     owner: int
     x: float
     y: float
+
+
+@dataclass(frozen=True)
+class Death:
+    who: int
+    killer: int
+    headshot: bool
