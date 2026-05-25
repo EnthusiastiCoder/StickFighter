@@ -21,3 +21,6 @@ class ArcherState:
     kills: int = 0
     coins: int = 0
     rounds_won: int = 0
+
+    def top(self) -> float:
+        return self.y - C.CHAR_HEIGHT
