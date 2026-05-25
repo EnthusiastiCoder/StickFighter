@@ -55,3 +55,6 @@ class RoundOver:
 @dataclass(frozen=True)
 class MatchOver:
     winner: int
+
+
+Event = ArrowFired | ArrowHit | ArrowMiss | Death | CoinEarned | RoundOver | MatchOver
