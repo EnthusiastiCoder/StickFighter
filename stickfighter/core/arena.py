@@ -15,3 +15,7 @@ class Platform:
     x: float  # left edge
     y: float  # top (walkable) surface
     width: float
+
+    @property
+    def right(self) -> float:
+        return self.x + self.width
