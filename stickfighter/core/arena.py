@@ -66,3 +66,7 @@ ARENAS: tuple[Arena, ...] = (
     ),
     _arena("wide_shelf", [Platform(330, 440, 300)]),
 )
+
+
+def random_arena(rng: random.Random) -> Arena:
+    return ARENAS[rng.randrange(len(ARENAS))]
