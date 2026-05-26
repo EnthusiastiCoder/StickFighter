@@ -27,3 +27,7 @@ class Arena:
     platforms: tuple[Platform, ...]  # includes the ground
     spawn_p0: tuple[float, float]
     spawn_p1: tuple[float, float]
+
+
+def _ground() -> Platform:
+    return Platform(x=0.0, y=C.GROUND_Y, width=C.ARENA_WIDTH)
