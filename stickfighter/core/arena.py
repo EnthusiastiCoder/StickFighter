@@ -31,3 +31,7 @@ class Arena:
 
 def _ground() -> Platform:
     return Platform(x=0.0, y=C.GROUND_Y, width=C.ARENA_WIDTH)
+
+
+def _spawns(margin: float = 110.0) -> tuple[tuple[float, float], tuple[float, float]]:
+    return (margin, C.GROUND_Y), (C.ARENA_WIDTH - margin, C.GROUND_Y)
