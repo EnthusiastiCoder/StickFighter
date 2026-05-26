@@ -76,3 +76,13 @@ def limb_hitbox(archer: ArcherState) -> Rect:
         right=archer.x + C.CHAR_HALF_WIDTH,
         bottom=top + C.LIMB_BOTTOM_Y,
     )
+
+
+def body_aabb(archer: ArcherState) -> Rect:
+    """Full bounding box, used for character-vs-platform collision."""
+    return Rect(
+        left=archer.x - C.CHAR_HALF_WIDTH,
+        top=archer.top(),
+        right=archer.x + C.CHAR_HALF_WIDTH,
+        bottom=archer.y,
+    )
