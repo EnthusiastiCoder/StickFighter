@@ -43,3 +43,11 @@ class Circle:
     cx: float
     cy: float
     r: float
+
+
+@dataclass(frozen=True)
+class Rect:
+    left: float
+    top: float
+    right: float
+    bottom: float
