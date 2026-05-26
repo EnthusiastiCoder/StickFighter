@@ -66,3 +66,13 @@ def torso_hitbox(archer: ArcherState) -> Rect:
         right=archer.x + C.CHAR_HALF_WIDTH,
         bottom=top + C.TORSO_BOTTOM_Y,
     )
+
+
+def limb_hitbox(archer: ArcherState) -> Rect:
+    top = archer.top()
+    return Rect(
+        left=archer.x - C.CHAR_HALF_WIDTH,
+        top=top + C.TORSO_BOTTOM_Y,
+        right=archer.x + C.CHAR_HALF_WIDTH,
+        bottom=top + C.LIMB_BOTTOM_Y,
+    )
