@@ -24,3 +24,15 @@ class ArcherState:
 
     def top(self) -> float:
         return self.y - C.CHAR_HEIGHT
+
+
+@dataclass
+class ArrowState:
+    id: int
+    x: float
+    y: float
+    vx: float
+    vy: float
+    owner: int
+    age: float = 0.0
+    alive: bool = True
