@@ -6,3 +6,5 @@ onto it (see character.py); there is no collision from the sides or below.
 
 import random
 from dataclasses import dataclass
+
+from stickfighter.core import constants as C
