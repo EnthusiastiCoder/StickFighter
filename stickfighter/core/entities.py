@@ -51,3 +51,8 @@ class Rect:
     top: float
     right: float
     bottom: float
+
+
+def head_hitbox(archer: ArcherState) -> Circle:
+    top = archer.top()
+    return Circle(cx=archer.x, cy=top + C.HEAD_CENTER_Y, r=C.HEAD_RADIUS)
