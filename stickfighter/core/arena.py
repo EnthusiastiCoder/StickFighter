@@ -8,3 +8,10 @@ import random
 from dataclasses import dataclass
 
 from stickfighter.core import constants as C
+
+
+@dataclass(frozen=True)
+class Platform:
+    x: float  # left edge
+    y: float  # top (walkable) surface
+    width: float
