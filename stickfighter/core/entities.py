@@ -56,3 +56,13 @@ class Rect:
 def head_hitbox(archer: ArcherState) -> Circle:
     top = archer.top()
     return Circle(cx=archer.x, cy=top + C.HEAD_CENTER_Y, r=C.HEAD_RADIUS)
+
+
+def torso_hitbox(archer: ArcherState) -> Rect:
+    top = archer.top()
+    return Rect(
+        left=archer.x - C.CHAR_HALF_WIDTH,
+        top=top + C.TORSO_TOP_Y,
+        right=archer.x + C.CHAR_HALF_WIDTH,
+        bottom=top + C.TORSO_BOTTOM_Y,
+    )
