@@ -36,3 +36,10 @@ class ArrowState:
     owner: int
     age: float = 0.0
     alive: bool = True
+
+
+@dataclass(frozen=True)
+class Circle:
+    cx: float
+    cy: float
+    r: float
