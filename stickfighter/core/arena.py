@@ -19,3 +19,11 @@ class Platform:
     @property
     def right(self) -> float:
         return self.x + self.width
+
+
+@dataclass(frozen=True)
+class Arena:
+    name: str
+    platforms: tuple[Platform, ...]  # includes the ground
+    spawn_p0: tuple[float, float]
+    spawn_p1: tuple[float, float]
