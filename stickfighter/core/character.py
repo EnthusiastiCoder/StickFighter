@@ -13,3 +13,7 @@ def step_character(archer: ArcherState, action, arena: Arena, dt: float) -> None
     match.py is what revives it, and the death ragdoll is a render-only effect."""
     if not archer.alive:
         return
+
+    archer.aim_angle = action.aim_angle
+    archer.draw = action.draw
+    archer.facing = 1 if math.cos(action.aim_angle) >= 0.0 else -1
