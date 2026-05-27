@@ -17,3 +17,8 @@ def step_character(archer: ArcherState, action, arena: Arena, dt: float) -> None
     archer.aim_angle = action.aim_angle
     archer.draw = action.draw
     archer.facing = 1 if math.cos(action.aim_angle) >= 0.0 else -1
+
+    archer.vx = action.move * C.CHAR_MOVE_SPEED
+    if action.jump and archer.grounded:
+        archer.vy = -C.CHAR_JUMP_SPEED
+        archer.grounded = False
