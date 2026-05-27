@@ -22,3 +22,5 @@ def step_character(archer: ArcherState, action, arena: Arena, dt: float) -> None
     if action.jump and archer.grounded:
         archer.vy = -C.CHAR_JUMP_SPEED
         archer.grounded = False
+
+    archer.vy = min(archer.vy + C.GRAVITY * dt, C.CHAR_MAX_FALL_SPEED)
