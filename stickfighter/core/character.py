@@ -29,3 +29,19 @@ def step_character(archer: ArcherState, action, arena: Arena, dt: float) -> None
     new_x = archer.x + archer.vx * dt
     new_y = old_bottom + archer.vy * dt
     new_x = max(C.CHAR_HALF_WIDTH, min(C.ARENA_WIDTH - C.CHAR_HALF_WIDTH, new_x))
+
+    grounded = False
+    if archer.vy > 0.0:
+        left = new_x - C.CHAR_HALF_WIDTH
+        right = new_x + C.CHAR_HALF_WIDTH
+        landing_y = None
+        for platform in arena.platforms:
+            if platform.x >= right or platform.right <= left:
+                continue
+            if old_bottom <= platform.y <= new_y:
+                if landing_y is None or platform.y < landing_y:
+                    landing_y = platform.y
+        if landing_y is not None:
+            new_y = landing_y
+            archer.vy = 0.0
+            grounded = True
