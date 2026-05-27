@@ -50,3 +50,7 @@ def step_character(archer: ArcherState, action, arena: Arena, dt: float) -> None
         new_y = C.GROUND_Y
         archer.vy = 0.0
         grounded = True
+
+    archer.x = new_x
+    archer.y = new_y
+    archer.grounded = grounded
