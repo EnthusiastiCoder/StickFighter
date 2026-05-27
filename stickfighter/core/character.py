@@ -6,3 +6,10 @@ import math
 from stickfighter.core import constants as C
 from stickfighter.core.arena import Arena
 from stickfighter.core.entities import ArcherState
+
+
+def step_character(archer: ArcherState, action, arena: Arena, dt: float) -> None:
+    """Mutates archer in place. A dead archer is frozen -- the round-reset in
+    match.py is what revives it, and the death ragdoll is a render-only effect."""
+    if not archer.alive:
+        return
