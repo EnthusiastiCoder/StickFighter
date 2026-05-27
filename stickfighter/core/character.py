@@ -45,3 +45,8 @@ def step_character(archer: ArcherState, action, arena: Arena, dt: float) -> None
             new_y = landing_y
             archer.vy = 0.0
             grounded = True
+
+    if new_y > C.GROUND_Y:  # safety net against tunnelling through the world floor
+        new_y = C.GROUND_Y
+        archer.vy = 0.0
+        grounded = True
