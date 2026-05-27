@@ -24,3 +24,8 @@ def step_character(archer: ArcherState, action, arena: Arena, dt: float) -> None
         archer.grounded = False
 
     archer.vy = min(archer.vy + C.GRAVITY * dt, C.CHAR_MAX_FALL_SPEED)
+
+    old_bottom = archer.y
+    new_x = archer.x + archer.vx * dt
+    new_y = old_bottom + archer.vy * dt
+    new_x = max(C.CHAR_HALF_WIDTH, min(C.ARENA_WIDTH - C.CHAR_HALF_WIDTH, new_x))
