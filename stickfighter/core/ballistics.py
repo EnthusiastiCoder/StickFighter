@@ -85,3 +85,24 @@ def segment_hits_rect(
     if t0 > t1:
         return None
     return x0 + t0 * dx, y0 + t0 * dy
+
+
+def solve_launch_angle(
+    dx: float, dy: float, speed: float, gravity: float = C.GRAVITY, prefer_low: bool = True
+) -> float | None:
+    """Inverse projectile motion (y-down, gravity positive-downward): the
+    launch angle that sends a shot at `speed` through the relative offset
+    (dx, dy). Substituting T = tan(theta) into the trajectory equation turns
+    it into a quadratic in T, which is solved directly rather than searched.
+    Two solutions normally exist (a flat arc and a lobbed one); prefer_low
+    picks the flatter one. Returns None if the target is out of range.
+    """
+    if speed <= 0.0:
+        return None
+    if abs(dx) < 1e-6:
+        # 0.5*g*t^2 + vy*t - dy = 0 must have a real root for some t > 0.
+        vy = -speed if dy < 0.0 else speed
+        disc = vy * vy + 2.0 * gravity * dy
+        if disc < 0.0:
+            return None
+        return -math.pi / 2.0 if dy < 0.0 else math.pi / 2.0
