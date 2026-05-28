@@ -118,3 +118,8 @@ def solve_launch_angle(
     t2 = (-qb - sqrt_disc) / (2.0 * qa)
     lo, hi = sorted((t1, t2), key=abs)
     tan_theta = lo if prefer_low else hi
+
+    theta = math.atan(tan_theta)
+    if dx < 0.0:
+        theta += math.pi
+    return math.atan2(math.sin(theta), math.cos(theta))
