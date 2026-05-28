@@ -19,3 +19,15 @@ def spawn_arrow(archer: ArcherState, owner: int, arrow_id: int) -> ArrowState:
     vx = math.cos(archer.aim_angle) * speed
     vy = math.sin(archer.aim_angle) * speed
     return ArrowState(id=arrow_id, x=ox, y=oy, vx=vx, vy=vy, owner=owner)
+
+
+def step_arrow(arrow: ArrowState, dt: float, wind: float) -> tuple[float, float]:
+    """Integrates the arrow one step and returns its pre-step position, so the
+    caller can run a swept-segment collision test against (prev -> new)."""
+    prev = (arrow.x, arrow.y)
+    arrow.vy += C.GRAVITY * dt
+    arrow.vx += wind * dt
+    arrow.x += arrow.vx * dt
+    arrow.y += arrow.vy * dt
+    arrow.age += dt
+    return prev
