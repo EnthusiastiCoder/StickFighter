@@ -55,3 +55,33 @@ def segment_hits_circle(
     if (closest[0] - circle.cx) ** 2 + (closest[1] - circle.cy) ** 2 <= r * r:
         return closest
     return None
+
+
+def segment_hits_rect(
+    p0: tuple[float, float], p1: tuple[float, float], rect: Rect, extra: float = 0.0
+) -> tuple[float, float] | None:
+    """Liang-Barsky segment-vs-AABB clipping; returns the entry point, or the
+    segment start if it begins inside the (padded) rect."""
+    x0, y0 = p0
+    x1, y1 = p1
+    left, right = rect.left - extra, rect.right + extra
+    top, bottom = rect.top - extra, rect.bottom + extra
+    dx, dy = x1 - x0, y1 - y0
+    t0, t1 = 0.0, 1.0
+    for p, q in ((-dx, x0 - left), (dx, right - x0), (-dy, y0 - top), (dy, bottom - y0)):
+        if p == 0.0:
+            if q < 0.0:
+                return None
+            continue
+        t = q / p
+        if p < 0.0:
+            if t > t1:
+                return None
+            t0 = max(t0, t)
+        else:
+            if t < t0:
+                return None
+            t1 = min(t1, t)
+    if t0 > t1:
+        return None
+    return x0 + t0 * dx, y0 + t0 * dy
