@@ -106,3 +106,15 @@ def solve_launch_angle(
         if disc < 0.0:
             return None
         return -math.pi / 2.0 if dy < 0.0 else math.pi / 2.0
+
+    qa = gravity * dx * dx / (2.0 * speed * speed)
+    qb = dx
+    qc = qa - dy
+    disc = qb * qb - 4.0 * qa * qc
+    if disc < 0.0:
+        return None
+    sqrt_disc = math.sqrt(disc)
+    t1 = (-qb + sqrt_disc) / (2.0 * qa)
+    t2 = (-qb - sqrt_disc) / (2.0 * qa)
+    lo, hi = sorted((t1, t2), key=abs)
+    tan_theta = lo if prefer_low else hi
