@@ -31,3 +31,17 @@ def step_arrow(arrow: ArrowState, dt: float, wind: float) -> tuple[float, float]
     arrow.y += arrow.vy * dt
     arrow.age += dt
     return prev
+
+
+def _closest_point_on_segment(
+    p0: tuple[float, float], p1: tuple[float, float], q: tuple[float, float]
+) -> tuple[float, float]:
+    ax, ay = p0
+    bx, by = p1
+    qx, qy = q
+    dx, dy = bx - ax, by - ay
+    len_sq = dx * dx + dy * dy
+    if len_sq < 1e-9:
+        return p0
+    t = max(0.0, min(1.0, ((qx - ax) * dx + (qy - ay) * dy) / len_sq))
+    return ax + t * dx, ay + t * dy
