@@ -38,3 +38,10 @@ from stickfighter.core.events import (
     RoundOver,
 )
 from stickfighter.core.rules import coins_for_part, damage_for_part, is_match_won
+
+
+@dataclass(frozen=True)
+class MatchSnapshot:
+    """A read-only view for the renderer and observation encoder. The nested
+    Arena/ArcherState/ArrowState objects are the sim's live instances, not
+    copies -- callers must treat everything here as read-only."""
