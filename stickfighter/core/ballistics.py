@@ -45,3 +45,13 @@ def _closest_point_on_segment(
         return p0
     t = max(0.0, min(1.0, ((qx - ax) * dx + (qy - ay) * dy) / len_sq))
     return ax + t * dx, ay + t * dy
+
+
+def segment_hits_circle(
+    p0: tuple[float, float], p1: tuple[float, float], circle: Circle, extra_radius: float = 0.0
+) -> tuple[float, float] | None:
+    closest = _closest_point_on_segment(p0, p1, (circle.cx, circle.cy))
+    r = circle.r + extra_radius
+    if (closest[0] - circle.cx) ** 2 + (closest[1] - circle.cy) ** 2 <= r * r:
+        return closest
+    return None
