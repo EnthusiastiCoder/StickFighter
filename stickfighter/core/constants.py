@@ -22,7 +22,10 @@ CHAR_MAX_HP = 100.0
 RELOAD_TIME = 0.45  # seconds of cooldown after releasing before another shot can fire
 MIN_DRAW = 0.15  # draw fractions below this do not release a shot
 ARROW_SPEED_MIN = 380.0  # px/s at draw == MIN_DRAW
-ARROW_SPEED_MAX = 980.0  # px/s at draw == 1.0
+# px/s at draw == 1.0. Flat-trajectory max range is speed^2/GRAVITY; this must
+# clear the default spawn-to-spawn distance (~740px) with real margin, or a
+# full-draw shot literally cannot cross the arena.
+ARROW_SPEED_MAX = 1150.0
 ARROW_LENGTH = 34.0
 ARROW_COLLIDE_RADIUS = 4.0  # thickness used for swept-segment collision tests
 BOW_FORWARD_OFFSET = 18.0  # arrow spawns this far ahead of the archer, along facing
