@@ -250,3 +250,14 @@ class MatchSim:
 
         def arrow_tuple(ar: ArrowState) -> tuple:
             return (ar.id, ar.x, ar.y, ar.vx, ar.vy, ar.owner, ar.age, ar.alive)
+
+        return (
+            tuple(archer_tuple(a) for a in self.archers),
+            tuple(arrow_tuple(a) for a in self.arrows),
+            self.wind,
+            self.round_time_left,
+            self.p0_rounds,
+            self.p1_rounds,
+            self.match_over,
+            self.winner,
+        )
