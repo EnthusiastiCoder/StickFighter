@@ -241,3 +241,9 @@ class MatchSim:
     def state_tuple(self) -> tuple:
         """A fully deterministic snapshot for equality comparisons in
         determinism tests -- not for rendering or observation encoding."""
+
+        def archer_tuple(a: ArcherState) -> tuple:
+            return (
+                a.x, a.y, a.vx, a.vy, a.facing, a.grounded, a.hp, a.reload_timer,
+                a.alive, a.aim_angle, a.draw, a.kills, a.coins,
+            )
