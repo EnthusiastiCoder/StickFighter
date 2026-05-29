@@ -100,3 +100,8 @@ class MatchSim:
         self.arrows = []
         self.wind = self.rng.uniform(-C.WIND_MAX, C.WIND_MAX)
         self.round_time_left = C.ROUND_TIME_LIMIT
+
+    def step(self, a0: Action, a1: Action) -> list[Event]:
+        events: list[Event] = []
+        if self.match_over:
+            return events
