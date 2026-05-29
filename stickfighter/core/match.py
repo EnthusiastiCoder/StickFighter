@@ -45,3 +45,13 @@ class MatchSnapshot:
     """A read-only view for the renderer and observation encoder. The nested
     Arena/ArcherState/ArrowState objects are the sim's live instances, not
     copies -- callers must treat everything here as read-only."""
+
+    arena: Arena
+    archers: tuple[ArcherState, ArcherState]
+    arrows: tuple[ArrowState, ...]
+    wind: float
+    round_time_left: float
+    p0_rounds: int
+    p1_rounds: int
+    match_over: bool
+    winner: int | None
