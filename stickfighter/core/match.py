@@ -122,3 +122,10 @@ class MatchSim:
                 archer.reload_timer = C.RELOAD_TIME
                 archer.draw = 0.0
                 events.append(ArrowFired(owner=i, x=arrow.x, y=arrow.y, vx=arrow.vx, vy=arrow.vy))
+
+        surviving: list[ArrowState] = []
+        for arrow in self.arrows:
+            prev = step_arrow(arrow, C.DT, self.wind)
+            if not self._resolve_arrow(arrow, prev, events):
+                surviving.append(arrow)
+        self.arrows = surviving
