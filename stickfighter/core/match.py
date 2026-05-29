@@ -277,3 +277,17 @@ def _selftest() -> None:
             draw=r.random(),
             release=r.random() < 0.1,
         )
+
+    sim = MatchSim()
+    sim.reset(seed=42)
+    steps = 0
+    max_steps = 20_000
+    while not sim.match_over and steps < max_steps:
+        a0, a1 = random_action(rng), random_action(rng)
+        tape.append((a0, a1))
+        sim.step(a0, a1)
+        steps += 1
+    print(
+        f"match finished in {steps} steps, winner={sim.winner}, "
+        f"score={sim.p0_rounds}-{sim.p1_rounds}"
+    )
