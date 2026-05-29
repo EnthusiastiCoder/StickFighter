@@ -82,3 +82,21 @@ class MatchSim:
         self._next_arrow_id = 0
         self.archers = [ArcherState(x=0.0, y=0.0), ArcherState(x=0.0, y=0.0)]
         self._start_round()
+
+    def _start_round(self) -> None:
+        for archer, (x, y), facing in (
+            (self.archers[0], self.arena.spawn_p0, 1),
+            (self.archers[1], self.arena.spawn_p1, -1),
+        ):
+            archer.x, archer.y = x, y
+            archer.vx = archer.vy = 0.0
+            archer.facing = facing
+            archer.grounded = True
+            archer.hp = C.CHAR_MAX_HP
+            archer.reload_timer = 0.0
+            archer.alive = True
+            archer.aim_angle = 0.0
+            archer.draw = 0.0
+        self.arrows = []
+        self.wind = self.rng.uniform(-C.WIND_MAX, C.WIND_MAX)
+        self.round_time_left = C.ROUND_TIME_LIMIT
