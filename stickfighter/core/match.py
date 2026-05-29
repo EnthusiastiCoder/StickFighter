@@ -129,3 +129,7 @@ class MatchSim:
             if not self._resolve_arrow(arrow, prev, events):
                 surviving.append(arrow)
         self.arrows = surviving
+
+        self.round_time_left -= C.DT
+        self._maybe_end_round(events)
+        return events
