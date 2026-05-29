@@ -161,3 +161,25 @@ class MatchSim:
             events.append(ArrowMiss(owner=arrow.owner, x=arrow.x, y=arrow.y))
             return True
         return False
+
+    def _apply_hit(
+        self,
+        owner: int,
+        target_idx: int,
+        part: str,
+        point: tuple[float, float],
+        events: list[Event],
+    ) -> None:
+        target = self.archers[target_idx]
+        damage = damage_for_part(part)
+        target.hp = max(0.0, target.hp - damage)
+        events.append(
+            ArrowHit(owner=owner, target=target_idx, part=part, damage=damage, x=point[0], y=point[1])
+        )
+        coins = coins_for_part(part)
+        self.archers[owner].coins += coins
+        events.append(CoinEarned(who=owner, amount=coins))
+        if target.hp <= 0.0 and target.alive:
+            target.alive = False
+            self.archers[owner].kills += 1
+            events.append(Death(who=target_idx, killer=owner, headshot=(part == "head")))
