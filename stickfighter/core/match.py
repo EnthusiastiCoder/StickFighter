@@ -237,3 +237,7 @@ class MatchSim:
             match_over=self.match_over,
             winner=self.winner,
         )
+
+    def state_tuple(self) -> tuple:
+        """A fully deterministic snapshot for equality comparisons in
+        determinism tests -- not for rendering or observation encoding."""
