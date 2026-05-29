@@ -224,3 +224,16 @@ class MatchSim:
             events.append(MatchOver(winner=match_winner))
         else:
             self._start_round()
+
+    def snapshot(self) -> MatchSnapshot:
+        return MatchSnapshot(
+            arena=self.arena,
+            archers=(self.archers[0], self.archers[1]),
+            arrows=tuple(self.arrows),
+            wind=self.wind,
+            round_time_left=self.round_time_left,
+            p0_rounds=self.p0_rounds,
+            p1_rounds=self.p1_rounds,
+            match_over=self.match_over,
+            winner=self.winner,
+        )
