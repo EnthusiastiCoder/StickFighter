@@ -105,3 +105,9 @@ class MatchSim:
         events: list[Event] = []
         if self.match_over:
             return events
+
+        actions = (a0, a1)
+        for i, archer in enumerate(self.archers):
+            step_character(archer, actions[i], self.arena, C.DT)
+            if archer.alive:
+                archer.reload_timer = max(0.0, archer.reload_timer - C.DT)
