@@ -261,3 +261,10 @@ class MatchSim:
             self.match_over,
             self.winner,
         )
+
+
+def _selftest() -> None:
+    """Plays a full headless match with random actions, then replays the same
+    seed + action tape a second time and checks the two runs match exactly."""
+    rng = random.Random(1234)
+    tape: list[tuple[Action, Action]] = []
