@@ -183,3 +183,12 @@ class MatchSim:
             target.alive = False
             self.archers[owner].kills += 1
             events.append(Death(who=target_idx, killer=owner, headshot=(part == "head")))
+
+    def _out_of_bounds(self, arrow: ArrowState) -> bool:
+        m = C.OUT_OF_BOUNDS_MARGIN
+        return (
+            arrow.x < -m
+            or arrow.x > C.ARENA_WIDTH + m
+            or arrow.y > C.ARENA_HEIGHT + m
+            or arrow.y < -m
+        )
