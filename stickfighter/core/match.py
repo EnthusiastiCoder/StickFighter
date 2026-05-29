@@ -268,3 +268,12 @@ def _selftest() -> None:
     seed + action tape a second time and checks the two runs match exactly."""
     rng = random.Random(1234)
     tape: list[tuple[Action, Action]] = []
+
+    def random_action(r: random.Random) -> Action:
+        return Action(
+            move=r.uniform(-1, 1),
+            jump=r.random() < 0.05,
+            aim_angle=r.uniform(-3.14159, 3.14159),
+            draw=r.random(),
+            release=r.random() < 0.1,
+        )
