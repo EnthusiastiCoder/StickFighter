@@ -291,3 +291,8 @@ def _selftest() -> None:
         f"match finished in {steps} steps, winner={sim.winner}, "
         f"score={sim.p0_rounds}-{sim.p1_rounds}"
     )
+
+    replay = MatchSim()
+    replay.reset(seed=42)
+    for a0, a1 in tape:
+        replay.step(a0, a1)
