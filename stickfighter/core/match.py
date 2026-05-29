@@ -55,3 +55,19 @@ class MatchSnapshot:
     p1_rounds: int
     match_over: bool
     winner: int | None
+
+
+class MatchSim:
+    def __init__(self) -> None:
+        self.rng = random.Random()
+        self.arena: Arena = random_arena(self.rng)
+        self.archers: list[ArcherState] = [ArcherState(x=0.0, y=0.0), ArcherState(x=0.0, y=0.0)]
+        self.arrows: list[ArrowState] = []
+        self.wind = 0.0
+        self.round_time_left = C.ROUND_TIME_LIMIT
+        self.p0_rounds = 0
+        self.p1_rounds = 0
+        self.match_over = False
+        self.winner: int | None = None
+        self._next_arrow_id = 0
+        self.reset()
