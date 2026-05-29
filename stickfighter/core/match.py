@@ -111,3 +111,14 @@ class MatchSim:
             step_character(archer, actions[i], self.arena, C.DT)
             if archer.alive:
                 archer.reload_timer = max(0.0, archer.reload_timer - C.DT)
+
+        for i, archer in enumerate(self.archers):
+            if not archer.alive:
+                continue
+            if actions[i].release and archer.reload_timer <= 0.0 and archer.draw >= C.MIN_DRAW:
+                arrow = spawn_arrow(archer, owner=i, arrow_id=self._next_arrow_id)
+                self._next_arrow_id += 1
+                self.arrows.append(arrow)
+                archer.reload_timer = C.RELOAD_TIME
+                archer.draw = 0.0
+                events.append(ArrowFired(owner=i, x=arrow.x, y=arrow.y, vx=arrow.vx, vy=arrow.vy))
