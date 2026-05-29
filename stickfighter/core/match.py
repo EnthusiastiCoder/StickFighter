@@ -192,3 +192,35 @@ class MatchSim:
             or arrow.y > C.ARENA_HEIGHT + m
             or arrow.y < -m
         )
+
+    def _maybe_end_round(self, events: list[Event]) -> None:
+        p0_alive, p1_alive = self.archers[0].alive, self.archers[1].alive
+        ended = False
+        winner: int | None = None
+        if not p0_alive or not p1_alive:
+            ended = True
+            if p0_alive:
+                winner = 0
+            elif p1_alive:
+                winner = 1
+        elif self.round_time_left <= 0.0:
+            ended = True
+            hp0, hp1 = self.archers[0].hp, self.archers[1].hp
+            if hp0 > hp1:
+                winner = 0
+            elif hp1 > hp0:
+                winner = 1
+        if not ended:
+            return
+        if winner == 0:
+            self.p0_rounds += 1
+        elif winner == 1:
+            self.p1_rounds += 1
+        events.append(RoundOver(winner=winner, p0_rounds=self.p0_rounds, p1_rounds=self.p1_rounds))
+        match_winner = is_match_won(self.p0_rounds, self.p1_rounds)
+        if match_winner is not None:
+            self.match_over = True
+            self.winner = match_winner
+            events.append(MatchOver(winner=match_winner))
+        else:
+            self._start_round()
