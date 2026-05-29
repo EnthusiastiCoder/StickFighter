@@ -296,3 +296,9 @@ def _selftest() -> None:
     replay.reset(seed=42)
     for a0, a1 in tape:
         replay.step(a0, a1)
+
+    if sim.state_tuple() == replay.state_tuple():
+        print("determinism check: PASS")
+    else:
+        print("determinism check: FAIL")
+        raise SystemExit(1)
