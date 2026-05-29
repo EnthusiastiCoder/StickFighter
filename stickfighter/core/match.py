@@ -133,3 +133,31 @@ class MatchSim:
         self.round_time_left -= C.DT
         self._maybe_end_round(events)
         return events
+
+    def _resolve_arrow(
+        self, arrow: ArrowState, prev: tuple[float, float], events: list[Event]
+    ) -> bool:
+        """Returns True if the arrow is destroyed (hit or miss) this step."""
+        cur = (arrow.x, arrow.y)
+        target_idx = 1 - arrow.owner
+        target = self.archers[target_idx]
+        if target.alive:
+            for part, hitbox, test in (
+                ("head", head_hitbox(target), segment_hits_circle),
+                ("torso", torso_hitbox(target), segment_hits_rect),
+                ("limb", limb_hitbox(target), segment_hits_rect),
+            ):
+                point = test(prev, cur, hitbox, C.ARROW_COLLIDE_RADIUS)
+                if point is not None:
+                    self._apply_hit(arrow.owner, target_idx, part, point, events)
+                    return True
+        for platform in self.arena.platforms:
+            rect = Rect(platform.x, platform.y, platform.right, platform.y + 6.0)
+            point = segment_hits_rect(prev, cur, rect, C.ARROW_COLLIDE_RADIUS)
+            if point is not None:
+                events.append(ArrowMiss(owner=arrow.owner, x=point[0], y=point[1]))
+                return True
+        if self._out_of_bounds(arrow):
+            events.append(ArrowMiss(owner=arrow.owner, x=arrow.x, y=arrow.y))
+            return True
+        return False
