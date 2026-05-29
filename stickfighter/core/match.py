@@ -71,3 +71,14 @@ class MatchSim:
         self.winner: int | None = None
         self._next_arrow_id = 0
         self.reset()
+
+    def reset(self, seed: int | None = None, arena: Arena | None = None) -> None:
+        self.rng = random.Random(seed)
+        self.arena = arena if arena is not None else random_arena(self.rng)
+        self.p0_rounds = 0
+        self.p1_rounds = 0
+        self.match_over = False
+        self.winner = None
+        self._next_arrow_id = 0
+        self.archers = [ArcherState(x=0.0, y=0.0), ArcherState(x=0.0, y=0.0)]
+        self._start_round()
