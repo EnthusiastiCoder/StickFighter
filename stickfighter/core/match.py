@@ -302,3 +302,13 @@ def _selftest() -> None:
     else:
         print("determinism check: FAIL")
         raise SystemExit(1)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--selftest", action="store_true")
+    args = parser.parse_args()
+    if args.selftest:
+        _selftest()
+    else:
+        parser.print_help()
