@@ -247,3 +247,6 @@ class MatchSim:
                 a.x, a.y, a.vx, a.vy, a.facing, a.grounded, a.hp, a.reload_timer,
                 a.alive, a.aim_angle, a.draw, a.kills, a.coins,
             )
+
+        def arrow_tuple(ar: ArrowState) -> tuple:
+            return (ar.id, ar.x, ar.y, ar.vx, ar.vy, ar.owner, ar.age, ar.alive)
