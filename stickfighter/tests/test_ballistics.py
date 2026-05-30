@@ -82,3 +82,8 @@ def test_solve_launch_angle_downward_is_always_reachable():
 def test_segment_hits_circle_basic():
     assert segment_hits_circle((0, 0), (20, 0), Circle(10, 0, 3)) is not None
     assert segment_hits_circle((0, 0), (20, 0), Circle(10, 20, 3)) is None
+
+
+def test_segment_hits_rect_basic():
+    assert segment_hits_rect((0, 0), (20, 0), Rect(5, -2, 15, 2)) is not None
+    assert segment_hits_rect((0, 10), (20, 10), Rect(5, -2, 15, 2)) is None
