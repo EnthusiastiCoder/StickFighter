@@ -65,3 +65,9 @@ def test_solve_launch_angle_straight_up_within_reach():
     max_height = speed**2 / (2 * C.GRAVITY)
     angle = solve_launch_angle(0.0, -max_height * 0.5, speed, C.GRAVITY)
     assert angle == pytest.approx(-math.pi / 2)
+
+
+def test_solve_launch_angle_straight_up_out_of_reach_returns_none():
+    speed = 700.0
+    max_height = speed**2 / (2 * C.GRAVITY)
+    assert solve_launch_angle(0.0, -max_height * 2, speed, C.GRAVITY) is None
