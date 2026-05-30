@@ -87,3 +87,16 @@ def test_segment_hits_circle_basic():
 def test_segment_hits_rect_basic():
     assert segment_hits_rect((0, 0), (20, 0), Rect(5, -2, 15, 2)) is not None
     assert segment_hits_rect((0, 10), (20, 10), Rect(5, -2, 15, 2)) is None
+
+
+def test_no_tunnelling_through_a_hitbox_at_max_arrow_speed():
+    # A single step at max draw travels C.ARROW_SPEED_MAX * C.DT px. Even
+    # though that endpoint can land past a thin hitbox, the *swept* segment
+    # must still register the crossing -- this is why match.py always tests
+    # (prev -> cur), never the endpoint alone.
+    step_distance = C.ARROW_SPEED_MAX * C.DT
+    assert step_distance > C.HEAD_RADIUS * 2  # confirms the endpoint-only check would miss
+    prev = (0.0, 0.0)
+    cur = (step_distance, 0.0)
+    target = Circle(cx=step_distance / 2, cy=0.0, r=C.HEAD_RADIUS)
+    assert segment_hits_circle(prev, cur, target, C.ARROW_COLLIDE_RADIUS) is not None
