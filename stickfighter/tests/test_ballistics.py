@@ -77,3 +77,8 @@ def test_solve_launch_angle_downward_is_always_reachable():
     # Gravity does the work for any downward offset, regardless of speed.
     assert solve_launch_angle(0.0, 5.0, 1.0, C.GRAVITY) is not None
     assert solve_launch_angle(0.0, 10_000.0, 1.0, C.GRAVITY) is not None
+
+
+def test_segment_hits_circle_basic():
+    assert segment_hits_circle((0, 0), (20, 0), Circle(10, 0, 3)) is not None
+    assert segment_hits_circle((0, 0), (20, 0), Circle(10, 20, 3)) is None
