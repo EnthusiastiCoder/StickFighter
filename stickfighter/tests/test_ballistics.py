@@ -52,3 +52,9 @@ def test_solve_launch_angle_high_arc_also_round_trips():
     assert angle is not None
     x, y = _simulate_landing(angle, speed, C.GRAVITY, 0.0, dx)
     assert math.hypot(x - dx, y - dy) < 4.0
+
+
+def test_solve_launch_angle_out_of_range_returns_none():
+    # Max flat range at this speed is speed^2/gravity; well beyond that is unreachable.
+    max_range = 700**2 / C.GRAVITY
+    assert solve_launch_angle(max_range * 3, 0.0, 700, C.GRAVITY) is None
