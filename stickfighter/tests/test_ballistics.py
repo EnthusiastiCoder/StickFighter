@@ -58,3 +58,10 @@ def test_solve_launch_angle_out_of_range_returns_none():
     # Max flat range at this speed is speed^2/gravity; well beyond that is unreachable.
     max_range = 700**2 / C.GRAVITY
     assert solve_launch_angle(max_range * 3, 0.0, 700, C.GRAVITY) is None
+
+
+def test_solve_launch_angle_straight_up_within_reach():
+    speed = 700.0
+    max_height = speed**2 / (2 * C.GRAVITY)
+    angle = solve_launch_angle(0.0, -max_height * 0.5, speed, C.GRAVITY)
+    assert angle == pytest.approx(-math.pi / 2)
