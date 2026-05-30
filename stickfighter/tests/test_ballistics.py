@@ -44,3 +44,11 @@ def test_solve_launch_angle_round_trips_to_target(dx, dy, speed, wind):
     assert angle is not None
     x, y = _simulate_landing(angle, speed, C.GRAVITY, wind, dx)
     assert math.hypot(x - dx, y - dy) < 4.0
+
+
+def test_solve_launch_angle_high_arc_also_round_trips():
+    dx, dy, speed = 300, -30, 700
+    angle = solve_launch_angle(dx, dy, speed, C.GRAVITY, prefer_low=False)
+    assert angle is not None
+    x, y = _simulate_landing(angle, speed, C.GRAVITY, 0.0, dx)
+    assert math.hypot(x - dx, y - dy) < 4.0
