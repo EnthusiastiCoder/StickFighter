@@ -25,3 +25,22 @@ def _simulate_landing(angle, speed, gravity, wind, dx_target, dt=1.0 / 240, step
         if abs(x - dx_target) < abs(best[0] - dx_target):
             best = (x, y)
     return best
+
+
+@pytest.mark.parametrize(
+    "dx,dy,speed,wind",
+    [
+        (300, -30, 700, 0.0),
+        (300, -30, 700, 40.0),
+        (-300, -30, 700, 0.0),
+        (-300, 50, 700, 0.0),
+        (300, 100, 700, 0.0),
+        (150, -80, 900, 0.0),
+        (600, -20, 950, 0.0),
+    ],
+)
+def test_solve_launch_angle_round_trips_to_target(dx, dy, speed, wind):
+    angle = solve_launch_angle(dx, dy, speed, C.GRAVITY, prefer_low=True)
+    assert angle is not None
+    x, y = _simulate_landing(angle, speed, C.GRAVITY, wind, dx)
+    assert math.hypot(x - dx, y - dy) < 4.0
