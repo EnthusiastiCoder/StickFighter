@@ -71,3 +71,9 @@ def test_solve_launch_angle_straight_up_out_of_reach_returns_none():
     speed = 700.0
     max_height = speed**2 / (2 * C.GRAVITY)
     assert solve_launch_angle(0.0, -max_height * 2, speed, C.GRAVITY) is None
+
+
+def test_solve_launch_angle_downward_is_always_reachable():
+    # Gravity does the work for any downward offset, regardless of speed.
+    assert solve_launch_angle(0.0, 5.0, 1.0, C.GRAVITY) is not None
+    assert solve_launch_angle(0.0, 10_000.0, 1.0, C.GRAVITY) is not None
