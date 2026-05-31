@@ -16,3 +16,10 @@ _TWIN_MID = next(a for a in ARENAS if a.name == "twin_mid")
 def _run(archer: ArcherState, arena, action, steps: int) -> None:
     for _ in range(steps):
         step_character(archer, action, arena, C.DT)
+
+
+def test_jump_apex_matches_kinematics_and_lands_back_on_ground():
+    archer = ArcherState(x=110.0, y=C.GROUND_Y, grounded=True)
+    step_character(archer, JUMP, _FLAT, C.DT)
+    assert not archer.grounded
+    assert archer.vy < 0.0
