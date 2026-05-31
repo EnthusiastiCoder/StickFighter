@@ -11,3 +11,8 @@ JUMP = Action(move=0.0, jump=True, aim_angle=0.0, draw=0.0, release=False)
 
 _FLAT = next(a for a in ARENAS if a.name == "flat")
 _TWIN_MID = next(a for a in ARENAS if a.name == "twin_mid")
+
+
+def _run(archer: ArcherState, arena, action, steps: int) -> None:
+    for _ in range(steps):
+        step_character(archer, action, arena, C.DT)
