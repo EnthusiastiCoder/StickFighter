@@ -28,3 +28,15 @@ def _aim_action(shooter, target_point: tuple[float, float]) -> Action:
     angle = solve_launch_angle(dx, dy, C.ARROW_SPEED_MAX, C.GRAVITY, prefer_low=True)
     assert angle is not None
     return Action(move=0.0, jump=False, aim_angle=angle, draw=1.0, release=True)
+
+
+def _fire_and_collect_until_landed(sim: MatchSim, target_point: tuple[float, float], max_steps=120):
+    """Fires one aimed shot from archer 0, then keeps stepping (both archers
+    idle) until the arrow lands -- it takes many frames to cross the arena,
+    so a single step() only spawns it. Returns every event along the way."""
+    events = list(sim.step(_aim_action(sim.archers[0], target_point), NOOP))
+    for _ in range(max_steps):
+        if any(isinstance(e, (ArrowHit, RoundOver)) for e in events):
+            break
+        events.extend(sim.step(NOOP, NOOP))
+    return events
