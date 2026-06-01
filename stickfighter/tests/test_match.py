@@ -45,3 +45,8 @@ def _fire_and_collect_until_landed(sim: MatchSim, target_point: tuple[float, flo
 def test_same_seed_and_action_tape_is_bit_identical():
     rng = random.Random(99)
     tape = [(_random_action(rng), _random_action(rng)) for _ in range(2000)]
+
+    sim_a = MatchSim()
+    sim_a.reset(seed=99)
+    for a0, a1 in tape:
+        sim_a.step(a0, a1)
