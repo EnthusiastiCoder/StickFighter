@@ -55,3 +55,5 @@ def test_same_seed_and_action_tape_is_bit_identical():
     sim_b.reset(seed=99)
     for a0, a1 in tape:
         sim_b.step(a0, a1)
+
+    assert sim_a.state_tuple() == sim_b.state_tuple()
