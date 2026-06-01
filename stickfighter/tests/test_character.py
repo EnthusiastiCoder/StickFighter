@@ -40,3 +40,11 @@ def test_jump_apex_matches_kinematics_and_lands_back_on_ground():
     # not a bug, so this checks "close to" rather than exact equality.
     expected_apex = C.CHAR_JUMP_SPEED**2 / (2 * C.GRAVITY)
     assert (C.GROUND_Y - min_y) == pytest.approx(expected_apex, rel=0.06)
+
+
+def test_archer_lands_on_a_floating_platform():
+    # twin_mid has a platform at x=200, y=380, width=140 -> spans [200, 340]
+    archer = ArcherState(x=270.0, y=100.0)
+    _run(archer, _TWIN_MID, NOOP, 200)
+    assert archer.grounded
+    assert archer.y == 380.0
