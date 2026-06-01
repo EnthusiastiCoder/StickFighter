@@ -32,3 +32,11 @@ def test_jump_apex_matches_kinematics_and_lands_back_on_ground():
         if archer.grounded:
             landed_step = i
             break
+
+    assert landed_step is not None
+    assert archer.y == C.GROUND_Y
+    # Semi-implicit Euler at 60Hz systematically undershoots the closed-form
+    # continuous apex (v^2/2g) by a few percent -- a discretization artifact,
+    # not a bug, so this checks "close to" rather than exact equality.
+    expected_apex = C.CHAR_JUMP_SPEED**2 / (2 * C.GRAVITY)
+    assert (C.GROUND_Y - min_y) == pytest.approx(expected_apex, rel=0.06)
