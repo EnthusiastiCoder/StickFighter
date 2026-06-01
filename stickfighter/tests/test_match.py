@@ -121,3 +121,8 @@ def test_round_timeout_with_equal_hp_is_a_draw_and_match_continues():
     # a fresh round started: both archers are back to full HP and alive
     assert sim.archers[0].hp == C.CHAR_MAX_HP and sim.archers[0].alive
     assert sim.archers[1].hp == C.CHAR_MAX_HP and sim.archers[1].alive
+
+
+def test_match_ends_after_win_rounds_reached_and_then_step_is_a_noop():
+    sim = MatchSim()
+    sim.reset(seed=5, arena=_FLAT)
