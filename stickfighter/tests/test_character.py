@@ -75,3 +75,11 @@ def test_facing_follows_aim_angle_not_movement():
     aim_left = Action(move=1.0, jump=False, aim_angle=3.0, draw=0.0, release=False)
     step_character(archer, aim_left, _FLAT, C.DT)
     assert archer.facing == -1  # cos(3.0) < 0, even though move is rightward
+
+
+def test_dead_archer_is_frozen():
+    archer = ArcherState(x=400.0, y=100.0, alive=False, vy=0.0)
+    step_character(archer, JUMP, _FLAT, C.DT)
+    assert archer.y == 100.0
+    assert archer.vy == 0.0
+    assert not archer.grounded
