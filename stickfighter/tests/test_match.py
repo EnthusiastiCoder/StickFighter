@@ -126,3 +126,9 @@ def test_round_timeout_with_equal_hp_is_a_draw_and_match_continues():
 def test_match_ends_after_win_rounds_reached_and_then_step_is_a_noop():
     sim = MatchSim()
     sim.reset(seed=5, arena=_FLAT)
+
+    match_over_events = []
+    for round_i in range(C.WIN_ROUNDS):
+        target = head_hitbox(sim.archers[1])
+        events = _fire_and_collect_until_landed(sim, (target.cx, target.cy))
+        match_over_events.extend(e for e in events if isinstance(e, MatchOver))
