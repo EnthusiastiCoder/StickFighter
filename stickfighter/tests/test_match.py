@@ -84,3 +84,9 @@ def test_torso_hit_applies_partial_damage_and_no_death():
     target = torso_hitbox(sim.archers[1])
     mid = (target.left + target.right) / 2, (target.top + target.bottom) / 2
     events = _fire_and_collect_until_landed(sim, mid)
+
+    hits = [e for e in events if isinstance(e, ArrowHit)]
+    assert len(hits) == 1 and hits[0].part == "torso"
+    assert sim.archers[1].hp == C.CHAR_MAX_HP - C.DAMAGE_TORSO
+    assert sim.archers[1].alive
+    assert not any(isinstance(e, Death) for e in events)
