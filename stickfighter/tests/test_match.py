@@ -97,3 +97,7 @@ def test_hit_awards_coins_to_the_shooter():
     sim.reset(seed=3, arena=_FLAT)
     target = head_hitbox(sim.archers[1])
     events = _fire_and_collect_until_landed(sim, (target.cx, target.cy))
+
+    coin_events = [e for e in events if isinstance(e, CoinEarned)]
+    assert coin_events == [CoinEarned(who=0, amount=C.COINS_HEADSHOT)]
+    assert sim.archers[0].coins == C.COINS_HEADSHOT
