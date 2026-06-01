@@ -137,3 +137,5 @@ def test_match_ends_after_win_rounds_reached_and_then_step_is_a_noop():
     assert sim.match_over
     assert sim.winner == 0
     assert match_over_events == [MatchOver(winner=0)]
+
+    assert sim.step(NOOP, NOOP) == []
