@@ -56,3 +56,10 @@ def test_archer_falls_through_gap_between_platforms_to_ground():
     _run(archer, _TWIN_MID, NOOP, 400)
     assert archer.grounded
     assert archer.y == C.GROUND_Y
+
+
+def test_horizontal_movement_is_clamped_to_arena_bounds():
+    archer = ArcherState(x=C.CHAR_HALF_WIDTH, y=C.GROUND_Y, grounded=True)
+    move_left = Action(move=-1.0, jump=False, aim_angle=0.0, draw=0.0, release=False)
+    _run(archer, _FLAT, move_left, 30)
+    assert archer.x == C.CHAR_HALF_WIDTH
