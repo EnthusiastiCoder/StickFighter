@@ -68,3 +68,10 @@ def test_horizontal_movement_is_clamped_to_arena_bounds():
     move_right = Action(move=1.0, jump=False, aim_angle=0.0, draw=0.0, release=False)
     _run(archer2, _FLAT, move_right, 30)
     assert archer2.x == C.ARENA_WIDTH - C.CHAR_HALF_WIDTH
+
+
+def test_facing_follows_aim_angle_not_movement():
+    archer = ArcherState(x=400.0, y=C.GROUND_Y, grounded=True)
+    aim_left = Action(move=1.0, jump=False, aim_angle=3.0, draw=0.0, release=False)
+    step_character(archer, aim_left, _FLAT, C.DT)
+    assert archer.facing == -1  # cos(3.0) < 0, even though move is rightward
