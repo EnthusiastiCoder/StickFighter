@@ -90,3 +90,10 @@ def test_torso_hit_applies_partial_damage_and_no_death():
     assert sim.archers[1].hp == C.CHAR_MAX_HP - C.DAMAGE_TORSO
     assert sim.archers[1].alive
     assert not any(isinstance(e, Death) for e in events)
+
+
+def test_hit_awards_coins_to_the_shooter():
+    sim = MatchSim()
+    sim.reset(seed=3, arena=_FLAT)
+    target = head_hitbox(sim.archers[1])
+    events = _fire_and_collect_until_landed(sim, (target.cx, target.cy))
