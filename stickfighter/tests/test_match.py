@@ -20,3 +20,11 @@ def _random_action(rng: random.Random) -> Action:
         draw=rng.random(),
         release=rng.random() < 0.1,
     )
+
+
+def _aim_action(shooter, target_point: tuple[float, float]) -> Action:
+    dx = target_point[0] - shooter.x
+    dy = target_point[1] - (shooter.top() + C.BOW_HEIGHT_OFFSET)
+    angle = solve_launch_angle(dx, dy, C.ARROW_SPEED_MAX, C.GRAVITY, prefer_low=True)
+    assert angle is not None
+    return Action(move=0.0, jump=False, aim_angle=angle, draw=1.0, release=True)
