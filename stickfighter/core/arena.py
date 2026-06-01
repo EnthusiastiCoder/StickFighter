@@ -62,7 +62,12 @@ ARENAS: tuple[Arena, ...] = (
     ),
     _arena(
         "zigzag",
-        [Platform(80, 400, 130), Platform(340, 360, 130), Platform(600, 280, 130), Platform(750, 400, 130)],
+        [
+            Platform(80, 400, 130),
+            Platform(340, 360, 130),
+            Platform(600, 280, 130),
+            Platform(750, 400, 130),
+        ],
     ),
     _arena("wide_shelf", [Platform(330, 440, 300)]),
 )

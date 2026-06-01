@@ -174,7 +174,9 @@ class MatchSim:
         damage = damage_for_part(part)
         target.hp = max(0.0, target.hp - damage)
         events.append(
-            ArrowHit(owner=owner, target=target_idx, part=part, damage=damage, x=point[0], y=point[1])
+            ArrowHit(
+                owner=owner, target=target_idx, part=part, damage=damage, x=point[0], y=point[1]
+            )
         )
         coins = coins_for_part(part)
         self.archers[owner].coins += coins

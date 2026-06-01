@@ -1,6 +1,7 @@
+import random
+
 from stickfighter.core import constants as C
 from stickfighter.core.arena import ARENAS, random_arena
-import random
 
 
 def _body_range(x: float, y: float) -> tuple[float, float, float, float]:
