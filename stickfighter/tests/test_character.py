@@ -63,3 +63,8 @@ def test_horizontal_movement_is_clamped_to_arena_bounds():
     move_left = Action(move=-1.0, jump=False, aim_angle=0.0, draw=0.0, release=False)
     _run(archer, _FLAT, move_left, 30)
     assert archer.x == C.CHAR_HALF_WIDTH
+
+    archer2 = ArcherState(x=C.ARENA_WIDTH - C.CHAR_HALF_WIDTH, y=C.GROUND_Y, grounded=True)
+    move_right = Action(move=1.0, jump=False, aim_angle=0.0, draw=0.0, release=False)
+    _run(archer2, _FLAT, move_right, 30)
+    assert archer2.x == C.ARENA_WIDTH - C.CHAR_HALF_WIDTH
