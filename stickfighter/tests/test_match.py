@@ -112,3 +112,12 @@ def test_round_timeout_with_equal_hp_is_a_draw_and_match_continues():
         round_overs.extend(e for e in events if isinstance(e, RoundOver))
         if round_overs:
             break
+
+    assert len(round_overs) == 1
+    assert round_overs[0].winner is None
+    assert round_overs[0].p0_rounds == 0
+    assert round_overs[0].p1_rounds == 0
+    assert not sim.match_over
+    # a fresh round started: both archers are back to full HP and alive
+    assert sim.archers[0].hp == C.CHAR_MAX_HP and sim.archers[0].alive
+    assert sim.archers[1].hp == C.CHAR_MAX_HP and sim.archers[1].alive
