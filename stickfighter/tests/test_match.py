@@ -64,3 +64,15 @@ def test_headshot_is_an_instakill_regardless_of_max_hp():
     sim.reset(seed=1, arena=_FLAT)
     target = head_hitbox(sim.archers[1])
     events = _fire_and_collect_until_landed(sim, (target.cx, target.cy))
+
+    hits = [e for e in events if isinstance(e, ArrowHit)]
+    deaths = [e for e in events if isinstance(e, Death)]
+    assert len(hits) == 1 and hits[0].part == "head"
+    assert hits[0].damage >= C.CHAR_MAX_HP  # instakill regardless of remaining HP
+    assert len(deaths) == 1
+    assert deaths[0] == Death(who=1, killer=0, headshot=True)
+    # the kill ends the round (and this match isn't over yet, so a new one
+    # started immediately -- both archers are back to full HP for it)
+    assert sim.p0_rounds == 1
+    assert sim.archers[0].kills == 1
+    assert sim.archers[1].alive and sim.archers[1].hp == C.CHAR_MAX_HP
