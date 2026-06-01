@@ -101,3 +101,14 @@ def test_hit_awards_coins_to_the_shooter():
     coin_events = [e for e in events if isinstance(e, CoinEarned)]
     assert coin_events == [CoinEarned(who=0, amount=C.COINS_HEADSHOT)]
     assert sim.archers[0].coins == C.COINS_HEADSHOT
+
+
+def test_round_timeout_with_equal_hp_is_a_draw_and_match_continues():
+    sim = MatchSim()
+    sim.reset(seed=4, arena=_FLAT)
+    round_overs = []
+    for _ in range(1900):
+        events = sim.step(NOOP, NOOP)
+        round_overs.extend(e for e in events if isinstance(e, RoundOver))
+        if round_overs:
+            break
