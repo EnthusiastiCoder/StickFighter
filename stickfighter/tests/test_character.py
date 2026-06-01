@@ -23,3 +23,12 @@ def test_jump_apex_matches_kinematics_and_lands_back_on_ground():
     step_character(archer, JUMP, _FLAT, C.DT)
     assert not archer.grounded
     assert archer.vy < 0.0
+
+    min_y = archer.y
+    landed_step = None
+    for i in range(300):
+        step_character(archer, NOOP, _FLAT, C.DT)
+        min_y = min(min_y, archer.y)
+        if archer.grounded:
+            landed_step = i
+            break
