@@ -76,3 +76,11 @@ def test_headshot_is_an_instakill_regardless_of_max_hp():
     assert sim.p0_rounds == 1
     assert sim.archers[0].kills == 1
     assert sim.archers[1].alive and sim.archers[1].hp == C.CHAR_MAX_HP
+
+
+def test_torso_hit_applies_partial_damage_and_no_death():
+    sim = MatchSim()
+    sim.reset(seed=2, arena=_FLAT)
+    target = torso_hitbox(sim.archers[1])
+    mid = (target.left + target.right) / 2, (target.top + target.bottom) / 2
+    events = _fire_and_collect_until_landed(sim, mid)
