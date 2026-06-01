@@ -57,3 +57,10 @@ def test_same_seed_and_action_tape_is_bit_identical():
         sim_b.step(a0, a1)
 
     assert sim_a.state_tuple() == sim_b.state_tuple()
+
+
+def test_headshot_is_an_instakill_regardless_of_max_hp():
+    sim = MatchSim()
+    sim.reset(seed=1, arena=_FLAT)
+    target = head_hitbox(sim.archers[1])
+    events = _fire_and_collect_until_landed(sim, (target.cx, target.cy))
