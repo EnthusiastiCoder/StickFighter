@@ -48,3 +48,11 @@ def test_archer_lands_on_a_floating_platform():
     _run(archer, _TWIN_MID, NOOP, 200)
     assert archer.grounded
     assert archer.y == 380.0
+
+
+def test_archer_falls_through_gap_between_platforms_to_ground():
+    # x=500 is well outside both twin_mid platforms ([200,340] and [620,760])
+    archer = ArcherState(x=500.0, y=100.0)
+    _run(archer, _TWIN_MID, NOOP, 400)
+    assert archer.grounded
+    assert archer.y == C.GROUND_Y
