@@ -10,3 +10,5 @@ from stickfighter.core.arena import Arena
 from stickfighter.core.ballistics import bow_origin
 from stickfighter.core.entities import ArcherState, ArrowState
 from stickfighter.render import theme
+
+PLATFORM_THICKNESS = 14.0
