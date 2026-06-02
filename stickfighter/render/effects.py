@@ -28,3 +28,13 @@ class FloatingText:
     age: float = 0.0
     lifetime: float = 0.9
     vy: float = -40.0
+
+
+@dataclass
+class Particle:
+    x: float
+    y: float
+    vx: float
+    vy: float
+    age: float = 0.0
+    lifetime: float = 0.5
