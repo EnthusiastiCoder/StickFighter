@@ -6,3 +6,5 @@ import math
 import random
 from collections import deque
 from dataclasses import dataclass
+
+import pygame
