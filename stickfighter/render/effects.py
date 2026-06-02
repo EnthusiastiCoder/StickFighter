@@ -93,3 +93,11 @@ class EffectsSystem:
     def shake(self, magnitude: float, duration: float) -> None:
         self.shake_magnitude = max(self.shake_magnitude, magnitude)
         self.shake_time = max(self.shake_time, duration)
+
+    def update(self, dt: float, arrows: tuple[ArrowState, ...]) -> None:
+        live_ids = {a.id for a in arrows}
+        for a in arrows:
+            trail = self._trails.setdefault(a.id, deque(maxlen=TRAIL_LENGTH))
+            trail.appendleft((a.x, a.y))
+        for stale_id in [i for i in self._trails if i not in live_ids]:
+            del self._trails[stale_id]
