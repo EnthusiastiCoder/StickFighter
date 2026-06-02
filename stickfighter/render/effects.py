@@ -53,3 +53,14 @@ def _get_font(size: int) -> pygame.font.Font:
     if size not in _font_cache:
         _font_cache[size] = pygame.font.Font(None, size)
     return _font_cache[size]
+
+
+class EffectsSystem:
+    def __init__(self) -> None:
+        self._trails: dict[int, deque[tuple[float, float]]] = {}
+        self.floaters: list[FloatingText] = []
+        self.particles: list[Particle] = []
+        self.stuck: list[StuckArrow] = []
+        self.shake_time = 0.0
+        self.shake_magnitude = 0.0
+        self._rng = random.Random()
