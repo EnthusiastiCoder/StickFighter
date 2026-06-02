@@ -30,3 +30,14 @@ def _aim_vectors(angle: float) -> tuple[tuple[float, float], tuple[float, float]
     forward = (math.cos(angle), math.sin(angle))
     perp = (-forward[1], forward[0])
     return forward, perp
+
+
+def _quad_bezier(p0, p1, p2, segments: int = 10) -> list[tuple[float, float]]:
+    pts = []
+    for i in range(segments + 1):
+        t = i / segments
+        mt = 1.0 - t
+        x = mt * mt * p0[0] + 2 * mt * t * p1[0] + t * t * p2[0]
+        y = mt * mt * p0[1] + 2 * mt * t * p1[1] + t * t * p2[1]
+        pts.append((x, y))
+    return pts
