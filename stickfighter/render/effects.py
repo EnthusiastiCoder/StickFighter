@@ -17,3 +17,14 @@ from stickfighter.render import theme
 TRAIL_LENGTH = 14
 TRAIL_DOT_STRIDE = 2
 MAX_STUCK_ARROWS = 40
+
+
+@dataclass
+class FloatingText:
+    x: float
+    y: float
+    text: str
+    color: tuple[int, int, int]
+    age: float = 0.0
+    lifetime: float = 0.9
+    vy: float = -40.0
