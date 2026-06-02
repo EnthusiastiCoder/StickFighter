@@ -64,3 +64,22 @@ class EffectsSystem:
         self.shake_time = 0.0
         self.shake_magnitude = 0.0
         self._rng = random.Random()
+
+    def handle_events(self, events: list[Event]) -> None:
+        last_hit_pos: tuple[float, float] | None = None
+        for e in events:
+            if isinstance(e, ArrowHit):
+                last_hit_pos = (e.x, e.y)
+                self._spawn_hit_particles(e.x, e.y)
+                self.shake(8.0 if e.part == "head" else 4.0, 0.15)
+                if e.part == "head":
+                    self.floaters.append(FloatingText(e.x, e.y - 22, "HEADSHOT", theme.GOLD))
+            elif isinstance(e, CoinEarned) and last_hit_pos is not None:
+                x, y = last_hit_pos
+                self.floaters.append(FloatingText(x, y - 6, f"+{e.amount}", theme.GOLD))
+            elif isinstance(e, ArrowMiss):
+                self.stuck.append(StuckArrow(e.x, e.y))
+                if len(self.stuck) > MAX_STUCK_ARROWS:
+                    self.stuck.pop(0)
+            elif isinstance(e, Death):
+                self.shake(10.0, 0.25)
