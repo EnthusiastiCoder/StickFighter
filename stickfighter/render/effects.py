@@ -44,3 +44,6 @@ class Particle:
 class StuckArrow:
     x: float
     y: float
+
+
+_font_cache: dict[int, pygame.font.Font] = {}
