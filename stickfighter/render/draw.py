@@ -41,3 +41,11 @@ def _quad_bezier(p0, p1, p2, segments: int = 10) -> list[tuple[float, float]]:
         y = mt * mt * p0[1] + 2 * mt * t * p1[1] + t * t * p2[1]
         pts.append((x, y))
     return pts
+
+
+def _leg_points(
+    hip: tuple[float, float], feet_y: float, x_offset: float, bend: float
+) -> tuple[tuple[float, float], tuple[float, float], tuple[float, float]]:
+    foot = (hip[0] + x_offset, feet_y)
+    knee = ((hip[0] + foot[0]) / 2.0 + bend, (hip[1] + feet_y) / 2.0)
+    return hip, knee, foot
