@@ -108,3 +108,7 @@ def _draw_bow_and_arms(surface, archer: ArcherState, shoulder: tuple[float, floa
     pygame.draw.line(surface, theme.INK, tip_b, nock, 2)
     pygame.draw.line(surface, theme.INK, shoulder, (bow_x, bow_y), LINE_WIDTH)
     pygame.draw.line(surface, theme.INK, shoulder, nock, LINE_WIDTH)
+
+    if draw >= C.MIN_DRAW:
+        arrow_tip = (nock[0] + forward[0] * C.ARROW_LENGTH, nock[1] + forward[1] * C.ARROW_LENGTH)
+        pygame.draw.line(surface, theme.WHITE, nock, arrow_tip, 2)
