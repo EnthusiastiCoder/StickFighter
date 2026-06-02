@@ -108,3 +108,8 @@ class EffectsSystem:
             p.y += p.vy * dt
             p.age += dt
         self.particles = [p for p in self.particles if p.age < p.lifetime]
+
+        for f in self.floaters:
+            f.y += f.vy * dt
+            f.age += dt
+        self.floaters = [f for f in self.floaters if f.age < f.lifetime]
