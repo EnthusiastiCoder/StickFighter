@@ -83,3 +83,9 @@ class EffectsSystem:
                     self.stuck.pop(0)
             elif isinstance(e, Death):
                 self.shake(10.0, 0.25)
+
+    def _spawn_hit_particles(self, x: float, y: float) -> None:
+        for _ in range(8):
+            angle = self._rng.uniform(0, math.tau)
+            speed = self._rng.uniform(40, 160)
+            self.particles.append(Particle(x, y, math.cos(angle) * speed, math.sin(angle) * speed))
