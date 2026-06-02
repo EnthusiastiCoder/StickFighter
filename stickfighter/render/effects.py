@@ -13,3 +13,7 @@ from stickfighter.core import constants as C
 from stickfighter.core.entities import ArrowState
 from stickfighter.core.events import ArrowHit, ArrowMiss, CoinEarned, Death, Event
 from stickfighter.render import theme
+
+TRAIL_LENGTH = 14
+TRAIL_DOT_STRIDE = 2
+MAX_STUCK_ARROWS = 40
