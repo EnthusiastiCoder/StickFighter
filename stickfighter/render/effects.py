@@ -101,3 +101,10 @@ class EffectsSystem:
             trail.appendleft((a.x, a.y))
         for stale_id in [i for i in self._trails if i not in live_ids]:
             del self._trails[stale_id]
+
+        for p in self.particles:
+            p.vy += C.GRAVITY * 0.5 * dt
+            p.x += p.vx * dt
+            p.y += p.vy * dt
+            p.age += dt
+        self.particles = [p for p in self.particles if p.age < p.lifetime]
