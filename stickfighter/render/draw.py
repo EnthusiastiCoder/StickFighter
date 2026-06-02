@@ -95,3 +95,10 @@ def _draw_bow_and_arms(surface, archer: ArcherState, shoulder: tuple[float, floa
     bow_x, bow_y = bow_origin(archer)
     forward, perp = _aim_vectors(archer.aim_angle)
     draw = archer.draw
+
+    tip_a = (bow_x + perp[0] * BOW_HALF_LEN, bow_y + perp[1] * BOW_HALF_LEN)
+    tip_b = (bow_x - perp[0] * BOW_HALF_LEN, bow_y - perp[1] * BOW_HALF_LEN)
+    curve = BOW_CURVE_BASE + BOW_CURVE_DRAW * draw
+    control = (bow_x - forward[0] * curve, bow_y - forward[1] * curve)
+    pull = STRING_PULL_BASE + STRING_PULL_MAX * draw
+    nock = (bow_x - forward[0] * pull, bow_y - forward[1] * pull)
