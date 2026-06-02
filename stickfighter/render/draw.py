@@ -120,3 +120,11 @@ def draw_arena(surface: pygame.Surface, arena: Arena) -> None:
             round(platform.x), round(platform.y), round(platform.width), round(PLATFORM_THICKNESS)
         )
         pygame.draw.rect(surface, theme.INK, rect)
+
+
+def draw_arrow(surface: pygame.Surface, arrow: ArrowState) -> None:
+    speed = math.hypot(arrow.vx, arrow.vy) or 1.0
+    dx, dy = arrow.vx / speed, arrow.vy / speed
+    tail = (arrow.x - dx * C.ARROW_LENGTH, arrow.y - dy * C.ARROW_LENGTH)
+    tip = (arrow.x, arrow.y)
+    pygame.draw.line(surface, theme.INK, tail, tip, 3)
