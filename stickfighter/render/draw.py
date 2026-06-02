@@ -65,3 +65,27 @@ def draw_archer(surface: pygame.Surface, archer: ArcherState, elapsed: float) ->
 
     pygame.draw.line(surface, theme.INK, shoulder, hip, LINE_WIDTH)
     pygame.draw.circle(surface, theme.INK, (round(head[0]), round(head[1])), round(HEAD_RADIUS))
+
+
+def _draw_legs(surface, archer: ArcherState, hip, feet_y: float, elapsed: float) -> None:
+    speed_frac = min(abs(archer.vx) / C.CHAR_MOVE_SPEED, 1.0)
+    if not archer.grounded:
+        legs = (
+            _leg_points(hip, feet_y, x_offset=7.0 * archer.facing, bend=4.0 * archer.facing),
+            _leg_points(hip, feet_y, x_offset=-9.0 * archer.facing, bend=-5.0 * archer.facing),
+        )
+    elif speed_frac > 0.05:
+        phase = elapsed * WALK_FREQUENCY
+        swing = math.sin(phase) * WALK_SWING * speed_frac
+        legs = (
+            _leg_points(hip, feet_y, x_offset=swing, bend=swing * 0.4),
+            _leg_points(hip, feet_y, x_offset=-swing, bend=-swing * 0.4),
+        )
+    else:
+        legs = (
+            _leg_points(hip, feet_y, x_offset=6.0, bend=2.0),
+            _leg_points(hip, feet_y, x_offset=-6.0, bend=-2.0),
+        )
+    for a, b, c in legs:
+        pygame.draw.line(surface, theme.INK, a, b, LINE_WIDTH)
+        pygame.draw.line(surface, theme.INK, b, c, LINE_WIDTH)
