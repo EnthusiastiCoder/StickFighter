@@ -112,3 +112,11 @@ def _draw_bow_and_arms(surface, archer: ArcherState, shoulder: tuple[float, floa
     if draw >= C.MIN_DRAW:
         arrow_tip = (nock[0] + forward[0] * C.ARROW_LENGTH, nock[1] + forward[1] * C.ARROW_LENGTH)
         pygame.draw.line(surface, theme.WHITE, nock, arrow_tip, 2)
+
+
+def draw_arena(surface: pygame.Surface, arena: Arena) -> None:
+    for platform in arena.platforms:
+        rect = pygame.Rect(
+            round(platform.x), round(platform.y), round(platform.width), round(PLATFORM_THICKNESS)
+        )
+        pygame.draw.rect(surface, theme.INK, rect)
