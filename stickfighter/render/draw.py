@@ -128,3 +128,9 @@ def draw_arrow(surface: pygame.Surface, arrow: ArrowState) -> None:
     tail = (arrow.x - dx * C.ARROW_LENGTH, arrow.y - dy * C.ARROW_LENGTH)
     tip = (arrow.x, arrow.y)
     pygame.draw.line(surface, theme.INK, tail, tip, 3)
+
+    perp = (-dy, dx)
+    fletch_a = (tail[0] + perp[0] * 4.0, tail[1] + perp[1] * 4.0)
+    fletch_b = (tail[0] - perp[0] * 4.0, tail[1] - perp[1] * 4.0)
+    pygame.draw.line(surface, theme.INK, tail, fletch_a, 2)
+    pygame.draw.line(surface, theme.INK, tail, fletch_b, 2)
