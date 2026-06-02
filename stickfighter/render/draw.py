@@ -102,3 +102,9 @@ def _draw_bow_and_arms(surface, archer: ArcherState, shoulder: tuple[float, floa
     control = (bow_x - forward[0] * curve, bow_y - forward[1] * curve)
     pull = STRING_PULL_BASE + STRING_PULL_MAX * draw
     nock = (bow_x - forward[0] * pull, bow_y - forward[1] * pull)
+
+    pygame.draw.lines(surface, theme.INK, False, _quad_bezier(tip_a, control, tip_b), 3)
+    pygame.draw.line(surface, theme.INK, tip_a, nock, 2)
+    pygame.draw.line(surface, theme.INK, tip_b, nock, 2)
+    pygame.draw.line(surface, theme.INK, shoulder, (bow_x, bow_y), LINE_WIDTH)
+    pygame.draw.line(surface, theme.INK, shoulder, nock, LINE_WIDTH)
