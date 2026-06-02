@@ -38,3 +38,9 @@ class Particle:
     vy: float
     age: float = 0.0
     lifetime: float = 0.5
+
+
+@dataclass
+class StuckArrow:
+    x: float
+    y: float
