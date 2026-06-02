@@ -49,3 +49,13 @@ def _leg_points(
     foot = (hip[0] + x_offset, feet_y)
     knee = ((hip[0] + foot[0]) / 2.0 + bend, (hip[1] + feet_y) / 2.0)
     return hip, knee, foot
+
+
+def draw_archer(surface: pygame.Surface, archer: ArcherState, elapsed: float) -> None:
+    if not archer.alive:
+        return
+    top = archer.top()
+    head = (archer.x, top + C.HEAD_CENTER_Y)
+    shoulder = (archer.x, top + C.TORSO_TOP_Y + 4.0)
+    hip = (archer.x, top + C.TORSO_BOTTOM_Y)
+    feet_y = archer.y
