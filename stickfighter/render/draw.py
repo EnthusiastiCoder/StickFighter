@@ -59,3 +59,6 @@ def draw_archer(surface: pygame.Surface, archer: ArcherState, elapsed: float) ->
     shoulder = (archer.x, top + C.TORSO_TOP_Y + 4.0)
     hip = (archer.x, top + C.TORSO_BOTTOM_Y)
     feet_y = archer.y
+
+    _draw_legs(surface, archer, hip, feet_y, elapsed)
+    _draw_bow_and_arms(surface, archer, shoulder)
