@@ -62,3 +62,6 @@ def draw_archer(surface: pygame.Surface, archer: ArcherState, elapsed: float) ->
 
     _draw_legs(surface, archer, hip, feet_y, elapsed)
     _draw_bow_and_arms(surface, archer, shoulder)
+
+    pygame.draw.line(surface, theme.INK, shoulder, hip, LINE_WIDTH)
+    pygame.draw.circle(surface, theme.INK, (round(head[0]), round(head[1])), round(HEAD_RADIUS))
