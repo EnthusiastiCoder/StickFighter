@@ -24,3 +24,9 @@ STRING_PULL_MAX = 22.0
 
 WALK_FREQUENCY = 9.0
 WALK_SWING = 13.0
+
+
+def _aim_vectors(angle: float) -> tuple[tuple[float, float], tuple[float, float]]:
+    forward = (math.cos(angle), math.sin(angle))
+    perp = (-forward[1], forward[0])
+    return forward, perp
