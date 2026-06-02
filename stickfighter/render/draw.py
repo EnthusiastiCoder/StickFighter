@@ -89,3 +89,9 @@ def _draw_legs(surface, archer: ArcherState, hip, feet_y: float, elapsed: float)
     for a, b, c in legs:
         pygame.draw.line(surface, theme.INK, a, b, LINE_WIDTH)
         pygame.draw.line(surface, theme.INK, b, c, LINE_WIDTH)
+
+
+def _draw_bow_and_arms(surface, archer: ArcherState, shoulder: tuple[float, float]) -> None:
+    bow_x, bow_y = bow_origin(archer)
+    forward, perp = _aim_vectors(archer.aim_angle)
+    draw = archer.draw
