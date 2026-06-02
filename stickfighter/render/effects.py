@@ -89,3 +89,7 @@ class EffectsSystem:
             angle = self._rng.uniform(0, math.tau)
             speed = self._rng.uniform(40, 160)
             self.particles.append(Particle(x, y, math.cos(angle) * speed, math.sin(angle) * speed))
+
+    def shake(self, magnitude: float, duration: float) -> None:
+        self.shake_magnitude = max(self.shake_magnitude, magnitude)
+        self.shake_time = max(self.shake_time, duration)
