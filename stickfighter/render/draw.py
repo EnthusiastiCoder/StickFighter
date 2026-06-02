@@ -12,3 +12,6 @@ from stickfighter.core.entities import ArcherState, ArrowState
 from stickfighter.render import theme
 
 PLATFORM_THICKNESS = 14.0
+
+LINE_WIDTH = 5
+HEAD_RADIUS = C.HEAD_RADIUS + 1
