@@ -25,3 +25,12 @@ def draw_hp_bar(
     fg_x = x + width - fill_w if flip else x
     pygame.draw.rect(surface, theme.BAR_HP_FG, pygame.Rect(fg_x, y, fill_w, height))
     pygame.draw.rect(surface, theme.INK, bg_rect, 2)
+
+
+def _draw_wind(surface: pygame.Surface, wind: float) -> None:
+    cx, cy = C.ARENA_WIDTH / 2, 84.0
+    length = min(abs(wind), C.WIND_MAX) / C.WIND_MAX * 30.0
+    direction = 1.0 if wind >= 0.0 else -1.0
+    end = (cx + direction * length, cy)
+    pygame.draw.line(surface, theme.WIND_ARROW, (cx, cy), end, 3)
+    pygame.draw.circle(surface, theme.WIND_ARROW, (round(end[0]), round(end[1])), 3)
