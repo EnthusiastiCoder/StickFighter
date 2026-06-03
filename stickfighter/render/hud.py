@@ -5,3 +5,5 @@ import pygame
 from stickfighter.core import constants as C
 from stickfighter.core.match import MatchSnapshot
 from stickfighter.render import theme
+
+_font_cache: dict[int, pygame.font.Font] = {}
