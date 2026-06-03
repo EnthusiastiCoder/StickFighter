@@ -138,3 +138,12 @@ class EffectsSystem:
         for p in self.particles:
             radius = max(1, round(3 * (1.0 - p.age / p.lifetime)))
             pygame.draw.circle(surface, theme.BLOOD, (round(p.x), round(p.y)), radius)
+
+        for f in self.floaters:
+            frac = max(0.0, 1.0 - f.age / f.lifetime)
+            font = _get_font(22)
+            text_surf = font.render(f.text, True, f.color)
+            text_surf.set_alpha(round(255 * frac))
+            surface.blit(
+                text_surf, (f.x - text_surf.get_width() / 2, f.y - text_surf.get_height() / 2)
+            )
