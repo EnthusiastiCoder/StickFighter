@@ -37,6 +37,9 @@ class Death:
     who: int
     killer: int
     headshot: bool
+    x: float  # position at the moment of death -- the round resets right
+    y: float  # after this event, so the renderer has nowhere else to get
+    facing: int  # the corpse's spawn pose for its death ragdoll
 
 
 @dataclass(frozen=True)

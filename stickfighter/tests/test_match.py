@@ -70,7 +70,9 @@ def test_headshot_is_an_instakill_regardless_of_max_hp():
     assert len(hits) == 1 and hits[0].part == "head"
     assert hits[0].damage >= C.CHAR_MAX_HP  # instakill regardless of remaining HP
     assert len(deaths) == 1
-    assert deaths[0] == Death(who=1, killer=0, headshot=True)
+    assert deaths[0].who == 1
+    assert deaths[0].killer == 0
+    assert deaths[0].headshot is True
     # the kill ends the round (and this match isn't over yet, so a new one
     # started immediately -- both archers are back to full HP for it)
     assert sim.p0_rounds == 1
