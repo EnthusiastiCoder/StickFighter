@@ -3,7 +3,7 @@
 BG = (232, 197, 84)
 INK = (24, 22, 20)
 WHITE = (247, 245, 238)
-GOLD = (255, 208, 64)
+GOLD = (255, 174, 0)  # saturated enough to read against the mustard BG
 BLOOD = (139, 26, 26)
 SHADOW = (20, 16, 8)
 WIND_ARROW = (255, 255, 255)
