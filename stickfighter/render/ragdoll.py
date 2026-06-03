@@ -16,3 +16,11 @@ from stickfighter.render import theme
 RAGDOLL_LIFETIME = 2.5
 LINE_WIDTH = 5
 _GROUP = 1  # ragdoll pieces never collide with each other or other ragdolls
+
+
+class Ragdoll:
+    def __init__(self, x: float, y: float, facing: int, knock_vx: float, knock_vy: float) -> None:
+        self.age = 0.0
+        self._rng = random.Random()
+        self.space = pymunk.Space()
+        self.space.gravity = (0.0, C.GRAVITY)
