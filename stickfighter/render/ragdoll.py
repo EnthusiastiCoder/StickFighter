@@ -24,3 +24,8 @@ class Ragdoll:
         self._rng = random.Random()
         self.space = pymunk.Space()
         self.space.gravity = (0.0, C.GRAVITY)
+
+        ground_pts = ((-2000.0, C.GROUND_Y), (4000.0, C.GROUND_Y))
+        ground = pymunk.Segment(self.space.static_body, *ground_pts, 4.0)
+        ground.friction = 0.9
+        self.space.add(ground)
