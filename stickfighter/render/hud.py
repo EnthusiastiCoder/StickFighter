@@ -61,3 +61,5 @@ def draw_hud(surface: pygame.Surface, snapshot: MatchSnapshot) -> None:
     hp1_frac = snapshot.archers[1].hp / C.CHAR_MAX_HP
     draw_hp_bar(surface, 20, 50, 180, 14, hp0_frac, flip=False)
     draw_hp_bar(surface, round(width) - 200, 50, 180, 14, hp1_frac, flip=True)
+
+    _draw_wind(surface, snapshot.wind)
