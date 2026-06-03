@@ -8,3 +8,7 @@ import random
 
 import pygame
 import pymunk
+
+from stickfighter.core import constants as C
+from stickfighter.core.events import Death, Event
+from stickfighter.render import theme
