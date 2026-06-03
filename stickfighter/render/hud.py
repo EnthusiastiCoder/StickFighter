@@ -40,3 +40,8 @@ def draw_hud(surface: pygame.Surface, snapshot: MatchSnapshot) -> None:
     font_big = _get_font(44)
     font_small = _get_font(26)
     width = C.ARENA_WIDTH
+
+    pygame.draw.circle(surface, theme.GOLD, (26, 26), 10)
+    pygame.draw.circle(surface, theme.INK, (26, 26), 10, 2)
+    coin_text = font_small.render(str(snapshot.archers[0].coins), True, theme.WHITE)
+    surface.blit(coin_text, (44, 14))
