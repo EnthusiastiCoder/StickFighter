@@ -51,3 +51,8 @@ def draw_hud(surface: pygame.Surface, snapshot: MatchSnapshot) -> None:
 
     timer_text = font_small.render(str(max(0, int(snapshot.round_time_left))), True, theme.WHITE)
     surface.blit(timer_text, (width / 2 - timer_text.get_width() / 2, 50))
+
+    pause_center = (round(width) - 30, 26)
+    pygame.draw.circle(surface, theme.WHITE, pause_center, 16, 2)
+    pygame.draw.line(surface, theme.WHITE, (pause_center[0] - 5, 18), (pause_center[0] - 5, 34), 3)
+    pygame.draw.line(surface, theme.WHITE, (pause_center[0] + 5, 18), (pause_center[0] + 5, 34), 3)
