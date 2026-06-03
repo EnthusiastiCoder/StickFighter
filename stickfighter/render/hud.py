@@ -56,3 +56,8 @@ def draw_hud(surface: pygame.Surface, snapshot: MatchSnapshot) -> None:
     pygame.draw.circle(surface, theme.WHITE, pause_center, 16, 2)
     pygame.draw.line(surface, theme.WHITE, (pause_center[0] - 5, 18), (pause_center[0] - 5, 34), 3)
     pygame.draw.line(surface, theme.WHITE, (pause_center[0] + 5, 18), (pause_center[0] + 5, 34), 3)
+
+    hp0_frac = snapshot.archers[0].hp / C.CHAR_MAX_HP
+    hp1_frac = snapshot.archers[1].hp / C.CHAR_MAX_HP
+    draw_hp_bar(surface, 20, 50, 180, 14, hp0_frac, flip=False)
+    draw_hp_bar(surface, round(width) - 200, 50, 180, 14, hp1_frac, flip=True)
