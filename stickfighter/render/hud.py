@@ -45,3 +45,6 @@ def draw_hud(surface: pygame.Surface, snapshot: MatchSnapshot) -> None:
     pygame.draw.circle(surface, theme.INK, (26, 26), 10, 2)
     coin_text = font_small.render(str(snapshot.archers[0].coins), True, theme.WHITE)
     surface.blit(coin_text, (44, 14))
+
+    score_text = font_big.render(f"{snapshot.p0_rounds} - {snapshot.p1_rounds}", True, theme.WHITE)
+    surface.blit(score_text, (width / 2 - score_text.get_width() / 2, 6))
