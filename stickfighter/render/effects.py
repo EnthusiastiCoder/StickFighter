@@ -134,3 +134,7 @@ class EffectsSystem:
 
         for s in self.stuck:
             pygame.draw.line(surface, theme.INK, (s.x - 10, s.y), (s.x + 10, s.y), 3)
+
+        for p in self.particles:
+            radius = max(1, round(3 * (1.0 - p.age / p.lifetime)))
+            pygame.draw.circle(surface, theme.BLOOD, (round(p.x), round(p.y)), radius)
