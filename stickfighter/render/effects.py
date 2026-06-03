@@ -113,3 +113,7 @@ class EffectsSystem:
             f.y += f.vy * dt
             f.age += dt
         self.floaters = [f for f in self.floaters if f.age < f.lifetime]
+
+        self.shake_time = max(0.0, self.shake_time - dt)
+        if self.shake_time <= 0.0:
+            self.shake_magnitude = 0.0
