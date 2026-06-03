@@ -34,3 +34,9 @@ def _draw_wind(surface: pygame.Surface, wind: float) -> None:
     end = (cx + direction * length, cy)
     pygame.draw.line(surface, theme.WIND_ARROW, (cx, cy), end, 3)
     pygame.draw.circle(surface, theme.WIND_ARROW, (round(end[0]), round(end[1])), 3)
+
+
+def draw_hud(surface: pygame.Surface, snapshot: MatchSnapshot) -> None:
+    font_big = _get_font(44)
+    font_small = _get_font(26)
+    width = C.ARENA_WIDTH
