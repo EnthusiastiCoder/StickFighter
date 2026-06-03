@@ -48,3 +48,6 @@ def draw_hud(surface: pygame.Surface, snapshot: MatchSnapshot) -> None:
 
     score_text = font_big.render(f"{snapshot.p0_rounds} - {snapshot.p1_rounds}", True, theme.WHITE)
     surface.blit(score_text, (width / 2 - score_text.get_width() / 2, 6))
+
+    timer_text = font_small.render(str(max(0, int(snapshot.round_time_left))), True, theme.WHITE)
+    surface.blit(timer_text, (width / 2 - timer_text.get_width() / 2, 50))
