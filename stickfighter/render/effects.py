@@ -131,3 +131,6 @@ class EffectsSystem:
                 radius = max(1, round(2 * (1.0 - i / max(len(pts), 1))))
                 pos = (round(pts[i][0]), round(pts[i][1]))
                 pygame.draw.circle(surface, theme.WHITE, pos, radius)
+
+        for s in self.stuck:
+            pygame.draw.line(surface, theme.INK, (s.x - 10, s.y), (s.x + 10, s.y), 3)
