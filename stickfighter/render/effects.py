@@ -123,3 +123,11 @@ class EffectsSystem:
             return (0, 0)
         m = self.shake_magnitude
         return (self._rng.randint(-int(m), int(m)), self._rng.randint(-int(m), int(m)))
+
+    def draw(self, surface: pygame.Surface) -> None:
+        for trail in self._trails.values():
+            pts = list(trail)
+            for i in range(0, len(pts), TRAIL_DOT_STRIDE):
+                radius = max(1, round(2 * (1.0 - i / max(len(pts), 1))))
+                pos = (round(pts[i][0]), round(pts[i][1]))
+                pygame.draw.circle(surface, theme.WHITE, pos, radius)
