@@ -117,3 +117,9 @@ class EffectsSystem:
         self.shake_time = max(0.0, self.shake_time - dt)
         if self.shake_time <= 0.0:
             self.shake_magnitude = 0.0
+
+    def screen_offset(self) -> tuple[int, int]:
+        if self.shake_time <= 0.0:
+            return (0, 0)
+        m = self.shake_magnitude
+        return (self._rng.randint(-int(m), int(m)), self._rng.randint(-int(m), int(m)))
