@@ -100,3 +100,6 @@ class RagdollManager:
                 self.ragdolls.append(
                     Ragdoll(e.x, e.y, e.facing, knock_vx=knock_dir * 220.0, knock_vy=-140.0)
                 )
+
+    def update(self, dt: float) -> None:
+        self.ragdolls = [r for r in self.ragdolls if r.update(dt)]
