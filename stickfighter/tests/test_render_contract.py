@@ -67,3 +67,9 @@ def test_drawing_a_full_frame_does_not_mutate_sim_state():
 
     after = sim.state_tuple()
     assert before == after
+
+
+def test_effects_and_ragdolls_do_not_mutate_sim_state_across_event_batches():
+    sim = _random_played_sim(seed=12)
+    fx = effects.EffectsSystem()
+    ragdolls = ragdoll.RagdollManager()
