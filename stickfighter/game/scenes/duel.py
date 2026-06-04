@@ -13,3 +13,5 @@ from stickfighter.game.input import HumanInputController
 from stickfighter.render import draw, effects, hud, ragdoll, theme
 
 NOOP = Action(move=0.0, jump=False, aim_angle=0.0, draw=0.0, release=False)
+
+_FONT_CACHE: dict[int, pygame.font.Font] = {}
