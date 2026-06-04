@@ -47,3 +47,8 @@ class DuelScene:
         if self.paused:
             return
         self.elapsed += dt
+
+        archer0 = self.sim.archers[0]
+        anchor = (archer0.x, archer0.top() + C.BOW_HEIGHT_OFFSET)
+        action0 = self.input.build_action(anchor)
+        action1 = NOOP
