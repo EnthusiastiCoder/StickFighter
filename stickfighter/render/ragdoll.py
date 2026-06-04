@@ -29,3 +29,10 @@ class Ragdoll:
         ground = pymunk.Segment(self.space.static_body, *ground_pts, 4.0)
         ground.friction = 0.9
         self.space.add(ground)
+
+        top = y - C.CHAR_HEIGHT
+        head_pt = (x, top + C.HEAD_CENTER_Y)
+        shoulder_pt = (x, top + C.TORSO_TOP_Y)
+        hip_pt = (x, top + C.TORSO_BOTTOM_Y)
+        foot1_pt = (x + 9.0 * facing, y)
+        foot2_pt = (x - 7.0 * facing, y)
