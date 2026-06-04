@@ -64,3 +64,6 @@ def test_drawing_a_full_frame_does_not_mutate_sim_state():
     ragdolls.update(C.DT)
     ragdolls.draw(surface)
     hud.draw_hud(surface, snapshot)
+
+    after = sim.state_tuple()
+    assert before == after
