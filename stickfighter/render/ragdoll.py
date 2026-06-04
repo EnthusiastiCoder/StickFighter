@@ -82,3 +82,8 @@ class Ragdoll:
         self._draw_segment(surface, self.torso_body, self._torso_local)
         self._draw_segment(surface, self.leg1_body, self._leg1_local)
         self._draw_segment(surface, self.leg2_body, self._leg2_local)
+
+    def _draw_segment(self, surface: pygame.Surface, body: pymunk.Body, local_pts) -> None:
+        a = body.local_to_world(local_pts[0])
+        b = body.local_to_world(local_pts[1])
+        pygame.draw.line(surface, theme.INK, (a.x, a.y), (b.x, b.y), LINE_WIDTH)
