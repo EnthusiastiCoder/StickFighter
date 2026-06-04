@@ -23,3 +23,11 @@ _ENEMY_DIM = 10
 _ARROW_DIM = 6
 _PLATFORM_DIM = 4
 OBS_DIM = _SELF_DIM + _ENEMY_DIM + MAX_ARROWS * _ARROW_DIM + MAX_PLATFORMS * _PLATFORM_DIM + 3
+
+
+def encode_obs(snapshot: MatchSnapshot, perspective: int) -> np.ndarray:
+    self_idx = perspective
+    enemy_idx = 1 - perspective
+    self_a = snapshot.archers[self_idx]
+    enemy_a = snapshot.archers[enemy_idx]
+    mirror = perspective == 1
