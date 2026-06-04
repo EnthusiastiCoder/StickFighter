@@ -12,3 +12,8 @@ import numpy as np
 
 from stickfighter.core import constants as C
 from stickfighter.core.match import MatchSnapshot
+
+MAX_ARROWS = C.MAX_ARROWS_TRACKED
+MAX_PLATFORMS = 4
+CHAR_VEL_NORM = C.CHAR_JUMP_SPEED
+ARROW_VEL_NORM = C.ARROW_SPEED_MAX
