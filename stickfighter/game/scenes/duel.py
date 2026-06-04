@@ -75,3 +75,8 @@ class DuelScene:
 
         surface.fill(theme.BG)
         surface.blit(scene, self.effects.screen_offset())
+
+        if snapshot.match_over:
+            self._draw_banner(surface, f"PLAYER {snapshot.winner + 1} WINS", "Enter to rematch")
+        elif self.paused:
+            self._draw_banner(surface, "PAUSED", "Esc to resume")
