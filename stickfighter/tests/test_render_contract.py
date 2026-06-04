@@ -19,3 +19,26 @@ def _random_played_sim(seed: int, steps: int = 90) -> MatchSim:
     import random
 
     from stickfighter.core.actions import Action
+
+    rng = random.Random(seed)
+    sim = MatchSim()
+    sim.reset(seed=seed)
+    for _ in range(steps):
+        if sim.match_over:
+            break
+        a0 = Action(
+            move=rng.uniform(-1, 1),
+            jump=rng.random() < 0.05,
+            aim_angle=rng.uniform(-3.14, 3.14),
+            draw=rng.random(),
+            release=rng.random() < 0.1,
+        )
+        a1 = Action(
+            move=rng.uniform(-1, 1),
+            jump=rng.random() < 0.05,
+            aim_angle=rng.uniform(-3.14, 3.14),
+            draw=rng.random(),
+            release=rng.random() < 0.1,
+        )
+        sim.step(a0, a1)
+    return sim
