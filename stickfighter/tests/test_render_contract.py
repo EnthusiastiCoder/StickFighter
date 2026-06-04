@@ -80,3 +80,7 @@ def test_effects_and_ragdolls_do_not_mutate_sim_state_across_event_batches():
     ragdolls.handle_events(events)
     fx.update(C.DT, tuple(sim.arrows))
     ragdolls.update(C.DT)
+
+    # feeding events to the render-only systems must not retroactively change
+    # the sim state captured right after the step that produced them
+    assert sim.state_tuple() == after_step
