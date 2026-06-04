@@ -84,3 +84,7 @@ def test_effects_and_ragdolls_do_not_mutate_sim_state_across_event_batches():
     # feeding events to the render-only systems must not retroactively change
     # the sim state captured right after the step that produced them
     assert sim.state_tuple() == after_step
+
+
+def _idle_actions():
+    from stickfighter.core.actions import Action
