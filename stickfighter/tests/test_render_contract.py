@@ -13,3 +13,7 @@ from stickfighter.core.match import MatchSim  # noqa: E402
 from stickfighter.render import draw, effects, hud, ragdoll  # noqa: E402
 
 pygame.init()
+
+
+def _random_played_sim(seed: int, steps: int = 90) -> MatchSim:
+    import random
