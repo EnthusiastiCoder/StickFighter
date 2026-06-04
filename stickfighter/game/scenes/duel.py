@@ -52,3 +52,10 @@ class DuelScene:
         anchor = (archer0.x, archer0.top() + C.BOW_HEIGHT_OFFSET)
         action0 = self.input.build_action(anchor)
         action1 = NOOP
+
+        events = self.sim.step(action0, action1)
+        self._snapshot = self.sim.snapshot()
+        self.effects.handle_events(events)
+        self.ragdolls.handle_events(events)
+        self.effects.update(dt, self._snapshot.arrows)
+        self.ragdolls.update(dt)
