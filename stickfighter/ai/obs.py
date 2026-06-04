@@ -31,3 +31,6 @@ def encode_obs(snapshot: MatchSnapshot, perspective: int) -> np.ndarray:
     self_a = snapshot.archers[self_idx]
     enemy_a = snapshot.archers[enemy_idx]
     mirror = perspective == 1
+
+    def mx(v: float) -> float:
+        return C.ARENA_WIDTH - v if mirror else v
