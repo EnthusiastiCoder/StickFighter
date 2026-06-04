@@ -87,3 +87,8 @@ class Ragdoll:
         a = body.local_to_world(local_pts[0])
         b = body.local_to_world(local_pts[1])
         pygame.draw.line(surface, theme.INK, (a.x, a.y), (b.x, b.y), LINE_WIDTH)
+
+
+class RagdollManager:
+    def __init__(self) -> None:
+        self.ragdolls: list[Ragdoll] = []
