@@ -34,3 +34,11 @@ class DuelScene:
         self.paused = False
         self._scene_surface = pygame.Surface((int(C.ARENA_WIDTH), int(C.ARENA_HEIGHT)))
         self._snapshot = self.sim.snapshot()
+
+    def handle_event(self, event: pygame.event.Event) -> None:
+        self.input.handle_pygame_event(event)
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                self.paused = not self.paused
+            elif event.key == pygame.K_RETURN and self.sim.match_over:
+                self.sim.reset()
