@@ -7,3 +7,5 @@ effective self-play data per match.
 """
 
 import math
+
+import numpy as np
