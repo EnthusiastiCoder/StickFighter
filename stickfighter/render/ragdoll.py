@@ -43,3 +43,7 @@ class Ragdoll:
         head_shape.friction = 0.5
         head_shape.filter = pymunk.ShapeFilter(group=_GROUP)
         self.space.add(self.head_body, head_shape)
+
+        self.torso_body, self._torso_local = self._add_segment(shoulder_pt, hip_pt, 3.0)
+        self.leg1_body, self._leg1_local = self._add_segment(hip_pt, foot1_pt, 1.4)
+        self.leg2_body, self._leg2_local = self._add_segment(hip_pt, foot2_pt, 1.4)
