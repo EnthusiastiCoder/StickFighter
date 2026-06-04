@@ -7,3 +7,7 @@ os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
 os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
 
 import pygame  # noqa: E402
+
+from stickfighter.core import constants as C  # noqa: E402
+from stickfighter.core.match import MatchSim  # noqa: E402
+from stickfighter.render import draw, effects, hud, ragdoll  # noqa: E402
