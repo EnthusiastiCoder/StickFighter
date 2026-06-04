@@ -72,3 +72,6 @@ class DuelScene:
         self.effects.draw(scene)
         self.ragdolls.draw(scene)
         hud.draw_hud(scene, snapshot)
+
+        surface.fill(theme.BG)
+        surface.blit(scene, self.effects.screen_offset())
