@@ -103,3 +103,7 @@ class RagdollManager:
 
     def update(self, dt: float) -> None:
         self.ragdolls = [r for r in self.ragdolls if r.update(dt)]
+
+    def draw(self, surface: pygame.Surface) -> None:
+        for r in self.ragdolls:
+            r.draw(surface)
