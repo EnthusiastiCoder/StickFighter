@@ -47,3 +47,8 @@ def _random_played_sim(seed: int, steps: int = 90) -> MatchSim:
 def test_drawing_a_full_frame_does_not_mutate_sim_state():
     sim = _random_played_sim(seed=11)
     before = sim.state_tuple()
+
+    snapshot = sim.snapshot()
+    surface = pygame.Surface((int(C.ARENA_WIDTH), int(C.ARENA_HEIGHT)))
+    fx = effects.EffectsSystem()
+    ragdolls = ragdoll.RagdollManager()
