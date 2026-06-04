@@ -75,3 +75,10 @@ class Ragdoll:
         self.space.step(dt)
         self.age += dt
         return self.age < RAGDOLL_LIFETIME
+
+    def draw(self, surface: pygame.Surface) -> None:
+        hx, hy = self.head_body.position
+        pygame.draw.circle(surface, theme.INK, (round(hx), round(hy)), round(C.HEAD_RADIUS))
+        self._draw_segment(surface, self.torso_body, self._torso_local)
+        self._draw_segment(surface, self.leg1_body, self._leg1_local)
+        self._draw_segment(surface, self.leg2_body, self._leg2_local)
