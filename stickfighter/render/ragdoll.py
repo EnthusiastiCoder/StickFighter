@@ -55,3 +55,17 @@ class Ragdoll:
         for body in (self.head_body, self.torso_body, self.leg1_body, self.leg2_body):
             body.velocity = (knock_vx * 0.25, knock_vy * 0.25 - 60.0)
             body.angular_velocity = self._rng.uniform(-5.0, 5.0)
+
+    def _add_segment(
+        self, p0: tuple[float, float], p1: tuple[float, float], mass: float, radius: float = 4.0
+    ) -> tuple[pymunk.Body, tuple[tuple[float, float], tuple[float, float]]]:
+        mid = ((p0[0] + p1[0]) / 2.0, (p0[1] + p1[1]) / 2.0)
+        local_a = (p0[0] - mid[0], p0[1] - mid[1])
+        local_b = (p1[0] - mid[0], p1[1] - mid[1])
+        body = pymunk.Body(mass, pymunk.moment_for_segment(mass, local_a, local_b, radius))
+        body.position = mid
+        shape = pymunk.Segment(body, local_a, local_b, radius)
+        shape.friction = 0.7
+        shape.filter = pymunk.ShapeFilter(group=_GROUP)
+        self.space.add(body, shape)
+        return body, (local_a, local_b)
