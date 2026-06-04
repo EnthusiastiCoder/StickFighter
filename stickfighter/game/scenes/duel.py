@@ -42,3 +42,8 @@ class DuelScene:
                 self.paused = not self.paused
             elif event.key == pygame.K_RETURN and self.sim.match_over:
                 self.sim.reset()
+
+    def update(self, dt: float) -> None:
+        if self.paused:
+            return
+        self.elapsed += dt
