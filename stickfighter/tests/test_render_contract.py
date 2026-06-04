@@ -73,3 +73,10 @@ def test_effects_and_ragdolls_do_not_mutate_sim_state_across_event_batches():
     sim = _random_played_sim(seed=12)
     fx = effects.EffectsSystem()
     ragdolls = ragdoll.RagdollManager()
+
+    events = sim.step(*_idle_actions())
+    after_step = sim.state_tuple()
+    fx.handle_events(events)
+    ragdolls.handle_events(events)
+    fx.update(C.DT, tuple(sim.arrows))
+    ragdolls.update(C.DT)
