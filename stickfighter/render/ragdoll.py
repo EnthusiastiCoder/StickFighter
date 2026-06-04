@@ -69,3 +69,9 @@ class Ragdoll:
         shape.filter = pymunk.ShapeFilter(group=_GROUP)
         self.space.add(body, shape)
         return body, (local_a, local_b)
+
+    def update(self, dt: float) -> bool:
+        """Steps the ragdoll and returns False once it has expired."""
+        self.space.step(dt)
+        self.age += dt
+        return self.age < RAGDOLL_LIFETIME
