@@ -51,3 +51,7 @@ class Ragdoll:
         self.space.add(pymunk.PivotJoint(self.head_body, self.torso_body, shoulder_pt))
         self.space.add(pymunk.PivotJoint(self.torso_body, self.leg1_body, hip_pt))
         self.space.add(pymunk.PivotJoint(self.torso_body, self.leg2_body, hip_pt))
+
+        for body in (self.head_body, self.torso_body, self.leg1_body, self.leg2_body):
+            body.velocity = (knock_vx * 0.25, knock_vy * 0.25 - 60.0)
+            body.angular_velocity = self._rng.uniform(-5.0, 5.0)
