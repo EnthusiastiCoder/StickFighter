@@ -80,3 +80,8 @@ class DuelScene:
             self._draw_banner(surface, f"PLAYER {snapshot.winner + 1} WINS", "Enter to rematch")
         elif self.paused:
             self._draw_banner(surface, "PAUSED", "Esc to resume")
+
+    def _draw_banner(self, surface: pygame.Surface, title: str, subtitle: str) -> None:
+        overlay = pygame.Surface(surface.get_size(), pygame.SRCALPHA)
+        overlay.fill((*theme.INK, 140))
+        surface.blit(overlay, (0, 0))
