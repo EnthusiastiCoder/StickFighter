@@ -59,3 +59,16 @@ class DuelScene:
         self.ragdolls.handle_events(events)
         self.effects.update(dt, self._snapshot.arrows)
         self.ragdolls.update(dt)
+
+    def draw(self, surface: pygame.Surface) -> None:
+        snapshot = self._snapshot
+        scene = self._scene_surface
+        scene.fill(theme.BG)
+        draw.draw_arena(scene, snapshot.arena)
+        for archer in snapshot.archers:
+            draw.draw_archer(scene, archer, self.elapsed)
+        for arrow in snapshot.arrows:
+            draw.draw_arrow(scene, arrow)
+        self.effects.draw(scene)
+        self.ragdolls.draw(scene)
+        hud.draw_hud(scene, snapshot)
