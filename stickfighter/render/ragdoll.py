@@ -36,3 +36,10 @@ class Ragdoll:
         hip_pt = (x, top + C.TORSO_BOTTOM_Y)
         foot1_pt = (x + 9.0 * facing, y)
         foot2_pt = (x - 7.0 * facing, y)
+
+        self.head_body = pymunk.Body(1.0, pymunk.moment_for_circle(1.0, 0.0, C.HEAD_RADIUS))
+        self.head_body.position = head_pt
+        head_shape = pymunk.Circle(self.head_body, C.HEAD_RADIUS)
+        head_shape.friction = 0.5
+        head_shape.filter = pymunk.ShapeFilter(group=_GROUP)
+        self.space.add(self.head_body, head_shape)
