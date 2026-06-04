@@ -9,3 +9,6 @@ effective self-play data per match.
 import math
 
 import numpy as np
+
+from stickfighter.core import constants as C
+from stickfighter.core.match import MatchSnapshot
