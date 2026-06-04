@@ -21,3 +21,16 @@ def _font(size: int) -> pygame.font.Font:
     if size not in _FONT_CACHE:
         _FONT_CACHE[size] = pygame.font.Font(None, size)
     return _FONT_CACHE[size]
+
+
+class DuelScene:
+    def __init__(self, seed: int | None = None) -> None:
+        self.sim = MatchSim()
+        self.sim.reset(seed=seed)
+        self.input = HumanInputController()
+        self.effects = effects.EffectsSystem()
+        self.ragdolls = ragdoll.RagdollManager()
+        self.elapsed = 0.0
+        self.paused = False
+        self._scene_surface = pygame.Surface((int(C.ARENA_WIDTH), int(C.ARENA_HEIGHT)))
+        self._snapshot = self.sim.snapshot()
