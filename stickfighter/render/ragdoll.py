@@ -92,3 +92,11 @@ class Ragdoll:
 class RagdollManager:
     def __init__(self) -> None:
         self.ragdolls: list[Ragdoll] = []
+
+    def handle_events(self, events: list[Event]) -> None:
+        for e in events:
+            if isinstance(e, Death):
+                knock_dir = 1 if e.killer == 0 else -1
+                self.ragdolls.append(
+                    Ragdoll(e.x, e.y, e.facing, knock_vx=knock_dir * 220.0, knock_vy=-140.0)
+                )
