@@ -88,3 +88,6 @@ def test_effects_and_ragdolls_do_not_mutate_sim_state_across_event_batches():
 
 def _idle_actions():
     from stickfighter.core.actions import Action
+
+    noop = Action(move=0.0, jump=False, aim_angle=0.0, draw=0.0, release=False)
+    return noop, noop
