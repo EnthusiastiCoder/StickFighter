@@ -85,3 +85,9 @@ class DuelScene:
         overlay = pygame.Surface(surface.get_size(), pygame.SRCALPHA)
         overlay.fill((*theme.INK, 140))
         surface.blit(overlay, (0, 0))
+
+        title_surf = _font(56).render(title, True, theme.WHITE)
+        sub_surf = _font(28).render(subtitle, True, theme.WHITE)
+        cx, cy = surface.get_width() / 2, surface.get_height() / 2
+        surface.blit(title_surf, (cx - title_surf.get_width() / 2, cy - 40))
+        surface.blit(sub_surf, (cx - sub_surf.get_width() / 2, cy + 20))
