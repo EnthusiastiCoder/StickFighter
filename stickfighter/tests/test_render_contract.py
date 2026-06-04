@@ -52,3 +52,15 @@ def test_drawing_a_full_frame_does_not_mutate_sim_state():
     surface = pygame.Surface((int(C.ARENA_WIDTH), int(C.ARENA_HEIGHT)))
     fx = effects.EffectsSystem()
     ragdolls = ragdoll.RagdollManager()
+
+    surface.fill((0, 0, 0))
+    draw.draw_arena(surface, snapshot.arena)
+    for archer in snapshot.archers:
+        draw.draw_archer(surface, archer, elapsed=1.23)
+    for arrow in snapshot.arrows:
+        draw.draw_arrow(surface, arrow)
+    fx.update(C.DT, snapshot.arrows)
+    fx.draw(surface)
+    ragdolls.update(C.DT)
+    ragdolls.draw(surface)
+    hud.draw_hud(surface, snapshot)
