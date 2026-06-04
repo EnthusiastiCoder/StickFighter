@@ -37,3 +37,5 @@ def encode_obs(snapshot: MatchSnapshot, perspective: int) -> np.ndarray:
 
     def mvx(v: float) -> float:
         return -v if mirror else v
+
+    feats: list[float] = []
