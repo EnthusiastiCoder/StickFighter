@@ -17,3 +17,5 @@ pygame.init()
 
 def _random_played_sim(seed: int, steps: int = 90) -> MatchSim:
     import random
+
+    from stickfighter.core.actions import Action
