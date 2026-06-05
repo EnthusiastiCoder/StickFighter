@@ -20,3 +20,10 @@ HEADSHOT_BONUS = 0.15  # on top of the round win a kill already causes
 
 NEAR_MISS_RADIUS = 60.0  # px; an own arrow within this of the enemy gets a shaping bonus
 NEAR_MISS_MAX_BONUS = 0.02  # per step, at radius == 0 and scale == 1.0
+
+
+def compute_reward(
+    events: list[Event], snapshot: MatchSnapshot, perspective: int, near_miss_scale: float = 0.0
+) -> float:
+    enemy = 1 - perspective
+    reward = STEP_PENALTY
