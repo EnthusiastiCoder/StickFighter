@@ -39,3 +39,16 @@ def encode_obs(snapshot: MatchSnapshot, perspective: int) -> np.ndarray:
         return -v if mirror else v
 
     feats: list[float] = []
+
+    feats += [
+        (mx(self_a.x) / C.ARENA_WIDTH) * 2.0 - 1.0,
+        self_a.y / C.ARENA_HEIGHT,
+        mvx(self_a.vx) / CHAR_VEL_NORM,
+        self_a.vy / CHAR_VEL_NORM,
+        1.0 if self_a.grounded else -1.0,
+        self_a.hp / C.CHAR_MAX_HP,
+        self_a.draw,
+        self_a.reload_timer / C.RELOAD_TIME,
+        math.sin(self_a.aim_angle),
+        -math.cos(self_a.aim_angle) if mirror else math.cos(self_a.aim_angle),
+    ]
