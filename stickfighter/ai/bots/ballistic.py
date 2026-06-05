@@ -41,3 +41,7 @@ HARD = BallisticBotConfig(
 PERFECT = BallisticBotConfig(
     aim_noise=0.0, reaction_delay=0.0, draw_fraction=1.0, lead_prediction=True, target_part="head"
 )
+
+
+def _speed_for_draw(draw_fraction: float) -> float:
+    return C.ARROW_SPEED_MIN + draw_fraction * (C.ARROW_SPEED_MAX - C.ARROW_SPEED_MIN)
