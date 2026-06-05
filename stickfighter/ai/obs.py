@@ -52,3 +52,18 @@ def encode_obs(snapshot: MatchSnapshot, perspective: int) -> np.ndarray:
         math.sin(self_a.aim_angle),
         -math.cos(self_a.aim_angle) if mirror else math.cos(self_a.aim_angle),
     ]
+
+    rel_x = mx(enemy_a.x) - mx(self_a.x)
+    rel_y = enemy_a.y - self_a.y
+    feats += [
+        rel_x / C.ARENA_WIDTH,
+        rel_y / C.ARENA_HEIGHT,
+        mvx(enemy_a.vx) / CHAR_VEL_NORM,
+        enemy_a.vy / CHAR_VEL_NORM,
+        1.0 if enemy_a.grounded else -1.0,
+        enemy_a.hp / C.CHAR_MAX_HP,
+        enemy_a.draw,
+        enemy_a.reload_timer / C.RELOAD_TIME,
+        math.sin(enemy_a.aim_angle),
+        -math.cos(enemy_a.aim_angle) if mirror else math.cos(enemy_a.aim_angle),
+    ]
