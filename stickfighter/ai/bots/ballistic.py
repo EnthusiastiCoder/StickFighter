@@ -52,3 +52,6 @@ class BallisticBot:
         self.config = config
         self._rng = random.Random(seed)
         self._hesitation = 0.0
+
+    def reset(self) -> None:
+        self._hesitation = 0.0
