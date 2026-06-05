@@ -27,3 +27,19 @@ def compute_reward(
 ) -> float:
     enemy = 1 - perspective
     reward = STEP_PENALTY
+
+    for e in events:
+        if isinstance(e, ArrowHit):
+            if e.part == "head":
+                if e.target == enemy:
+                    reward += HEADSHOT_BONUS
+                # being headshot is already covered by the round-loss below
+            elif e.target == enemy:
+                reward += e.damage * DAMAGE_SCALE
+            elif e.target == perspective:
+                reward -= e.damage * DAMAGE_SCALE
+        elif isinstance(e, RoundOver):
+            if e.winner == perspective:
+                reward += ROUND_WIN_REWARD
+            elif e.winner == enemy:
+                reward += ROUND_LOSS_PENALTY
