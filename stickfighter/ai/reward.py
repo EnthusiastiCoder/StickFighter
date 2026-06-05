@@ -53,3 +53,10 @@ def compute_reward(
 def _near_miss_bonus(snapshot: MatchSnapshot, perspective: int, scale: float) -> float:
     enemy_a = snapshot.archers[1 - perspective]
     target = (enemy_a.x, enemy_a.top() + C.TORSO_TOP_Y)
+
+    closest = math.inf
+    for arrow in snapshot.arrows:
+        if arrow.owner != perspective:
+            continue
+        d = math.hypot(arrow.x - target[0], arrow.y - target[1])
+        closest = min(closest, d)
