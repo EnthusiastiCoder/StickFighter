@@ -48,3 +48,8 @@ def compute_reward(
         reward += _near_miss_bonus(snapshot, perspective, near_miss_scale)
 
     return reward
+
+
+def _near_miss_bonus(snapshot: MatchSnapshot, perspective: int, scale: float) -> float:
+    enemy_a = snapshot.archers[1 - perspective]
+    target = (enemy_a.x, enemy_a.top() + C.TORSO_TOP_Y)
