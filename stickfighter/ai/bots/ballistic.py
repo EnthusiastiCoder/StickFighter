@@ -72,3 +72,10 @@ class BallisticBot:
         return Action(
             move=move, jump=False, aim_angle=angle, draw=self.config.draw_fraction, release=release
         )
+
+    def _aim(self, self_a: ArcherState, enemy_a: ArcherState) -> float:
+        target_x, target_y = self._target_point(self_a, enemy_a)
+        bow_x = self_a.x + self_a.facing * C.BOW_FORWARD_OFFSET
+        bow_y = self_a.top() + C.BOW_HEIGHT_OFFSET
+        speed = _speed_for_draw(self.config.draw_fraction)
+        dx, dy = target_x - bow_x, target_y - bow_y
