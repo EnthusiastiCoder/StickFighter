@@ -55,3 +55,9 @@ class BallisticBot:
 
     def reset(self) -> None:
         self._hesitation = 0.0
+
+    def act(self, snapshot: MatchSnapshot, perspective: int) -> Action:
+        self_a = snapshot.archers[perspective]
+        enemy_a = snapshot.archers[1 - perspective]
+        if not self_a.alive:
+            return Action(move=0.0, jump=False, aim_angle=self_a.aim_angle, draw=0.0, release=False)
