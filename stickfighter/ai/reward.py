@@ -11,3 +11,9 @@ import math
 from stickfighter.core import constants as C
 from stickfighter.core.events import ArrowHit, Event, RoundOver
 from stickfighter.core.match import MatchSnapshot
+
+STEP_PENALTY = -0.001
+ROUND_WIN_REWARD = 1.0
+ROUND_LOSS_PENALTY = -1.0
+DAMAGE_SCALE = 0.5 / 100.0  # +/-0.5 reward per 100 damage dealt/taken
+HEADSHOT_BONUS = 0.15  # on top of the round win a kill already causes
