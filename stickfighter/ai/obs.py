@@ -98,3 +98,9 @@ def encode_obs(snapshot: MatchSnapshot, perspective: int) -> np.ndarray:
             ]
         else:
             feats += [0.0, 0.0, 0.0, -1.0]
+
+    feats.append((-snapshot.wind if mirror else snapshot.wind) / C.WIND_MAX)
+    feats.append(snapshot.round_time_left / C.ROUND_TIME_LIMIT)
+    self_rounds = snapshot.p0_rounds if self_idx == 0 else snapshot.p1_rounds
+    enemy_rounds = snapshot.p1_rounds if self_idx == 0 else snapshot.p0_rounds
+    feats.append((self_rounds - enemy_rounds) / C.WIN_ROUNDS)
