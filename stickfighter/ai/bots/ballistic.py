@@ -61,3 +61,6 @@ class BallisticBot:
         enemy_a = snapshot.archers[1 - perspective]
         if not self_a.alive:
             return Action(move=0.0, jump=False, aim_angle=self_a.aim_angle, draw=0.0, release=False)
+
+        move = self._movement(enemy_a.x - self_a.x, self.config)
+        angle = self._aim(self_a, enemy_a)
