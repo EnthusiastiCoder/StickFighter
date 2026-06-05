@@ -45,3 +45,10 @@ PERFECT = BallisticBotConfig(
 
 def _speed_for_draw(draw_fraction: float) -> float:
     return C.ARROW_SPEED_MIN + draw_fraction * (C.ARROW_SPEED_MAX - C.ARROW_SPEED_MIN)
+
+
+class BallisticBot:
+    def __init__(self, config: BallisticBotConfig = MEDIUM, seed: int | None = None) -> None:
+        self.config = config
+        self._rng = random.Random(seed)
+        self._hesitation = 0.0
