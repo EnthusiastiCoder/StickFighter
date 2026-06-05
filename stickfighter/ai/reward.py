@@ -46,3 +46,5 @@ def compute_reward(
 
     if near_miss_scale > 0.0:
         reward += _near_miss_bonus(snapshot, perspective, near_miss_scale)
+
+    return reward
