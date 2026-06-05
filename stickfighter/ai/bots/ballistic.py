@@ -13,3 +13,13 @@ from stickfighter.core.actions import Action
 from stickfighter.core.ballistics import solve_launch_angle
 from stickfighter.core.entities import ArcherState, head_hitbox, torso_hitbox
 from stickfighter.core.match import MatchSnapshot
+
+
+@dataclass(frozen=True)
+class BallisticBotConfig:
+    aim_noise: float = 0.0  # radians, gaussian stddev added to the solved aim angle
+    reaction_delay: float = 0.15  # seconds of hesitation before committing to a shot
+    draw_fraction: float = 1.0  # how hard it draws; 1.0 = best range and speed
+    lead_prediction: bool = True  # aim where the enemy will be, not where it is now
+    target_part: str = "torso"  # "head" or "torso"
+    engage_range: tuple[float, float] = (150.0, 900.0)  # (back off below, close in above)
