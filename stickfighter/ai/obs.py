@@ -67,3 +67,20 @@ def encode_obs(snapshot: MatchSnapshot, perspective: int) -> np.ndarray:
         math.sin(enemy_a.aim_angle),
         -math.cos(enemy_a.aim_angle) if mirror else math.cos(enemy_a.aim_angle),
     ]
+
+    nearest_arrows = sorted(
+        snapshot.arrows, key=lambda a: (a.x - self_a.x) ** 2 + (a.y - self_a.y) ** 2
+    )[:MAX_ARROWS]
+    for i in range(MAX_ARROWS):
+        if i < len(nearest_arrows):
+            arrow = nearest_arrows[i]
+            feats += [
+                (mx(arrow.x) - mx(self_a.x)) / C.ARENA_WIDTH,
+                (arrow.y - self_a.y) / C.ARENA_HEIGHT,
+                mvx(arrow.vx) / ARROW_VEL_NORM,
+                arrow.vy / ARROW_VEL_NORM,
+                1.0 if arrow.owner == self_idx else -1.0,
+                1.0,
+            ]
+        else:
+            feats += [0.0, 0.0, 0.0, 0.0, 0.0, -1.0]
