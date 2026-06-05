@@ -60,3 +60,7 @@ def _near_miss_bonus(snapshot: MatchSnapshot, perspective: int, scale: float) ->
             continue
         d = math.hypot(arrow.x - target[0], arrow.y - target[1])
         closest = min(closest, d)
+
+    if closest >= NEAR_MISS_RADIUS:
+        return 0.0
+    return scale * NEAR_MISS_MAX_BONUS * (1.0 - closest / NEAR_MISS_RADIUS)
