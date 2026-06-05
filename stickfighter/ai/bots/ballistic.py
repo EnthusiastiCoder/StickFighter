@@ -68,3 +68,7 @@ class BallisticBot:
         ready = self_a.reload_timer <= 0.0
         self._hesitation = self._hesitation + C.DT if ready else 0.0
         release = ready and self._hesitation >= self.config.reaction_delay
+
+        return Action(
+            move=move, jump=False, aim_angle=angle, draw=self.config.draw_fraction, release=release
+        )
