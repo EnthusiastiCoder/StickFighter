@@ -79,3 +79,12 @@ class BallisticBot:
         bow_y = self_a.top() + C.BOW_HEIGHT_OFFSET
         speed = _speed_for_draw(self.config.draw_fraction)
         dx, dy = target_x - bow_x, target_y - bow_y
+
+        angle = solve_launch_angle(dx, dy, speed, C.GRAVITY, prefer_low=True)
+        if angle is None:
+            angle = solve_launch_angle(dx, dy, speed, C.GRAVITY, prefer_low=False)
+        if angle is None:
+            angle = math.atan2(dy, dx)
+        if self.config.aim_noise > 0.0:
+            angle += self._rng.gauss(0.0, self.config.aim_noise)
+        return angle
