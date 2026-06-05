@@ -84,3 +84,17 @@ def encode_obs(snapshot: MatchSnapshot, perspective: int) -> np.ndarray:
             ]
         else:
             feats += [0.0, 0.0, 0.0, 0.0, 0.0, -1.0]
+
+    floating_platforms = snapshot.arena.platforms[1:][:MAX_PLATFORMS]  # [0] is always the ground
+    for i in range(MAX_PLATFORMS):
+        if i < len(floating_platforms):
+            p = floating_platforms[i]
+            center_x = p.x + p.width / 2.0
+            feats += [
+                (mx(center_x) - mx(self_a.x)) / C.ARENA_WIDTH,
+                (p.y - self_a.y) / C.ARENA_HEIGHT,
+                (p.width / 2.0) / C.ARENA_WIDTH,
+                1.0,
+            ]
+        else:
+            feats += [0.0, 0.0, 0.0, -1.0]
