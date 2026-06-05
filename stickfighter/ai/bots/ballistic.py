@@ -64,3 +64,7 @@ class BallisticBot:
 
         move = self._movement(enemy_a.x - self_a.x, self.config)
         angle = self._aim(self_a, enemy_a)
+
+        ready = self_a.reload_timer <= 0.0
+        self._hesitation = self._hesitation + C.DT if ready else 0.0
+        release = ready and self._hesitation >= self.config.reaction_delay
