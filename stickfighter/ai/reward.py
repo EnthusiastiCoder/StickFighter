@@ -43,3 +43,6 @@ def compute_reward(
                 reward += ROUND_WIN_REWARD
             elif e.winner == enemy:
                 reward += ROUND_LOSS_PENALTY
+
+    if near_miss_scale > 0.0:
+        reward += _near_miss_bonus(snapshot, perspective, near_miss_scale)
