@@ -104,3 +104,7 @@ def encode_obs(snapshot: MatchSnapshot, perspective: int) -> np.ndarray:
     self_rounds = snapshot.p0_rounds if self_idx == 0 else snapshot.p1_rounds
     enemy_rounds = snapshot.p1_rounds if self_idx == 0 else snapshot.p0_rounds
     feats.append((self_rounds - enemy_rounds) / C.WIN_ROUNDS)
+
+    obs = np.array(feats, dtype=np.float32)
+    assert obs.shape == (OBS_DIM,)
+    return obs
