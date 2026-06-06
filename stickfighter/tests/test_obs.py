@@ -28,3 +28,10 @@ def _symmetric_snapshot(aim_angle: float = 0.4, vx: float = 50.0, rounds: int = 
         arena=_FLAT, archers=(a0, a1), arrows=(), wind=0.0, round_time_left=15.0,
         p0_rounds=rounds, p1_rounds=rounds, match_over=False, winner=None,
     )
+
+
+def test_mirrored_perspectives_of_a_symmetric_state_produce_identical_obs():
+    snap = _symmetric_snapshot()
+    o0 = encode_obs(snap, 0)
+    o1 = encode_obs(snap, 1)
+    assert np.allclose(o0, o1, atol=1e-5)
