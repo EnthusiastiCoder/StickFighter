@@ -28,3 +28,12 @@ def test_idle_bot_always_returns_noop():
     bot = IdleBot()
     assert bot.act(sim.snapshot(), 0) == NOOP
     assert bot.act(sim.snapshot(), 1) == NOOP
+
+
+def test_wanderer_bot_varies_its_actions_over_time():
+    sim = MatchSim()
+    sim.reset(seed=0)
+    bot = WandererBot(seed=1)
+    actions = [bot.act(sim.snapshot(), 0) for _ in range(300)]
+    assert len({a.aim_angle for a in actions}) > 10
+    assert any(a.release for a in actions)
