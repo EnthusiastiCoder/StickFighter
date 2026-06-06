@@ -96,3 +96,9 @@ class BallisticBot:
         else:
             hitbox = torso_hitbox(enemy_a)
             tx, ty = (hitbox.left + hitbox.right) / 2.0, (hitbox.top + hitbox.bottom) / 2.0
+
+        if self.config.lead_prediction:
+            dist = math.hypot(tx - self_a.x, ty - self_a.y)
+            speed = _speed_for_draw(self.config.draw_fraction)
+            time_of_flight = dist / max(speed, 1.0)
+            tx += enemy_a.vx * time_of_flight
