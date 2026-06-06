@@ -37,3 +37,13 @@ def test_wanderer_bot_varies_its_actions_over_time():
     actions = [bot.act(sim.snapshot(), 0) for _ in range(300)]
     assert len({a.aim_angle for a in actions}) > 10
     assert any(a.release for a in actions)
+
+
+def test_ballistic_bot_reliably_beats_an_idle_opponent_on_flat_ground():
+    wins = 0
+    trials = 12
+    for seed in range(trials):
+        winner = _play_match(seed, BallisticBot(HARD, seed=seed), IdleBot(), arena=_FLAT)
+        if winner == 0:
+            wins += 1
+    assert wins / trials >= 0.9
