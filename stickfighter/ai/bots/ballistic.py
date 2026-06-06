@@ -88,3 +88,11 @@ class BallisticBot:
         if self.config.aim_noise > 0.0:
             angle += self._rng.gauss(0.0, self.config.aim_noise)
         return angle
+
+    def _target_point(self, self_a: ArcherState, enemy_a: ArcherState) -> tuple[float, float]:
+        if self.config.target_part == "head":
+            hitbox = head_hitbox(enemy_a)
+            tx, ty = hitbox.cx, hitbox.cy
+        else:
+            hitbox = torso_hitbox(enemy_a)
+            tx, ty = (hitbox.left + hitbox.right) / 2.0, (hitbox.top + hitbox.bottom) / 2.0
