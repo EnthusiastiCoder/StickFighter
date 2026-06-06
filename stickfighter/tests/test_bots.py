@@ -47,3 +47,7 @@ def test_ballistic_bot_reliably_beats_an_idle_opponent_on_flat_ground():
         if winner == 0:
             wins += 1
     assert wins / trials >= 0.9
+
+
+def test_ballistic_bot_backs_away_when_too_close_and_closes_in_when_too_far():
+    config = HARD  # engage_range == (150.0, 900.0)
