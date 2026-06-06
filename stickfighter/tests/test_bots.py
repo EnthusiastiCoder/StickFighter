@@ -20,3 +20,11 @@ def _play_match(seed: int, bot0, bot1, arena=None, max_steps: int = 20_000) -> i
             break
         sim.step(bot0.act(sim.snapshot(), 0), bot1.act(sim.snapshot(), 1))
     return sim.winner
+
+
+def test_idle_bot_always_returns_noop():
+    sim = MatchSim()
+    sim.reset(seed=0)
+    bot = IdleBot()
+    assert bot.act(sim.snapshot(), 0) == NOOP
+    assert bot.act(sim.snapshot(), 1) == NOOP
