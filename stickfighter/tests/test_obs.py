@@ -41,3 +41,10 @@ def test_obs_shape_matches_declared_dim():
     snap = _symmetric_snapshot()
     assert encode_obs(snap, 0).shape == (OBS_DIM,)
     assert encode_obs(snap, 1).shape == (OBS_DIM,)
+
+
+def test_obs_values_stay_within_a_reasonable_bounded_range():
+    snap = _symmetric_snapshot()
+    obs = encode_obs(snap, 0)
+    assert np.all(obs >= -1.0001)
+    assert np.all(obs <= 1.0001)
