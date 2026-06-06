@@ -104,3 +104,13 @@ class BallisticBot:
             tx += enemy_a.vx * time_of_flight
 
         return tx, ty
+
+    @staticmethod
+    def _movement(dx_to_enemy: float, config: BallisticBotConfig) -> float:
+        too_close, too_far = config.engage_range
+        dist = abs(dx_to_enemy)
+        if dist < too_close:
+            return -1.0 if dx_to_enemy > 0.0 else 1.0
+        if dist > too_far:
+            return 1.0 if dx_to_enemy > 0.0 else -1.0
+        return 0.0
