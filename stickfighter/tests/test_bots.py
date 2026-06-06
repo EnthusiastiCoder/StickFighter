@@ -55,3 +55,7 @@ def test_ballistic_bot_backs_away_when_too_close_and_closes_in_when_too_far():
     # enemy 20px to the right, well under the 150px "too close" threshold
     assert BallisticBot._movement(20.0, config) == -1.0  # back away (move left)
     assert BallisticBot._movement(-20.0, config) == 1.0  # enemy to the left -> back away right
+
+    # enemy 950px to the right, beyond the 900px "too far" threshold
+    assert BallisticBot._movement(950.0, config) == 1.0  # close in (move right)
+    assert BallisticBot._movement(-950.0, config) == -1.0  # enemy to the left -> close in left
