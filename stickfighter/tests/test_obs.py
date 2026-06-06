@@ -48,3 +48,14 @@ def test_obs_values_stay_within_a_reasonable_bounded_range():
     obs = encode_obs(snap, 0)
     assert np.all(obs >= -1.0001)
     assert np.all(obs <= 1.0001)
+
+
+def test_asymmetric_state_produces_different_obs_per_perspective():
+    # a *different* aim angle for each archer breaks the mirror symmetry,
+    # so the two perspectives must no longer encode identically
+    snap = _symmetric_snapshot(aim_angle=0.4)
+    a0, a1 = snap.archers
+    a1.aim_angle = 1.7  # no longer math.pi - a0.aim_angle
+    o0 = encode_obs(snap, 0)
+    o1 = encode_obs(snap, 1)
+    assert not np.allclose(o0, o1, atol=1e-3)
