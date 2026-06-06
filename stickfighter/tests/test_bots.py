@@ -62,3 +62,13 @@ def test_ballistic_bot_backs_away_when_too_close_and_closes_in_when_too_far():
 
     # comfortably inside the engagement band -> hold position
     assert BallisticBot._movement(400.0, config) == 0.0
+
+
+def test_ballistic_bot_aim_solves_a_direct_shot_on_flat_ground():
+    bot = BallisticBot(HARD, seed=0)
+    sim = MatchSim()
+    sim.reset(seed=0, arena=_FLAT)
+    angle = bot._aim(sim.archers[0], sim.archers[1])
+    # p1 is to the right and roughly level with p0 -> a mostly-rightward, slightly-upward shot
+    assert math.cos(angle) > 0.5
+    assert math.sin(angle) < 0.0
