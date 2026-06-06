@@ -35,3 +35,9 @@ def test_mirrored_perspectives_of_a_symmetric_state_produce_identical_obs():
     o0 = encode_obs(snap, 0)
     o1 = encode_obs(snap, 1)
     assert np.allclose(o0, o1, atol=1e-5)
+
+
+def test_obs_shape_matches_declared_dim():
+    snap = _symmetric_snapshot()
+    assert encode_obs(snap, 0).shape == (OBS_DIM,)
+    assert encode_obs(snap, 1).shape == (OBS_DIM,)
