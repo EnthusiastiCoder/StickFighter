@@ -15,3 +15,9 @@ from stickfighter.core.events import ArrowHit, Death, RoundOver
 from stickfighter.core.match import MatchSim, MatchSnapshot
 
 _FLAT = next(a for a in ARENAS if a.name == "flat")
+
+
+def _base_snapshot() -> MatchSnapshot:
+    sim = MatchSim()
+    sim.reset(seed=0, arena=_FLAT)
+    return sim.snapshot()
