@@ -13,3 +13,5 @@ from stickfighter.core.arena import ARENAS
 from stickfighter.core.entities import ArrowState
 from stickfighter.core.events import ArrowHit, Death, RoundOver
 from stickfighter.core.match import MatchSim, MatchSnapshot
+
+_FLAT = next(a for a in ARENAS if a.name == "flat")
