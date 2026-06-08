@@ -25,3 +25,15 @@ def _base_snapshot() -> MatchSnapshot:
 
 def test_step_penalty_applies_with_no_events():
     assert compute_reward([], _base_snapshot(), 0) == pytest.approx(STEP_PENALTY)
+
+
+def test_headshot_dealt_gives_bonus_plus_round_win_no_damage_scale():
+    snap = _base_snapshot()
+    events = [
+        ArrowHit(owner=0, target=1, part="head", damage=9999.0, x=0, y=0),
+        Death(who=1, killer=0, headshot=True, x=0, y=0, facing=1),
+        RoundOver(winner=0, p0_rounds=1, p1_rounds=0),
+    ]
+    reward = compute_reward(events, snap, perspective=0)
+    expected = STEP_PENALTY + HEADSHOT_BONUS + ROUND_WIN_REWARD
+    assert reward == pytest.approx(expected)
