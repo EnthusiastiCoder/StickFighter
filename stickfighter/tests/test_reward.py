@@ -21,3 +21,7 @@ def _base_snapshot() -> MatchSnapshot:
     sim = MatchSim()
     sim.reset(seed=0, arena=_FLAT)
     return sim.snapshot()
+
+
+def test_step_penalty_applies_with_no_events():
+    assert compute_reward([], _base_snapshot(), 0) == pytest.approx(STEP_PENALTY)
