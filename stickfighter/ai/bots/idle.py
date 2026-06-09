@@ -9,5 +9,5 @@ class IdleBot:
     def act(self, snapshot: MatchSnapshot, perspective: int) -> Action:
         return NOOP
 
-    def reset(self) -> None:
+    def reset(self, seed: int | None = None) -> None:
         pass

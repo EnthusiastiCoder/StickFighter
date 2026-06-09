@@ -53,7 +53,9 @@ class BallisticBot:
         self._rng = random.Random(seed)
         self._hesitation = 0.0
 
-    def reset(self) -> None:
+    def reset(self, seed: int | None = None) -> None:
+        if seed is not None:
+            self._rng = random.Random(seed)
         self._hesitation = 0.0
 
     def act(self, snapshot: MatchSnapshot, perspective: int) -> Action:

@@ -16,7 +16,9 @@ class WandererBot:
         self._move = 0.0
         self._change_timer = 0.0
 
-    def reset(self) -> None:
+    def reset(self, seed: int | None = None) -> None:
+        if seed is not None:
+            self._rng = random.Random(seed)
         self._move = 0.0
         self._change_timer = 0.0
 
