@@ -66,3 +66,13 @@ class DuelEnv(gym.Env):
     def step(self, action: np.ndarray) -> tuple[np.ndarray, float, bool, bool, dict[str, Any]]:
         my_action = Action.from_array(np.asarray(action, dtype=np.float32))
         all_events: list[Event] = []
+
+        for _ in range(self.frame_skip):
+            opp_action = self.opponent.act(self.sim.snapshot(), 1 - self.perspective)
+            actions = (
+                (my_action, opp_action) if self.perspective == 0 else (opp_action, my_action)
+            )
+            all_events.extend(self.sim.step(*actions))
+            self._elapsed_steps += 1
+            if self.sim.match_over:
+                break
