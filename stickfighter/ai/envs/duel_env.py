@@ -62,3 +62,7 @@ class DuelEnv(gym.Env):
         self._elapsed_steps = 0
         obs = encode_obs(self.sim.snapshot(), self.perspective)
         return obs, {}
+
+    def step(self, action: np.ndarray) -> tuple[np.ndarray, float, bool, bool, dict[str, Any]]:
+        my_action = Action.from_array(np.asarray(action, dtype=np.float32))
+        all_events: list[Event] = []
