@@ -47,3 +47,8 @@ class DuelEnv(gym.Env):
         self.max_episode_steps = max_episode_steps
         self._fixed_arena = arena
         self._elapsed_steps = 0
+
+        self.observation_space = gym.spaces.Box(
+            low=-10.0, high=10.0, shape=(OBS_DIM,), dtype=np.float32
+        )
+        self.action_space = gym.spaces.Box(low=-1.0, high=1.0, shape=(5,), dtype=np.float32)
