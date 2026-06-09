@@ -52,3 +52,13 @@ class DuelEnv(gym.Env):
             low=-10.0, high=10.0, shape=(OBS_DIM,), dtype=np.float32
         )
         self.action_space = gym.spaces.Box(low=-1.0, high=1.0, shape=(5,), dtype=np.float32)
+
+    def reset(
+        self, *, seed: int | None = None, options: dict[str, Any] | None = None
+    ) -> tuple[np.ndarray, dict[str, Any]]:
+        super().reset(seed=seed)
+        self.sim.reset(seed=seed, arena=self._fixed_arena)
+        self.opponent.reset(seed=seed)
+        self._elapsed_steps = 0
+        obs = encode_obs(self.sim.snapshot(), self.perspective)
+        return obs, {}
