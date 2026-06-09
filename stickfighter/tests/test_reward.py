@@ -58,3 +58,10 @@ def test_torso_hit_scales_linearly_with_damage():
     taken = compute_reward(events, snap, perspective=1)
     assert dealt == pytest.approx(STEP_PENALTY + 34.0 * DAMAGE_SCALE)
     assert taken == pytest.approx(STEP_PENALTY - 34.0 * DAMAGE_SCALE)
+
+
+def test_round_draw_gives_neither_win_nor_loss_reward():
+    snap = _base_snapshot()
+    events = [RoundOver(winner=None, p0_rounds=0, p1_rounds=0)]
+    assert compute_reward(events, snap, 0) == pytest.approx(STEP_PENALTY)
+    assert compute_reward(events, snap, 1) == pytest.approx(STEP_PENALTY)
