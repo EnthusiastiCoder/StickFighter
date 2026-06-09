@@ -49,3 +49,12 @@ def test_headshot_taken_gives_only_round_loss_no_extra_penalty():
     reward = compute_reward(events, snap, perspective=1)
     expected = STEP_PENALTY + ROUND_LOSS_PENALTY
     assert reward == pytest.approx(expected)
+
+
+def test_torso_hit_scales_linearly_with_damage():
+    snap = _base_snapshot()
+    events = [ArrowHit(owner=0, target=1, part="torso", damage=34.0, x=0, y=0)]
+    dealt = compute_reward(events, snap, perspective=0)
+    taken = compute_reward(events, snap, perspective=1)
+    assert dealt == pytest.approx(STEP_PENALTY + 34.0 * DAMAGE_SCALE)
+    assert taken == pytest.approx(STEP_PENALTY - 34.0 * DAMAGE_SCALE)
