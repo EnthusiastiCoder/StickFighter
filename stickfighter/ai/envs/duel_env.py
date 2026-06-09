@@ -9,3 +9,6 @@ step regardless of frame_skip, so it stays fully reactive.
 """
 
 from typing import Any
+
+import gymnasium as gym
+import numpy as np
