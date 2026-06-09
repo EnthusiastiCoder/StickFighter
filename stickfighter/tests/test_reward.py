@@ -37,3 +37,15 @@ def test_headshot_dealt_gives_bonus_plus_round_win_no_damage_scale():
     reward = compute_reward(events, snap, perspective=0)
     expected = STEP_PENALTY + HEADSHOT_BONUS + ROUND_WIN_REWARD
     assert reward == pytest.approx(expected)
+
+
+def test_headshot_taken_gives_only_round_loss_no_extra_penalty():
+    snap = _base_snapshot()
+    events = [
+        ArrowHit(owner=0, target=1, part="head", damage=9999.0, x=0, y=0),
+        Death(who=1, killer=0, headshot=True, x=0, y=0, facing=1),
+        RoundOver(winner=0, p0_rounds=1, p1_rounds=0),
+    ]
+    reward = compute_reward(events, snap, perspective=1)
+    expected = STEP_PENALTY + ROUND_LOSS_PENALTY
+    assert reward == pytest.approx(expected)
