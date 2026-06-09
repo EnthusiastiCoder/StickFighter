@@ -28,3 +28,22 @@ DEFAULT_MAX_EPISODE_STEPS = 3600  # 60s of sim time at 60Hz
 
 class DuelEnv(gym.Env):
     metadata: dict[str, Any] = {"render_modes": []}
+
+    def __init__(
+        self,
+        opponent: Policy | None = None,
+        perspective: int = 0,
+        frame_skip: int = DEFAULT_FRAME_SKIP,
+        near_miss_scale: float = 0.0,
+        max_episode_steps: int = DEFAULT_MAX_EPISODE_STEPS,
+        arena: Arena | None = None,
+    ) -> None:
+        super().__init__()
+        self.sim = MatchSim()
+        self.opponent: Policy = opponent if opponent is not None else IdleBot()
+        self.perspective = perspective
+        self.frame_skip = frame_skip
+        self.near_miss_scale = near_miss_scale
+        self.max_episode_steps = max_episode_steps
+        self._fixed_arena = arena
+        self._elapsed_steps = 0
