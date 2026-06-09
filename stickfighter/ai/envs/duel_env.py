@@ -7,3 +7,5 @@ Frame-skip repeats the agent's action for `frame_skip` sim steps (60Hz sim ->
 game and roughly doubles throughput. The opponent is re-queried every sim
 step regardless of frame_skip, so it stays fully reactive.
 """
+
+from typing import Any
