@@ -24,3 +24,7 @@ from stickfighter.core.match import MatchSim
 
 DEFAULT_FRAME_SKIP = 2
 DEFAULT_MAX_EPISODE_STEPS = 3600  # 60s of sim time at 60Hz
+
+
+class DuelEnv(gym.Env):
+    metadata: dict[str, Any] = {"render_modes": []}
