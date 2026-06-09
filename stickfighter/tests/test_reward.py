@@ -65,3 +65,16 @@ def test_round_draw_gives_neither_win_nor_loss_reward():
     events = [RoundOver(winner=None, p0_rounds=0, p1_rounds=0)]
     assert compute_reward(events, snap, 0) == pytest.approx(STEP_PENALTY)
     assert compute_reward(events, snap, 1) == pytest.approx(STEP_PENALTY)
+
+
+def test_near_miss_bonus_is_zero_when_scale_is_zero():
+    snap = _base_snapshot()
+    enemy = snap.archers[1]
+    on_target_arrow = ArrowState(id=0, x=enemy.x, y=enemy.top() + 18.0, vx=1.0, vy=0.0, owner=0)
+    snap_with_arrow = MatchSnapshot(
+        arena=snap.arena, archers=snap.archers, arrows=(on_target_arrow,), wind=snap.wind,
+        round_time_left=snap.round_time_left, p0_rounds=0, p1_rounds=0,
+        match_over=False, winner=None,
+    )
+    reward = compute_reward([], snap_with_arrow, 0, near_miss_scale=0.0)
+    assert reward == pytest.approx(STEP_PENALTY)
