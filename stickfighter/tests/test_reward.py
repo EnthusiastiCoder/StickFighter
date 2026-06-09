@@ -84,3 +84,11 @@ def test_near_miss_bonus_grows_as_an_own_arrow_approaches_the_enemy():
     snap = _base_snapshot()
     enemy = snap.archers[1]
     target_x, target_y = enemy.x, enemy.top() + 18.0
+
+    def snapshot_with_arrow_at(dx: float) -> MatchSnapshot:
+        arrow = ArrowState(id=0, x=target_x + dx, y=target_y, vx=1.0, vy=0.0, owner=0)
+        return MatchSnapshot(
+            arena=snap.arena, archers=snap.archers, arrows=(arrow,), wind=snap.wind,
+            round_time_left=snap.round_time_left, p0_rounds=0, p1_rounds=0,
+            match_over=False, winner=None,
+        )
