@@ -78,3 +78,9 @@ def test_near_miss_bonus_is_zero_when_scale_is_zero():
     )
     reward = compute_reward([], snap_with_arrow, 0, near_miss_scale=0.0)
     assert reward == pytest.approx(STEP_PENALTY)
+
+
+def test_near_miss_bonus_grows_as_an_own_arrow_approaches_the_enemy():
+    snap = _base_snapshot()
+    enemy = snap.archers[1]
+    target_x, target_y = enemy.x, enemy.top() + 18.0
