@@ -21,3 +21,6 @@ from stickfighter.core.actions import Action
 from stickfighter.core.arena import Arena
 from stickfighter.core.events import Event
 from stickfighter.core.match import MatchSim
+
+DEFAULT_FRAME_SKIP = 2
+DEFAULT_MAX_EPISODE_STEPS = 3600  # 60s of sim time at 60Hz
