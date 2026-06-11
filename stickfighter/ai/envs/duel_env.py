@@ -76,3 +76,10 @@ class DuelEnv(gym.Env):
             self._elapsed_steps += 1
             if self.sim.match_over:
                 break
+
+        snapshot = self.sim.snapshot()
+        reward = compute_reward(all_events, snapshot, self.perspective, self.near_miss_scale)
+        terminated = self.sim.match_over
+        truncated = self._elapsed_steps >= self.max_episode_steps
+        obs = encode_obs(snapshot, self.perspective)
+        return obs, reward, terminated, truncated, {"events": all_events}
