@@ -8,3 +8,5 @@ from stickfighter.ai.envs.duel_env import DuelEnv
 from stickfighter.ai.obs import OBS_DIM
 from stickfighter.core.actions import Action
 from stickfighter.core.arena import ARENAS
+
+_FLAT = next(a for a in ARENAS if a.name == "flat")
