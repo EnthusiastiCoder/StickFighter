@@ -41,3 +41,9 @@ def test_perspective_1_env_lets_the_opponent_play_archer_0():
         env.step(move_right)
     assert env.sim.archers[0].x == pytest.approx(_FLAT.spawn_p0[0])
     assert env.sim.archers[1].x > _FLAT.spawn_p1[0] - 1.0  # moved from spawn (clamped or not)
+
+
+def test_episode_terminates_on_match_over_not_just_truncation():
+    env = DuelEnv(opponent=IdleBot(), arena=_FLAT, max_episode_steps=100_000)
+    env.reset(seed=0)
+    bot = BallisticBot(PERFECT, seed=0)
