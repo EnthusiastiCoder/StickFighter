@@ -23,3 +23,10 @@ def test_reset_and_step_shapes_and_dtypes():
     assert obs.shape == (OBS_DIM,)
     assert obs.dtype == np.float32
     assert isinstance(info, dict)
+
+    obs, reward, terminated, truncated, info = env.step(env.action_space.sample())
+    assert obs.shape == (OBS_DIM,)
+    assert isinstance(reward, float)
+    assert isinstance(terminated, bool)
+    assert isinstance(truncated, bool)
+    assert "events" in info
