@@ -47,3 +47,12 @@ def test_episode_terminates_on_match_over_not_just_truncation():
     env = DuelEnv(opponent=IdleBot(), arena=_FLAT, max_episode_steps=100_000)
     env.reset(seed=0)
     bot = BallisticBot(PERFECT, seed=0)
+
+    terminated = truncated = False
+    total_reward = 0.0
+    for _ in range(20_000):
+        action = bot.act(env.sim.snapshot(), 0).to_array()
+        obs, reward, terminated, truncated, info = env.step(action)
+        total_reward += reward
+        if terminated or truncated:
+            break
