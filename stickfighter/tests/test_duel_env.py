@@ -10,3 +10,8 @@ from stickfighter.core.actions import Action
 from stickfighter.core.arena import ARENAS
 
 _FLAT = next(a for a in ARENAS if a.name == "flat")
+
+
+def test_env_checker_passes_with_a_stochastic_opponent():
+    env = DuelEnv(opponent=BallisticBot(HARD, seed=0))
+    check_env(env, skip_render_check=True)
