@@ -30,3 +30,14 @@ def test_reset_and_step_shapes_and_dtypes():
     assert isinstance(terminated, bool)
     assert isinstance(truncated, bool)
     assert "events" in info
+
+
+def test_perspective_1_env_lets_the_opponent_play_archer_0():
+    env = DuelEnv(opponent=IdleBot(), perspective=1, arena=_FLAT)
+    env.reset(seed=0)
+    # archer 0 (the opponent) must stay put; archer 1 (us) should be free to move
+    move_right = np.array([1.0, -1.0, 0.0, -1.0, -1.0], dtype=np.float32)
+    for _ in range(30):
+        env.step(move_right)
+    assert env.sim.archers[0].x == pytest.approx(_FLAT.spawn_p0[0])
+    assert env.sim.archers[1].x > _FLAT.spawn_p1[0] - 1.0  # moved from spawn (clamped or not)
