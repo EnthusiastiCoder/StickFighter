@@ -15,3 +15,11 @@ _FLAT = next(a for a in ARENAS if a.name == "flat")
 def test_env_checker_passes_with_a_stochastic_opponent():
     env = DuelEnv(opponent=BallisticBot(HARD, seed=0))
     check_env(env, skip_render_check=True)
+
+
+def test_reset_and_step_shapes_and_dtypes():
+    env = DuelEnv(opponent=IdleBot())
+    obs, info = env.reset(seed=0)
+    assert obs.shape == (OBS_DIM,)
+    assert obs.dtype == np.float32
+    assert isinstance(info, dict)
