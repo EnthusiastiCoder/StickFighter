@@ -56,3 +56,9 @@ def test_episode_terminates_on_match_over_not_just_truncation():
         total_reward += reward
         if terminated or truncated:
             break
+
+    assert terminated
+    assert not truncated
+    assert env.sim.match_over
+    assert env.sim.winner == 0
+    assert total_reward > 0.0  # a dominant win should net a clearly positive return
