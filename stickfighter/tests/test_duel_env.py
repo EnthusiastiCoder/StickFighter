@@ -70,3 +70,8 @@ def test_frame_skip_holds_the_agent_action_but_still_advances_multiple_sim_steps
     noop_array = Action(move=0.0, jump=False, aim_angle=0.0, draw=0.0, release=False).to_array()
     env.step(noop_array)
     assert env._elapsed_steps == 4
+
+
+def test_near_miss_scale_is_off_by_default():
+    env = DuelEnv(opponent=IdleBot())
+    assert env.near_miss_scale == 0.0
