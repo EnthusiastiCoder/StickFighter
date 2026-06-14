@@ -62,3 +62,11 @@ def test_episode_terminates_on_match_over_not_just_truncation():
     assert env.sim.match_over
     assert env.sim.winner == 0
     assert total_reward > 0.0  # a dominant win should net a clearly positive return
+
+
+def test_frame_skip_holds_the_agent_action_but_still_advances_multiple_sim_steps():
+    env = DuelEnv(opponent=IdleBot(), frame_skip=4, arena=_FLAT)
+    env.reset(seed=0)
+    noop_array = Action(move=0.0, jump=False, aim_angle=0.0, draw=0.0, release=False).to_array()
+    env.step(noop_array)
+    assert env._elapsed_steps == 4
