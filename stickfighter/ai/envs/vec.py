@@ -13,3 +13,8 @@ import argparse
 import time
 
 import gymnasium as gym
+
+from stickfighter.ai.bots.ballistic import MEDIUM, BallisticBot
+from stickfighter.ai.bots.base import Policy
+from stickfighter.ai.envs.duel_env import DuelEnv
+from stickfighter.core.arena import Arena
