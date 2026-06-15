@@ -18,3 +18,7 @@ from stickfighter.ai.bots.ballistic import MEDIUM, BallisticBot
 from stickfighter.ai.bots.base import Policy
 from stickfighter.ai.envs.duel_env import DuelEnv
 from stickfighter.core.arena import Arena
+
+
+def default_opponent_factory() -> Policy:
+    return BallisticBot(MEDIUM)
