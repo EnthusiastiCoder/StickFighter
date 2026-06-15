@@ -22,3 +22,9 @@ from stickfighter.core.arena import Arena
 
 def default_opponent_factory() -> Policy:
     return BallisticBot(MEDIUM)
+
+
+class _EnvFactory:
+    """A picklable env constructor: multiprocessing pickles this object (an
+    int and a top-level function reference, both fine) and calls it inside
+    the worker process to build that worker's own DuelEnv instance."""
