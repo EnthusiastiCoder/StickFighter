@@ -11,3 +11,5 @@ below instead of the more obvious `lambda: DuelEnv(...)`.
 
 import argparse
 import time
+
+import gymnasium as gym
