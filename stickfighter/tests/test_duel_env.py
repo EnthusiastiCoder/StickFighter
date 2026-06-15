@@ -75,3 +75,14 @@ def test_frame_skip_holds_the_agent_action_but_still_advances_multiple_sim_steps
 def test_near_miss_scale_is_off_by_default():
     env = DuelEnv(opponent=IdleBot())
     assert env.near_miss_scale == 0.0
+
+
+def test_max_episode_steps_truncates_a_stalemate():
+    env = DuelEnv(opponent=IdleBot(), arena=_FLAT, max_episode_steps=10, frame_skip=1)
+    env.reset(seed=0)
+    noop_array = Action(move=0.0, jump=False, aim_angle=0.0, draw=0.0, release=False).to_array()
+    terminated = truncated = False
+    for _ in range(10):
+        obs, reward, terminated, truncated, info = env.step(noop_array)
+    assert truncated
+    assert not terminated
