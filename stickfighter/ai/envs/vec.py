@@ -37,3 +37,15 @@ class _EnvFactory:
 
     def __call__(self) -> DuelEnv:
         return DuelEnv(opponent=self.opponent_factory(), arena=self.arena, **self.env_kwargs)
+
+
+def make_vec_env(
+    num_envs: int,
+    opponent_factory=default_opponent_factory,
+    arena: Arena | None = None,
+    asynchronous: bool = True,
+    **env_kwargs,
+) -> gym.vector.VectorEnv:
+    env_fns = [_EnvFactory(i, opponent_factory, arena, **env_kwargs) for i in range(num_envs)]
+    cls = gym.vector.AsyncVectorEnv if asynchronous else gym.vector.SyncVectorEnv
+    return cls(env_fns)
