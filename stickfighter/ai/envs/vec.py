@@ -49,3 +49,20 @@ def make_vec_env(
     env_fns = [_EnvFactory(i, opponent_factory, arena, **env_kwargs) for i in range(num_envs)]
     cls = gym.vector.AsyncVectorEnv if asynchronous else gym.vector.SyncVectorEnv
     return cls(env_fns)
+
+
+def benchmark(worker_counts: list[int], steps_per_worker: int = 500) -> None:
+    for n in worker_counts:
+        env = make_vec_env(n, asynchronous=(n > 1))
+        env.reset(seed=0)
+        t0 = time.perf_counter()
+        for _ in range(steps_per_worker):
+            actions = env.action_space.sample()
+            env.step(actions)
+        elapsed = time.perf_counter() - t0
+        total_steps = n * steps_per_worker
+        print(
+            f"n_envs={n:>3}  {total_steps / elapsed:>9.0f} steps/sec  "
+            f"({elapsed:.2f}s for {total_steps} steps)"
+        )
+        env.close()
