@@ -34,3 +34,6 @@ class _EnvFactory:
         self.opponent_factory = opponent_factory
         self.arena = arena
         self.env_kwargs = env_kwargs
+
+    def __call__(self) -> DuelEnv:
+        return DuelEnv(opponent=self.opponent_factory(), arena=self.arena, **self.env_kwargs)
