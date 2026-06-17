@@ -28,3 +28,9 @@ class _EnvFactory:
     """A picklable env constructor: multiprocessing pickles this object (an
     int and a top-level function reference, both fine) and calls it inside
     the worker process to build that worker's own DuelEnv instance."""
+
+    def __init__(self, worker_index: int, opponent_factory, arena: Arena | None, **env_kwargs):
+        self.worker_index = worker_index
+        self.opponent_factory = opponent_factory
+        self.arena = arena
+        self.env_kwargs = env_kwargs
