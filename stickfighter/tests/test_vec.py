@@ -19,3 +19,14 @@ def test_sync_vec_env_reset_and_step_shapes():
     try:
         obs, info = env.reset(seed=0)
         assert obs.shape == (3, OBS_DIM)
+
+        actions = env.action_space.sample()
+        assert actions.shape == (3, 5)
+        obs, rewards, terminated, truncated, infos = env.step(actions)
+        assert obs.shape == (3, OBS_DIM)
+        assert rewards.shape == (3,)
+        assert rewards.dtype == np.float64 or rewards.dtype == np.float32
+        assert terminated.shape == (3,)
+        assert truncated.shape == (3,)
+    finally:
+        env.close()
