@@ -30,3 +30,13 @@ def test_sync_vec_env_reset_and_step_shapes():
         assert truncated.shape == (3,)
     finally:
         env.close()
+
+
+def test_sync_vec_env_with_custom_opponent_factory():
+    env = make_vec_env(2, opponent_factory=IdleBot, asynchronous=False)
+    try:
+        env.reset(seed=1)
+        for sub_env in env.envs:
+            assert isinstance(sub_env.unwrapped.opponent, IdleBot)
+    finally:
+        env.close()
