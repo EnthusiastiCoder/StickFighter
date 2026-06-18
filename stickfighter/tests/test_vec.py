@@ -44,3 +44,9 @@ def test_sync_vec_env_with_custom_opponent_factory():
 
 def test_default_opponent_factory_returns_a_working_policy():
     from stickfighter.core.match import MatchSim
+
+    policy = default_opponent_factory()
+    sim = MatchSim()
+    sim.reset(seed=0)
+    action = policy.act(sim.snapshot(), 1)
+    assert action is not None
