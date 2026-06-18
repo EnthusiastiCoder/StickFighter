@@ -1,18 +1,12 @@
-"""The playable duel: human archer (P0) vs a placeholder idle opponent (P1).
-
-Real bots (stickfighter.ai.bots) replace the idle opponent once M3 lands --
-this scene only needs *an* Action source for P1, not a specific one.
-"""
+"""The playable duel: human archer (P0) vs a scripted BallisticBot (P1)."""
 
 import pygame
 
+from stickfighter.ai.bots.ballistic import MEDIUM, BallisticBot
 from stickfighter.core import constants as C
-from stickfighter.core.actions import Action
 from stickfighter.core.match import MatchSim
 from stickfighter.game.input import HumanInputController
 from stickfighter.render import draw, effects, hud, ragdoll, theme
-
-NOOP = Action(move=0.0, jump=False, aim_angle=0.0, draw=0.0, release=False)
 
 _FONT_CACHE: dict[int, pygame.font.Font] = {}
 
@@ -26,7 +20,8 @@ def _font(size: int) -> pygame.font.Font:
 class DuelScene:
     def __init__(self, seed: int | None = None) -> None:
         self.sim = MatchSim()
-        self.sim.reset(seed=seed)
+        self.opponent = BallisticBot(MEDIUM)
+        self._new_match(seed)
         self.input = HumanInputController()
         self.effects = effects.EffectsSystem()
         self.ragdolls = ragdoll.RagdollManager()
@@ -35,13 +30,17 @@ class DuelScene:
         self._scene_surface = pygame.Surface((int(C.ARENA_WIDTH), int(C.ARENA_HEIGHT)))
         self._snapshot = self.sim.snapshot()
 
+    def _new_match(self, seed: int | None = None) -> None:
+        self.sim.reset(seed=seed)
+        self.opponent.reset(seed=seed)
+
     def handle_event(self, event: pygame.event.Event) -> None:
         self.input.handle_pygame_event(event)
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 self.paused = not self.paused
             elif event.key == pygame.K_RETURN and self.sim.match_over:
-                self.sim.reset()
+                self._new_match()
 
     def update(self, dt: float) -> None:
         if self.paused:
@@ -51,7 +50,7 @@ class DuelScene:
         archer0 = self.sim.archers[0]
         anchor = (archer0.x, archer0.top() + C.BOW_HEIGHT_OFFSET)
         action0 = self.input.build_action(anchor)
-        action1 = NOOP
+        action1 = self.opponent.act(self.sim.snapshot(), 1)
 
         events = self.sim.step(action0, action1)
         self._snapshot = self.sim.snapshot()
