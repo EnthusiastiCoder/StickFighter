@@ -8,3 +8,7 @@ this test suite is responsible for.
 """
 
 import numpy as np
+
+from stickfighter.ai.bots.idle import IdleBot
+from stickfighter.ai.envs.vec import default_opponent_factory, make_vec_env
+from stickfighter.ai.obs import OBS_DIM
