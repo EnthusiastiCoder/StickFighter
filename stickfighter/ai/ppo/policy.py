@@ -9,3 +9,6 @@ import numpy as np
 import torch
 from torch import nn
 from torch.distributions import Normal
+
+from stickfighter.ai.obs import OBS_DIM
+from stickfighter.core.actions import ACTION_DIM
