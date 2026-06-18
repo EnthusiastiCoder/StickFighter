@@ -6,3 +6,5 @@ actually be invoked from ppo/train.py -- since spawning real subprocesses
 from inside a pytest run is a separate, flakier concern from the env logic
 this test suite is responsible for.
 """
+
+import numpy as np
