@@ -12,3 +12,10 @@ import numpy as np
 from stickfighter.ai.bots.idle import IdleBot
 from stickfighter.ai.envs.vec import default_opponent_factory, make_vec_env
 from stickfighter.ai.obs import OBS_DIM
+
+
+def test_sync_vec_env_reset_and_step_shapes():
+    env = make_vec_env(3, asynchronous=False)
+    try:
+        obs, info = env.reset(seed=0)
+        assert obs.shape == (3, OBS_DIM)
