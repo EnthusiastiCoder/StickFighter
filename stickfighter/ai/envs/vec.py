@@ -66,3 +66,14 @@ def benchmark(worker_counts: list[int], steps_per_worker: int = 500) -> None:
             f"({elapsed:.2f}s for {total_steps} steps)"
         )
         env.close()
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--benchmark", action="store_true")
+    parser.add_argument("--n-envs", type=int, nargs="+", default=[1, 2, 4, 8])
+    args = parser.parse_args()
+    if args.benchmark:
+        benchmark(args.n_envs)
+    else:
+        parser.print_help()
