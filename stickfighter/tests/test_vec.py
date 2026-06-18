@@ -40,3 +40,7 @@ def test_sync_vec_env_with_custom_opponent_factory():
             assert isinstance(sub_env.unwrapped.opponent, IdleBot)
     finally:
         env.close()
+
+
+def test_default_opponent_factory_returns_a_working_policy():
+    from stickfighter.core.match import MatchSim
