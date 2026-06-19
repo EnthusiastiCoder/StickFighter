@@ -86,3 +86,7 @@ class RunningNormalizer:
         self.mean = new_mean
         self.var = m2 / total_count
         self.count = total_count
+
+    def normalize(self, x: np.ndarray, clip: float = 10.0) -> np.ndarray:
+        normed = (x - self.mean) / np.sqrt(self.var + 1e-8)
+        return np.clip(normed, -clip, clip).astype(np.float32)
