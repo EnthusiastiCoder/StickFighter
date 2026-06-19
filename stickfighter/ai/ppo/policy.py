@@ -12,3 +12,7 @@ from torch.distributions import Normal
 
 from stickfighter.ai.obs import OBS_DIM
 from stickfighter.core.actions import ACTION_DIM
+
+HIDDEN_SIZE = 256
+LOG_STD_INIT = -0.5
+_SQRT2 = float(np.sqrt(2.0))
