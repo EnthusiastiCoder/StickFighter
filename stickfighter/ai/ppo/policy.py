@@ -23,3 +23,17 @@ def _orthogonal_layer(in_features: int, out_features: int, gain: float) -> nn.Li
     nn.init.orthogonal_(layer.weight, gain=gain)
     nn.init.constant_(layer.bias, 0.0)
     return layer
+
+
+class ActorCritic(nn.Module):
+    def __init__(self, obs_dim: int = OBS_DIM, action_dim: int = ACTION_DIM) -> None:
+        super().__init__()
+        self.actor = nn.Sequential(
+            _orthogonal_layer(obs_dim, HIDDEN_SIZE, _SQRT2),
+            nn.Tanh(),
+            _orthogonal_layer(HIDDEN_SIZE, HIDDEN_SIZE, _SQRT2),
+            nn.Tanh(),
+            _orthogonal_layer(HIDDEN_SIZE, action_dim, 0.01),
+            nn.Tanh(),
+        )
+        self.log_std = nn.Parameter(torch.full((action_dim,), LOG_STD_INIT))
