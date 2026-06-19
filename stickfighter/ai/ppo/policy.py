@@ -48,3 +48,16 @@ class ActorCritic(nn.Module):
 
     def get_value(self, obs: torch.Tensor) -> torch.Tensor:
         return self.critic(obs).squeeze(-1)
+
+    def get_action_and_value(
+        self, obs: torch.Tensor, action: torch.Tensor | None = None
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+        mean = self.actor(obs)
+        std = self.log_std.exp().expand_as(mean)
+        dist = Normal(mean, std)
+        if action is None:
+            action = dist.sample()
+        log_prob = dist.log_prob(action).sum(-1)
+        entropy = dist.entropy().sum(-1)
+        value = self.get_value(obs)
+        return action, log_prob, entropy, value
