@@ -37,3 +37,11 @@ class ActorCritic(nn.Module):
             nn.Tanh(),
         )
         self.log_std = nn.Parameter(torch.full((action_dim,), LOG_STD_INIT))
+
+        self.critic = nn.Sequential(
+            _orthogonal_layer(obs_dim, HIDDEN_SIZE, _SQRT2),
+            nn.Tanh(),
+            _orthogonal_layer(HIDDEN_SIZE, HIDDEN_SIZE, _SQRT2),
+            nn.Tanh(),
+            _orthogonal_layer(HIDDEN_SIZE, 1, 1.0),
+        )
