@@ -66,3 +66,8 @@ class ActorCritic(nn.Module):
 class RunningNormalizer:
     """Online mean/variance tracker (Welford/Chan's parallel-variance merge)
     for observation normalization, updated from rollout data as it arrives."""
+
+    def __init__(self, shape: tuple[int, ...], epsilon: float = 1e-4) -> None:
+        self.mean = np.zeros(shape, dtype=np.float64)
+        self.var = np.ones(shape, dtype=np.float64)
+        self.count = epsilon
