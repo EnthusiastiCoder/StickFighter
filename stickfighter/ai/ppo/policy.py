@@ -61,3 +61,8 @@ class ActorCritic(nn.Module):
         entropy = dist.entropy().sum(-1)
         value = self.get_value(obs)
         return action, log_prob, entropy, value
+
+
+class RunningNormalizer:
+    """Online mean/variance tracker (Welford/Chan's parallel-variance merge)
+    for observation normalization, updated from rollout data as it arrives."""
