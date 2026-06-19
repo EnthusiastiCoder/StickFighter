@@ -45,3 +45,6 @@ class ActorCritic(nn.Module):
             nn.Tanh(),
             _orthogonal_layer(HIDDEN_SIZE, 1, 1.0),
         )
+
+    def get_value(self, obs: torch.Tensor) -> torch.Tensor:
+        return self.critic(obs).squeeze(-1)
