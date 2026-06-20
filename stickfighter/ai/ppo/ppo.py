@@ -3,3 +3,5 @@ value loss, advantage normalization, gradient clipping. Written from scratch
 rather than stable-baselines3 so it can drive a self-play league without
 fighting someone else's VecEnv/policy abstractions.
 """
+
+from dataclasses import dataclass
