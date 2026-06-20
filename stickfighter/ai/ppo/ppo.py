@@ -5,3 +5,7 @@ fighting someone else's VecEnv/policy abstractions.
 """
 
 from dataclasses import dataclass
+
+import numpy as np
+import torch
+from torch import nn
