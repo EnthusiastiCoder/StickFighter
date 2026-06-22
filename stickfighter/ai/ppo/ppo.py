@@ -26,3 +26,21 @@ class PPOConfig:
     n_epochs: int = 4
     n_minibatches: int = 4
     normalize_advantages: bool = True
+
+
+class RolloutBuffer:
+    def __init__(
+        self, n_steps: int, n_envs: int, obs_dim: int, action_dim: int, device: torch.device
+    ) -> None:
+        self.n_steps = n_steps
+        self.n_envs = n_envs
+        self.device = device
+        self.obs = torch.zeros((n_steps, n_envs, obs_dim), device=device)
+        self.actions = torch.zeros((n_steps, n_envs, action_dim), device=device)
+        self.log_probs = torch.zeros((n_steps, n_envs), device=device)
+        self.rewards = torch.zeros((n_steps, n_envs), device=device)
+        self.dones = torch.zeros((n_steps, n_envs), device=device)
+        self.values = torch.zeros((n_steps, n_envs), device=device)
+        self.advantages = torch.zeros((n_steps, n_envs), device=device)
+        self.returns = torch.zeros((n_steps, n_envs), device=device)
+        self.ptr = 0
