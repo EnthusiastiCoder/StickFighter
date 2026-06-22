@@ -9,3 +9,5 @@ from dataclasses import dataclass
 import numpy as np
 import torch
 from torch import nn
+
+from stickfighter.ai.ppo.policy import ActorCritic
