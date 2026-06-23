@@ -65,3 +65,6 @@ class RolloutBuffer:
         self.dones[i] = torch.as_tensor(done, device=self.device, dtype=torch.float32)
         self.values[i] = value
         self.ptr += 1
+
+    def reset(self) -> None:
+        self.ptr = 0
