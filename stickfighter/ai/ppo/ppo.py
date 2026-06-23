@@ -68,3 +68,17 @@ class RolloutBuffer:
 
     def reset(self) -> None:
         self.ptr = 0
+
+    def compute_gae(self, last_value: torch.Tensor, gamma: float, gae_lambda: float) -> None:
+        """`last_value` bootstraps past the buffer's final step -- the value
+        estimate of whatever observation follows it (irrelevant, and never
+        used, if that final step was itself terminal: dones[-1] zeroes it).
+        """
+        last_gae = torch.zeros(self.n_envs, device=self.device)
+        for t in reversed(range(self.n_steps)):
+            next_non_terminal = 1.0 - self.dones[t]
+            next_value = last_value if t == self.n_steps - 1 else self.values[t + 1]
+            delta = self.rewards[t] + gamma * next_value * next_non_terminal - self.values[t]
+            last_gae = delta + gamma * gae_lambda * next_non_terminal * last_gae
+            self.advantages[t] = last_gae
+        self.returns = self.advantages + self.values
