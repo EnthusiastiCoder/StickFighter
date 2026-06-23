@@ -82,3 +82,12 @@ class RolloutBuffer:
             last_gae = delta + gamma * gae_lambda * next_non_terminal * last_gae
             self.advantages[t] = last_gae
         self.returns = self.advantages + self.values
+
+    def get_batches(self, n_minibatches: int):
+        batch_size = self.n_steps * self.n_envs
+        flat_obs = self.obs.reshape(batch_size, -1)
+        flat_actions = self.actions.reshape(batch_size, -1)
+        flat_log_probs = self.log_probs.reshape(batch_size)
+        flat_advantages = self.advantages.reshape(batch_size)
+        flat_returns = self.returns.reshape(batch_size)
+        flat_values = self.values.reshape(batch_size)
