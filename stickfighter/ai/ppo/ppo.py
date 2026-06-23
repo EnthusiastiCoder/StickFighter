@@ -44,3 +44,24 @@ class RolloutBuffer:
         self.advantages = torch.zeros((n_steps, n_envs), device=device)
         self.returns = torch.zeros((n_steps, n_envs), device=device)
         self.ptr = 0
+
+    def add(
+        self,
+        obs: torch.Tensor,
+        action: torch.Tensor,
+        log_prob: torch.Tensor,
+        reward: np.ndarray,
+        done: np.ndarray,
+        value: torch.Tensor,
+    ) -> None:
+        """`done[i]` means the transition stored at index i itself ended the
+        episode -- i.e. whatever obs a training loop puts at index i+1 (if
+        any) belongs to a fresh episode and must not be bootstrapped across."""
+        i = self.ptr
+        self.obs[i] = obs
+        self.actions[i] = action
+        self.log_probs[i] = log_prob
+        self.rewards[i] = torch.as_tensor(reward, device=self.device, dtype=torch.float32)
+        self.dones[i] = torch.as_tensor(done, device=self.device, dtype=torch.float32)
+        self.values[i] = value
+        self.ptr += 1
