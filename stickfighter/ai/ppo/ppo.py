@@ -104,3 +104,17 @@ class RolloutBuffer:
                 flat_returns[idx],
                 flat_values[idx],
             )
+
+
+def ppo_update(
+    model: ActorCritic, optimizer: torch.optim.Optimizer, buffer: RolloutBuffer, config: PPOConfig
+) -> dict[str, float]:
+    stats: dict[str, list[float]] = {
+        "policy_loss": [], "value_loss": [], "entropy": [], "approx_kl": [], "clip_frac": [],
+    }
+    for _ in range(config.n_epochs):
+        for obs_b, act_b, old_log_prob_b, adv_b, ret_b, old_value_b in buffer.get_batches(
+            config.n_minibatches
+        ):
+            if config.normalize_advantages:
+                adv_b = (adv_b - adv_b.mean()) / (adv_b.std() + 1e-8)
