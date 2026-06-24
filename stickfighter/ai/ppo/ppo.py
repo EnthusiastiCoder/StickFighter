@@ -118,3 +118,7 @@ def ppo_update(
         ):
             if config.normalize_advantages:
                 adv_b = (adv_b - adv_b.mean()) / (adv_b.std() + 1e-8)
+
+            _, new_log_prob, entropy, new_value = model.get_action_and_value(obs_b, act_b)
+            log_ratio = new_log_prob - old_log_prob_b
+            ratio = log_ratio.exp()
