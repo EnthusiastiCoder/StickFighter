@@ -122,3 +122,7 @@ def ppo_update(
             _, new_log_prob, entropy, new_value = model.get_action_and_value(obs_b, act_b)
             log_ratio = new_log_prob - old_log_prob_b
             ratio = log_ratio.exp()
+
+            pg_loss1 = -adv_b * ratio
+            pg_loss2 = -adv_b * torch.clamp(ratio, 1 - config.clip_range, 1 + config.clip_range)
+            policy_loss = torch.max(pg_loss1, pg_loss2).mean()
