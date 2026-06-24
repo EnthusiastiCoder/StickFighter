@@ -133,3 +133,6 @@ def ppo_update(
             value_loss_unclipped = (new_value - ret_b) ** 2
             value_loss_clipped = (value_pred_clipped - ret_b) ** 2
             value_loss = 0.5 * torch.max(value_loss_unclipped, value_loss_clipped).mean()
+
+            entropy_loss = entropy.mean()
+            loss = policy_loss - config.ent_coef * entropy_loss + config.vf_coef * value_loss
