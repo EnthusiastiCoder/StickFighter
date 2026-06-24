@@ -141,3 +141,7 @@ def ppo_update(
             loss.backward()
             nn.utils.clip_grad_norm_(model.parameters(), config.max_grad_norm)
             optimizer.step()
+
+            with torch.no_grad():
+                approx_kl = ((ratio - 1) - log_ratio).mean().item()
+                clip_frac = ((ratio - 1).abs() > config.clip_range).float().mean().item()
