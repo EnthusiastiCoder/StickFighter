@@ -136,3 +136,8 @@ def ppo_update(
 
             entropy_loss = entropy.mean()
             loss = policy_loss - config.ent_coef * entropy_loss + config.vf_coef * value_loss
+
+            optimizer.zero_grad()
+            loss.backward()
+            nn.utils.clip_grad_norm_(model.parameters(), config.max_grad_norm)
+            optimizer.step()
