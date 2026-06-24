@@ -145,3 +145,9 @@ def ppo_update(
             with torch.no_grad():
                 approx_kl = ((ratio - 1) - log_ratio).mean().item()
                 clip_frac = ((ratio - 1).abs() > config.clip_range).float().mean().item()
+
+            stats["policy_loss"].append(policy_loss.item())
+            stats["value_loss"].append(value_loss.item())
+            stats["entropy"].append(entropy_loss.item())
+            stats["approx_kl"].append(approx_kl)
+            stats["clip_frac"].append(clip_frac)
