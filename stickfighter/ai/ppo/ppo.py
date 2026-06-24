@@ -126,3 +126,10 @@ def ppo_update(
             pg_loss1 = -adv_b * ratio
             pg_loss2 = -adv_b * torch.clamp(ratio, 1 - config.clip_range, 1 + config.clip_range)
             policy_loss = torch.max(pg_loss1, pg_loss2).mean()
+
+            value_pred_clipped = old_value_b + torch.clamp(
+                new_value - old_value_b, -config.value_clip_range, config.value_clip_range
+            )
+            value_loss_unclipped = (new_value - ret_b) ** 2
+            value_loss_clipped = (value_pred_clipped - ret_b) ** 2
+            value_loss = 0.5 * torch.max(value_loss_unclipped, value_loss_clipped).mean()
