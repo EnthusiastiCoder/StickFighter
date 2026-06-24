@@ -151,3 +151,5 @@ def ppo_update(
             stats["entropy"].append(entropy_loss.item())
             stats["approx_kl"].append(approx_kl)
             stats["clip_frac"].append(clip_frac)
+
+    return {k: float(np.mean(v)) for k, v in stats.items()}
