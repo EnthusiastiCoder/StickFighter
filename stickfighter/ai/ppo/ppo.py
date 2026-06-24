@@ -91,3 +91,16 @@ class RolloutBuffer:
         flat_advantages = self.advantages.reshape(batch_size)
         flat_returns = self.returns.reshape(batch_size)
         flat_values = self.values.reshape(batch_size)
+
+        indices = torch.randperm(batch_size, device=self.device)
+        minibatch_size = batch_size // n_minibatches
+        for start in range(0, batch_size, minibatch_size):
+            idx = indices[start : start + minibatch_size]
+            yield (
+                flat_obs[idx],
+                flat_actions[idx],
+                flat_log_probs[idx],
+                flat_advantages[idx],
+                flat_returns[idx],
+                flat_values[idx],
+            )
