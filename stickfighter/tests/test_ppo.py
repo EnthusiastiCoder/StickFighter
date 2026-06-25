@@ -42,3 +42,10 @@ def test_gae_matches_hand_computed_values_with_no_episode_boundary():
     actual_returns = buf.returns.squeeze(-1).tolist()
     for actual, expected in zip(actual_returns, expected_returns, strict=True):
         assert actual == pytest.approx(expected, abs=1e-4)
+
+
+def test_gae_does_not_bootstrap_across_an_episode_boundary():
+    # same rewards/values, but the episode ends exactly at t=1: the
+    # advantage at t=1 must not include any of A_2's future return.
+    buf = _buffer_from(rewards=[1.0, 2.0, 3.0], values=[0.5, 0.6, 0.7], dones=[0.0, 1.0, 0.0])
+    buf.compute_gae(torch.tensor([0.8]), gamma=GAMMA, gae_lambda=LAMBDA)
