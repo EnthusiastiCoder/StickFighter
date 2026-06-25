@@ -37,3 +37,8 @@ def test_gae_matches_hand_computed_values_with_no_episode_boundary():
     actual_advantages = buf.advantages.squeeze(-1).tolist()
     for actual, expected in zip(actual_advantages, expected_advantages, strict=True):
         assert actual == pytest.approx(expected, abs=1e-4)
+
+    expected_returns = [a + v for a, v in zip(expected_advantages, [0.5, 0.6, 0.7], strict=True)]
+    actual_returns = buf.returns.squeeze(-1).tolist()
+    for actual, expected in zip(actual_returns, expected_returns, strict=True):
+        assert actual == pytest.approx(expected, abs=1e-4)
