@@ -49,3 +49,8 @@ def test_gae_does_not_bootstrap_across_an_episode_boundary():
     # advantage at t=1 must not include any of A_2's future return.
     buf = _buffer_from(rewards=[1.0, 2.0, 3.0], values=[0.5, 0.6, 0.7], dones=[0.0, 1.0, 0.0])
     buf.compute_gae(torch.tensor([0.8]), gamma=GAMMA, gae_lambda=LAMBDA)
+
+    expected_advantages = [2.048, 1.4, 3.02]
+    actual_advantages = buf.advantages.squeeze(-1).tolist()
+    for actual, expected in zip(actual_advantages, expected_advantages, strict=True):
+        assert actual == pytest.approx(expected, abs=1e-4)
