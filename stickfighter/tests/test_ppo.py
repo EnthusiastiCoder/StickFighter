@@ -25,3 +25,10 @@ def _buffer_from(rewards, values, dones, obs_dim=1, action_dim=1) -> RolloutBuff
             torch.tensor([v]),
         )
     return buf
+
+
+def test_gae_matches_hand_computed_values_with_no_episode_boundary():
+    # gamma=0.9, lambda=0.8, rewards=[1,2,3], values=[0.5,0.6,0.7], last_value=0.8
+    # worked by hand back-to-front: A_2=3.02, A_1=4.2044, A_0=4.067168
+    buf = _buffer_from(rewards=[1.0, 2.0, 3.0], values=[0.5, 0.6, 0.7], dones=[0.0, 0.0, 0.0])
+    buf.compute_gae(torch.tensor([0.8]), gamma=GAMMA, gae_lambda=LAMBDA)
