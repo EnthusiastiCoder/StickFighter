@@ -54,3 +54,15 @@ def test_gae_does_not_bootstrap_across_an_episode_boundary():
     actual_advantages = buf.advantages.squeeze(-1).tolist()
     for actual, expected in zip(actual_advantages, expected_advantages, strict=True):
         assert actual == pytest.approx(expected, abs=1e-4)
+
+
+def test_get_batches_covers_every_sample_exactly_once_per_epoch():
+    buf = _buffer_from(
+        rewards=[0.0] * 8, values=[0.0] * 8, dones=[0.0] * 8, obs_dim=2, action_dim=2
+    )
+    buf.compute_gae(torch.tensor([0.0]), gamma=0.99, gae_lambda=0.95)
+    seen = 0
+    for batch in buf.get_batches(n_minibatches=4):
+        obs_b = batch[0]
+        seen += obs_b.shape[0]
+    assert seen == buf.n_steps * buf.n_envs
