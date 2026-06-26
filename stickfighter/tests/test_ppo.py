@@ -66,3 +66,10 @@ def test_get_batches_covers_every_sample_exactly_once_per_epoch():
         obs_b = batch[0]
         seen += obs_b.shape[0]
     assert seen == buf.n_steps * buf.n_envs
+
+
+def test_ppo_update_changes_parameters_and_returns_finite_stats():
+    torch.manual_seed(0)
+    model = ActorCritic()
+    optimizer = torch.optim.Adam(model.parameters(), lr=3e-4)
+    config = PPOConfig(n_epochs=2, n_minibatches=2)
