@@ -84,3 +84,7 @@ def test_ppo_update_changes_parameters_and_returns_finite_stats():
         done = (torch.rand(n_envs) < 0.05).float().numpy()
         buf.add(obs, action, log_prob, reward, done, value)
         obs = torch.randn(n_envs, OBS_DIM)
+
+    with torch.no_grad():
+        last_value = model.get_value(obs)
+    buf.compute_gae(last_value, config.gamma, config.gae_lambda)
