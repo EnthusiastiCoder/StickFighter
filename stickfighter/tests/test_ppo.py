@@ -73,3 +73,14 @@ def test_ppo_update_changes_parameters_and_returns_finite_stats():
     model = ActorCritic()
     optimizer = torch.optim.Adam(model.parameters(), lr=3e-4)
     config = PPOConfig(n_epochs=2, n_minibatches=2)
+
+    n_steps, n_envs = 16, 4
+    buf = RolloutBuffer(n_steps, n_envs, OBS_DIM, ACTION_DIM, torch.device("cpu"))
+    obs = torch.randn(n_envs, OBS_DIM)
+    for _ in range(n_steps):
+        with torch.no_grad():
+            action, log_prob, _entropy, value = model.get_action_and_value(obs)
+        reward = torch.randn(n_envs).numpy()
+        done = (torch.rand(n_envs) < 0.05).float().numpy()
+        buf.add(obs, action, log_prob, reward, done, value)
+        obs = torch.randn(n_envs, OBS_DIM)
