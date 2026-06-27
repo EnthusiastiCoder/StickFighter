@@ -91,3 +91,7 @@ def test_ppo_update_changes_parameters_and_returns_finite_stats():
 
     params_before = [p.clone() for p in model.parameters()]
     stats = ppo_update(model, optimizer, buf, config)
+
+    assert all(torch.isfinite(torch.tensor(v)) for v in stats.values())
+    params_after = list(model.parameters())
+    assert any(not torch.equal(a, b) for a, b in zip(params_before, params_after, strict=True))
