@@ -35,3 +35,6 @@ class FrozenPolicyBot:
 
     model: ActorCritic
     obs_normalizer: object | None = field(default=None)
+
+    def __post_init__(self) -> None:
+        self.model.eval()
