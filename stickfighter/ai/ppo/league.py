@@ -32,3 +32,6 @@ class LeagueEntry:
 @dataclass
 class FrozenPolicyBot:
     """Wraps a frozen ActorCritic snapshot as a Policy for match play."""
+
+    model: ActorCritic
+    obs_normalizer: object | None = field(default=None)
