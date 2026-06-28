@@ -15,3 +15,6 @@ from stickfighter.ai.obs import encode_obs
 from stickfighter.ai.ppo.policy import ActorCritic
 from stickfighter.core.actions import Action
 from stickfighter.core.match import MatchSnapshot
+
+DEFAULT_ELO = 1200.0
+ELO_K = 24.0
