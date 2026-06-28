@@ -27,3 +27,8 @@ class LeagueEntry:
     elo: float = DEFAULT_ELO
     games: int = 0
     wins_vs_trainee: int = 0
+
+
+@dataclass
+class FrozenPolicyBot:
+    """Wraps a frozen ActorCritic snapshot as a Policy for match play."""
