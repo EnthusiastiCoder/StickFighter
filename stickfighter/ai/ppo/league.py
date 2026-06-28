@@ -18,3 +18,12 @@ from stickfighter.core.match import MatchSnapshot
 
 DEFAULT_ELO = 1200.0
 ELO_K = 24.0
+
+
+@dataclass
+class LeagueEntry:
+    name: str
+    state_dict: dict
+    elo: float = DEFAULT_ELO
+    games: int = 0
+    wins_vs_trainee: int = 0
