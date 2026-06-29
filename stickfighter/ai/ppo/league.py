@@ -63,3 +63,13 @@ class League:
 
     def is_empty(self) -> bool:
         return len(self.entries) == 0
+
+    def add_snapshot(self, model: ActorCritic, name: str, elo: float | None = None) -> LeagueEntry:
+        state_dict = copy.deepcopy(model.state_dict())
+        seed_elo = elo if elo is not None else self._average_elo()
+        entry = LeagueEntry(name=name, state_dict=state_dict, elo=seed_elo)
+        self.entries.append(entry)
+        if len(self.entries) > self.max_size:
+            self.entries.sort(key=lambda e: e.elo)
+            self.entries.pop(0)  # drop the weakest snapshot to bound memory/compute
+        return entry
