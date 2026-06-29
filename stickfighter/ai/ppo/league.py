@@ -60,3 +60,6 @@ class League:
         self.pfsp_power = pfsp_power
         self.max_size = max_size
         self._rng = random.Random(seed)
+
+    def is_empty(self) -> bool:
+        return len(self.entries) == 0
