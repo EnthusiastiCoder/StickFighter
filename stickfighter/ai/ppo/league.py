@@ -104,3 +104,8 @@ class League:
         entry.games += 1
         if entry_won:
             entry.wins_vs_trainee += 1
+
+        expected_entry = 1.0 / (1.0 + 10 ** ((trainee_elo - entry.elo) / 400.0))
+        score_entry = 1.0 if entry_won else 0.0
+        entry.elo += ELO_K * (score_entry - expected_entry)
+        return trainee_elo + ELO_K * ((1.0 - score_entry) - (1.0 - expected_entry))
