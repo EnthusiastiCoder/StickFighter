@@ -78,3 +78,15 @@ class League:
         if not self.entries:
             return DEFAULT_ELO
         return sum(e.elo for e in self.entries) / len(self.entries)
+
+    def sample_entry(self) -> LeagueEntry:
+        if not self.entries:
+            raise ValueError("cannot sample from an empty league")
+        # win_rate is the ENTRY's win rate against the trainee -- high means
+        # the trainee is currently losing to it, which is exactly the
+        # opponent PFSP should serve up more of.
+        win_rates = [
+            (e.wins_vs_trainee / e.games) if e.games > 0 else 0.5 for e in self.entries
+        ]
+        weights = [wr**self.pfsp_power + 1e-3 for wr in win_rates]
+        return self._rng.choices(self.entries, weights=weights, k=1)[0]
