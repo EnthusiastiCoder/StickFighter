@@ -97,3 +97,10 @@ class League:
         model = ActorCritic(obs_dim, action_dim)
         model.load_state_dict(entry.state_dict)
         return FrozenPolicyBot(model, obs_normalizer)
+
+    def record_match(self, entry: LeagueEntry, trainee_elo: float, entry_won: bool) -> float:
+        """Updates PFSP bookkeeping and both Elo ratings; returns the
+        trainee's new Elo."""
+        entry.games += 1
+        if entry_won:
+            entry.wins_vs_trainee += 1
