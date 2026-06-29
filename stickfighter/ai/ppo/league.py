@@ -41,3 +41,12 @@ class FrozenPolicyBot:
 
     def reset(self, seed: int | None = None) -> None:
         pass
+
+    def act(self, snapshot: MatchSnapshot, perspective: int) -> Action:
+        obs = encode_obs(snapshot, perspective)
+        if self.obs_normalizer is not None:
+            obs = self.obs_normalizer.normalize(obs)
+        obs_t = torch.as_tensor(obs, dtype=torch.float32).unsqueeze(0)
+        with torch.no_grad():
+            action, _, _, _ = self.model.get_action_and_value(obs_t)
+        return Action.from_array(action.squeeze(0).numpy())
