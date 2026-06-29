@@ -73,3 +73,8 @@ class League:
             self.entries.sort(key=lambda e: e.elo)
             self.entries.pop(0)  # drop the weakest snapshot to bound memory/compute
         return entry
+
+    def _average_elo(self) -> float:
+        if not self.entries:
+            return DEFAULT_ELO
+        return sum(e.elo for e in self.entries) / len(self.entries)
