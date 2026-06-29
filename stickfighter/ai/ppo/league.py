@@ -50,3 +50,13 @@ class FrozenPolicyBot:
         with torch.no_grad():
             action, _, _, _ = self.model.get_action_and_value(obs_t)
         return Action.from_array(action.squeeze(0).numpy())
+
+
+class League:
+    def __init__(
+        self, pfsp_power: float = 2.0, max_size: int = 30, seed: int | None = None
+    ) -> None:
+        self.entries: list[LeagueEntry] = []
+        self.pfsp_power = pfsp_power
+        self.max_size = max_size
+        self._rng = random.Random(seed)
