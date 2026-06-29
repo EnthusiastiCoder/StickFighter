@@ -38,3 +38,6 @@ class FrozenPolicyBot:
 
     def __post_init__(self) -> None:
         self.model.eval()
+
+    def reset(self, seed: int | None = None) -> None:
+        pass
