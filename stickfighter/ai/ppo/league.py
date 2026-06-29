@@ -90,3 +90,10 @@ class League:
         ]
         weights = [wr**self.pfsp_power + 1e-3 for wr in win_rates]
         return self._rng.choices(self.entries, weights=weights, k=1)[0]
+
+    def make_opponent(
+        self, entry: LeagueEntry, obs_dim: int, action_dim: int, obs_normalizer=None
+    ) -> FrozenPolicyBot:
+        model = ActorCritic(obs_dim, action_dim)
+        model.load_state_dict(entry.state_dict)
+        return FrozenPolicyBot(model, obs_normalizer)
