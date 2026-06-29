@@ -109,3 +109,6 @@ class League:
         score_entry = 1.0 if entry_won else 0.0
         entry.elo += ELO_K * (score_entry - expected_entry)
         return trainee_elo + ELO_K * ((1.0 - score_entry) - (1.0 - expected_entry))
+
+    def elo_table(self) -> list[tuple[str, float, int]]:
+        return sorted(((e.name, e.elo, e.games) for e in self.entries), key=lambda r: -r[1])
