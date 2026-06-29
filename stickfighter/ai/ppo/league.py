@@ -112,3 +112,6 @@ class League:
 
     def elo_table(self) -> list[tuple[str, float, int]]:
         return sorted(((e.name, e.elo, e.games) for e in self.entries), key=lambda r: -r[1])
+
+    def mean_elo(self) -> float:
+        return float(np.mean([e.elo for e in self.entries])) if self.entries else DEFAULT_ELO
