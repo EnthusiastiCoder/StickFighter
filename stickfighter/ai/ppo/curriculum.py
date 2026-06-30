@@ -6,3 +6,7 @@ stops being useful shaping signal once the agent can reliably land hits.
 
 from collections.abc import Callable
 from dataclasses import dataclass, field
+
+from stickfighter.ai.bots.ballistic import EASY, HARD, BallisticBot
+from stickfighter.ai.bots.base import Policy
+from stickfighter.ai.bots.idle import IdleBot
