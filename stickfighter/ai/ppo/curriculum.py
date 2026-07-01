@@ -12,3 +12,12 @@ from stickfighter.ai.bots.base import Policy
 from stickfighter.ai.bots.idle import IdleBot
 
 SELFPLAY_STAGE_NAME = "S3_selfplay"
+
+
+@dataclass(frozen=True)
+class Stage:
+    name: str
+    opponent_factory: Callable[[], Policy] | None  # None for the self-play stage
+    near_miss_scale: float
+    advance_win_rate: float
+    min_matches: int  # matches required at this stage before it can advance
