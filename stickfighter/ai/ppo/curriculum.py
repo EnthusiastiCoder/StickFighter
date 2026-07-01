@@ -37,3 +37,11 @@ STAGES: tuple[Stage, ...] = (
     Stage("S2_sharp_bot", _hard_bot, near_miss_scale=0.0, advance_win_rate=0.60, min_matches=150),
     Stage(SELFPLAY_STAGE_NAME, None, near_miss_scale=0.0, advance_win_rate=1.1, min_matches=10**9),
 )
+
+
+@dataclass
+class Curriculum:
+    window: int = 50
+    stage_idx: int = 0
+    results: list[bool] = field(default_factory=list)
+    matches_this_stage: int = 0
