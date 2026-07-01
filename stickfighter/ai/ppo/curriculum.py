@@ -21,3 +21,7 @@ class Stage:
     near_miss_scale: float
     advance_win_rate: float
     min_matches: int  # matches required at this stage before it can advance
+
+
+def _easy_bot() -> Policy:
+    return BallisticBot(EASY)
