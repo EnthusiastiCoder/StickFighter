@@ -45,3 +45,7 @@ class Curriculum:
     stage_idx: int = 0
     results: list[bool] = field(default_factory=list)
     matches_this_stage: int = 0
+
+    @property
+    def stage(self) -> Stage:
+        return STAGES[self.stage_idx]
