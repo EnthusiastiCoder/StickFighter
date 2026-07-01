@@ -60,3 +60,10 @@ class Curriculum:
         if len(self.results) > self.window:
             self.results.pop(0)
         self.matches_this_stage += 1
+
+        if self.stage_idx >= len(STAGES) - 1:
+            return False
+        if self.matches_this_stage < self.stage.min_matches:
+            return False
+        if self.win_rate < self.stage.advance_win_rate:
+            return False
