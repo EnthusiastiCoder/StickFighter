@@ -25,3 +25,7 @@ class Stage:
 
 def _easy_bot() -> Policy:
     return BallisticBot(EASY)
+
+
+def _hard_bot() -> Policy:
+    return BallisticBot(HARD)
