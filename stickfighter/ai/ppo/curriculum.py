@@ -10,3 +10,5 @@ from dataclasses import dataclass, field
 from stickfighter.ai.bots.ballistic import EASY, HARD, BallisticBot
 from stickfighter.ai.bots.base import Policy
 from stickfighter.ai.bots.idle import IdleBot
+
+SELFPLAY_STAGE_NAME = "S3_selfplay"
