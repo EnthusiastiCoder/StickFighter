@@ -67,3 +67,8 @@ class Curriculum:
             return False
         if self.win_rate < self.stage.advance_win_rate:
             return False
+
+        self.stage_idx += 1
+        self.results.clear()
+        self.matches_this_stage = 0
+        return True
