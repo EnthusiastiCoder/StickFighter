@@ -49,3 +49,7 @@ class Curriculum:
     @property
     def stage(self) -> Stage:
         return STAGES[self.stage_idx]
+
+    @property
+    def win_rate(self) -> float:
+        return sum(self.results) / len(self.results) if self.results else 0.0
