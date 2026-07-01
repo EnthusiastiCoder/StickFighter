@@ -53,3 +53,10 @@ class Curriculum:
     @property
     def win_rate(self) -> float:
         return sum(self.results) / len(self.results) if self.results else 0.0
+
+    def record_match(self, trainee_won: bool) -> bool:
+        """Returns True if the curriculum just advanced to a new stage."""
+        self.results.append(trainee_won)
+        if len(self.results) > self.window:
+            self.results.pop(0)
+        self.matches_this_stage += 1
