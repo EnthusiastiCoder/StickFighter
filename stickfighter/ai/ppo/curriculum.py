@@ -29,3 +29,11 @@ def _easy_bot() -> Policy:
 
 def _hard_bot() -> Policy:
     return BallisticBot(HARD)
+
+
+STAGES: tuple[Stage, ...] = (
+    Stage("S0_static", IdleBot, near_miss_scale=1.0, advance_win_rate=0.90, min_matches=50),
+    Stage("S1_noisy_bot", _easy_bot, near_miss_scale=0.5, advance_win_rate=0.75, min_matches=100),
+    Stage("S2_sharp_bot", _hard_bot, near_miss_scale=0.0, advance_win_rate=0.60, min_matches=150),
+    Stage(SELFPLAY_STAGE_NAME, None, near_miss_scale=0.0, advance_win_rate=1.1, min_matches=10**9),
+)
