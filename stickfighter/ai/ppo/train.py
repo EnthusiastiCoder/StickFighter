@@ -29,3 +29,29 @@ from stickfighter.ai.ppo.policy import ActorCritic, RunningNormalizer
 from stickfighter.ai.ppo.ppo import PPOConfig, RolloutBuffer, ppo_update
 from stickfighter.ai.seeding import set_seed
 from stickfighter.core.actions import ACTION_DIM
+
+
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    p = argparse.ArgumentParser()
+    p.add_argument("--n-envs", type=int, default=8)
+    p.add_argument("--n-steps", type=int, default=256, help="steps per env per rollout")
+    p.add_argument("--total-steps", type=int, default=2_000_000)
+    p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--device", default="cpu", help="'cpu', 'cuda', or 'auto'")
+    p.add_argument("--lr", type=float, default=3e-4)
+    p.add_argument("--lr-final", type=float, default=None, help="default: 10%% of --lr")
+    p.add_argument("--gamma", type=float, default=0.99)
+    p.add_argument("--gae-lambda", type=float, default=0.95)
+    p.add_argument("--clip-range", type=float, default=0.2)
+    p.add_argument("--ent-coef", type=float, default=0.01)
+    p.add_argument("--ent-coef-final", type=float, default=0.001)
+    p.add_argument("--n-epochs", type=int, default=4)
+    p.add_argument("--n-minibatches", type=int, default=4)
+    p.add_argument("--run-dir", default=None)
+    p.add_argument("--resume", default=None, help="a run directory to resume from")
+    p.add_argument("--checkpoint-freq", type=int, default=20, help="rollouts between checkpoints")
+    p.add_argument("--league-refresh-interval", type=int, default=20, help="rollouts")
+    p.add_argument("--target-win-rate", type=float, default=None)
+    p.add_argument("--target-streak", type=int, default=3)
+    p.add_argument("--stage", type=int, default=None, help="force-start at this curriculum stage")
+    return p.parse_args(argv)
