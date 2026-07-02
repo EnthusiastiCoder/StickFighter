@@ -55,3 +55,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--target-streak", type=int, default=3)
     p.add_argument("--stage", type=int, default=None, help="force-start at this curriculum stage")
     return p.parse_args(argv)
+
+
+def resolve_device(name: str) -> torch.device:
+    if name == "auto":
+        return torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    return torch.device(name)
