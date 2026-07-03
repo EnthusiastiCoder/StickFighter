@@ -72,3 +72,10 @@ def make_run_dir(run_dir_arg: str | None) -> Path:
     (run_dir / "best").mkdir(exist_ok=True)
     (run_dir / "recordings").mkdir(exist_ok=True)
     return run_dir
+
+
+def find_latest_checkpoint(checkpoints_dir: Path) -> Path | None:
+    # filenames are zero-padded (ckpt_{step:012d}.pt), so lexicographic sort
+    # is numeric sort -- no risk of "ckpt_9.pt" sorting after "ckpt_100.pt".
+    checkpoints = sorted(checkpoints_dir.glob("ckpt_*.pt"))
+    return checkpoints[-1] if checkpoints else None
