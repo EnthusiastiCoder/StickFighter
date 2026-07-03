@@ -103,3 +103,8 @@ def save_checkpoint(
         },
         path,
     )
+
+
+def linear_schedule(start: float, end: float, progress: float) -> float:
+    progress = min(max(progress, 0.0), 1.0)
+    return start + (end - start) * progress
