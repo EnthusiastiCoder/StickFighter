@@ -141,3 +141,18 @@ def main(argv: list[str] | None = None) -> None:
     league = League(seed=args.seed)
     global_step = 0
     trainee_elo = DEFAULT_ELO
+
+    if args.resume:
+        ckpt_path = find_latest_checkpoint(Path(args.resume) / "checkpoints")
+        if ckpt_path is None:
+            raise FileNotFoundError(f"no checkpoints found under {args.resume}")
+        ckpt = torch.load(ckpt_path, map_location=device, weights_only=False)
+        model.load_state_dict(ckpt["model"])
+        optimizer.load_state_dict(ckpt["optimizer"])
+        global_step = ckpt["global_step"]
+        obs_normalizer.mean = ckpt["obs_mean"]
+        obs_normalizer.var = ckpt["obs_var"]
+        obs_normalizer.count = ckpt["obs_count"]
+        curriculum.stage_idx = ckpt["stage_idx"]
+        trainee_elo = ckpt["trainee_elo"]
+        print(f"resumed from {ckpt_path} at step {global_step}, stage {curriculum.stage.name}")
