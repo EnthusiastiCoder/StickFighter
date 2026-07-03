@@ -79,3 +79,27 @@ def find_latest_checkpoint(checkpoints_dir: Path) -> Path | None:
     # is numeric sort -- no risk of "ckpt_9.pt" sorting after "ckpt_100.pt".
     checkpoints = sorted(checkpoints_dir.glob("ckpt_*.pt"))
     return checkpoints[-1] if checkpoints else None
+
+
+def save_checkpoint(
+    path: Path,
+    model: ActorCritic,
+    optimizer: torch.optim.Optimizer,
+    global_step: int,
+    obs_normalizer: RunningNormalizer,
+    curriculum: Curriculum,
+    trainee_elo: float,
+) -> None:
+    torch.save(
+        {
+            "model": model.state_dict(),
+            "optimizer": optimizer.state_dict(),
+            "global_step": global_step,
+            "obs_mean": obs_normalizer.mean,
+            "obs_var": obs_normalizer.var,
+            "obs_count": obs_normalizer.count,
+            "stage_idx": curriculum.stage_idx,
+            "trainee_elo": trainee_elo,
+        },
+        path,
+    )
