@@ -168,3 +168,6 @@ def main(argv: list[str] | None = None) -> None:
             sub_env.opponent = opponent
             sub_env.near_miss_scale = curriculum.stage.near_miss_scale
             league_entries[i] = entry
+
+    refresh_opponents()
+    obs, _ = vec_env.reset(seed=args.seed)
