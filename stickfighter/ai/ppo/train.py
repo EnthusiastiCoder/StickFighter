@@ -128,3 +128,6 @@ def main(argv: list[str] | None = None) -> None:
     device = resolve_device(args.device)
     set_seed(args.seed)
     lr_final = args.lr_final if args.lr_final is not None else args.lr * 0.1
+
+    run_dir = make_run_dir(args.run_dir)
+    logger = TrainingLogger(run_dir / "logs")
