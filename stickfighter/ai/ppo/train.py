@@ -156,3 +156,8 @@ def main(argv: list[str] | None = None) -> None:
         curriculum.stage_idx = ckpt["stage_idx"]
         trainee_elo = ckpt["trainee_elo"]
         print(f"resumed from {ckpt_path} at step {global_step}, stage {curriculum.stage.name}")
+
+    envs = [DuelEnv(opponent=IdleBot(), near_miss_scale=curriculum.stage.near_miss_scale)
+            for _ in range(args.n_envs)]
+    vec_env = gym.vector.SyncVectorEnv([(lambda e=e: e) for e in envs])
+    league_entries: list[object | None] = [None] * args.n_envs
