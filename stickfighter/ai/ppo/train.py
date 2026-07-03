@@ -131,3 +131,13 @@ def main(argv: list[str] | None = None) -> None:
 
     run_dir = make_run_dir(args.run_dir)
     logger = TrainingLogger(run_dir / "logs")
+
+    model = ActorCritic(OBS_DIM, ACTION_DIM).to(device)
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
+    obs_normalizer = RunningNormalizer((OBS_DIM,))
+    curriculum = Curriculum()
+    if args.stage is not None:
+        curriculum.stage_idx = args.stage
+    league = League(seed=args.seed)
+    global_step = 0
+    trainee_elo = DEFAULT_ELO
