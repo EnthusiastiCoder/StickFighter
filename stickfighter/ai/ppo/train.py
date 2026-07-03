@@ -161,3 +161,10 @@ def main(argv: list[str] | None = None) -> None:
             for _ in range(args.n_envs)]
     vec_env = gym.vector.SyncVectorEnv([(lambda e=e: e) for e in envs])
     league_entries: list[object | None] = [None] * args.n_envs
+
+    def refresh_opponents() -> None:
+        for i, sub_env in enumerate(envs):
+            opponent, entry = build_opponent(curriculum, league, model, obs_normalizer, trainee_elo)
+            sub_env.opponent = opponent
+            sub_env.near_miss_scale = curriculum.stage.near_miss_scale
+            league_entries[i] = entry
