@@ -171,3 +171,15 @@ def main(argv: list[str] | None = None) -> None:
 
     refresh_opponents()
     obs, _ = vec_env.reset(seed=args.seed)
+
+    ppo_config = PPOConfig(
+        gamma=args.gamma,
+        gae_lambda=args.gae_lambda,
+        clip_range=args.clip_range,
+        ent_coef=args.ent_coef,
+        n_epochs=args.n_epochs,
+        n_minibatches=args.n_minibatches,
+    )
+    buffer = RolloutBuffer(args.n_steps, args.n_envs, OBS_DIM, ACTION_DIM, device)
+    rollout_idx = 0
+    target_hits = 0
