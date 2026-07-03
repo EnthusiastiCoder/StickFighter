@@ -121,3 +121,10 @@ def build_opponent(
     entry = league.sample_entry()
     opponent = league.make_opponent(entry, OBS_DIM, ACTION_DIM, obs_normalizer)
     return opponent, entry
+
+
+def main(argv: list[str] | None = None) -> None:
+    args = parse_args(argv)
+    device = resolve_device(args.device)
+    set_seed(args.seed)
+    lr_final = args.lr_final if args.lr_final is not None else args.lr * 0.1
