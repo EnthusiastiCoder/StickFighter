@@ -183,3 +183,18 @@ def main(argv: list[str] | None = None) -> None:
     buffer = RolloutBuffer(args.n_steps, args.n_envs, OBS_DIM, ACTION_DIM, device)
     rollout_idx = 0
     target_hits = 0
+
+    while global_step < args.total_steps:
+        buffer.reset()
+        for _ in range(args.n_steps):
+            obs_normalizer.update(obs)
+            normed_obs = obs_normalizer.normalize(obs)
+            obs_t = torch.as_tensor(normed_obs, dtype=torch.float32, device=device)
+            with torch.no_grad():
+                action, log_prob, _entropy, value = model.get_action_and_value(obs_t)
+            next_obs, reward, terminated, truncated, _infos = vec_env.step(
+                action.cpu().numpy()
+            )
+            done = np.logical_or(terminated, truncated)
+            buffer.add(obs_t, action, log_prob, reward, done.astype(np.float32), value)
+            global_step += args.n_envs
