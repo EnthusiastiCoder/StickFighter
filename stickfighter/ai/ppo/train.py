@@ -61,3 +61,14 @@ def resolve_device(name: str) -> torch.device:
     if name == "auto":
         return torch.device("cuda" if torch.cuda.is_available() else "cpu")
     return torch.device(name)
+
+
+def make_run_dir(run_dir_arg: str | None) -> Path:
+    run_dir = Path(run_dir_arg) if run_dir_arg else Path("runs") / time.strftime(
+        "stickfighter_%Y%m%d_%H%M%S"
+    )
+    (run_dir / "checkpoints").mkdir(parents=True, exist_ok=True)
+    (run_dir / "eval").mkdir(exist_ok=True)
+    (run_dir / "best").mkdir(exist_ok=True)
+    (run_dir / "recordings").mkdir(exist_ok=True)
+    return run_dir
