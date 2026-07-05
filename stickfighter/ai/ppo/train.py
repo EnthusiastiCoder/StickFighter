@@ -225,3 +225,6 @@ def main(argv: list[str] | None = None) -> None:
         for group in optimizer.param_groups:
             group["lr"] = linear_schedule(args.lr, lr_final, progress)
         ppo_config.ent_coef = linear_schedule(args.ent_coef, args.ent_coef_final, progress)
+
+        stats = ppo_update(model, optimizer, buffer, ppo_config)
+        rollout_idx += 1
