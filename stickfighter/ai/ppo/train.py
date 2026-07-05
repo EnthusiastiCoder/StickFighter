@@ -213,3 +213,10 @@ def main(argv: list[str] | None = None) -> None:
                 refresh_opponents()
 
             obs = next_obs
+
+        with torch.no_grad():
+            last_obs_t = torch.as_tensor(
+                obs_normalizer.normalize(obs), dtype=torch.float32, device=device
+            )
+            last_value = model.get_value(last_obs_t)
+        buffer.compute_gae(last_value, ppo_config.gamma, ppo_config.gae_lambda)
