@@ -241,3 +241,8 @@ def main(argv: list[str] | None = None) -> None:
                 **{f"ppo/{k}": v for k, v in stats.items()},
             },
         )
+
+        if curriculum.stage.name == SELFPLAY_STAGE_NAME:
+            if rollout_idx % args.league_refresh_interval == 0:
+                league.add_snapshot(model, name=f"step_{global_step}", elo=trainee_elo)
+                refresh_opponents()
