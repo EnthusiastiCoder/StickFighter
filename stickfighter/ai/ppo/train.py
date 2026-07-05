@@ -198,3 +198,16 @@ def main(argv: list[str] | None = None) -> None:
             done = np.logical_or(terminated, truncated)
             buffer.add(obs_t, action, log_prob, reward, done.astype(np.float32), value)
             global_step += args.n_envs
+
+            advanced = False
+            for i in range(args.n_envs):
+                if not terminated[i]:
+                    continue
+                trainee_won = envs[i].sim.winner == 0
+                advanced = curriculum.record_match(trainee_won) or advanced
+                if league_entries[i] is not None:
+                    trainee_elo = league.record_match(
+                        league_entries[i], trainee_elo, entry_won=not trainee_won
+                    )
+            if advanced:
+                refresh_opponents()
