@@ -220,3 +220,8 @@ def main(argv: list[str] | None = None) -> None:
             )
             last_value = model.get_value(last_obs_t)
         buffer.compute_gae(last_value, ppo_config.gamma, ppo_config.gae_lambda)
+
+        progress = global_step / args.total_steps
+        for group in optimizer.param_groups:
+            group["lr"] = linear_schedule(args.lr, lr_final, progress)
+        ppo_config.ent_coef = linear_schedule(args.ent_coef, args.ent_coef_final, progress)
