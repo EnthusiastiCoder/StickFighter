@@ -228,3 +228,16 @@ def main(argv: list[str] | None = None) -> None:
 
         stats = ppo_update(model, optimizer, buffer, ppo_config)
         rollout_idx += 1
+
+        logger.log(
+            global_step,
+            {
+                "curriculum/stage": curriculum.stage_idx,
+                "curriculum/win_rate": curriculum.win_rate,
+                "league/trainee_elo": trainee_elo,
+                "league/size": len(league.entries),
+                "opt/lr": optimizer.param_groups[0]["lr"],
+                "opt/ent_coef": ppo_config.ent_coef,
+                **{f"ppo/{k}": v for k, v in stats.items()},
+            },
+        )
