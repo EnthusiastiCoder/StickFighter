@@ -246,3 +246,9 @@ def main(argv: list[str] | None = None) -> None:
             if rollout_idx % args.league_refresh_interval == 0:
                 league.add_snapshot(model, name=f"step_{global_step}", elo=trainee_elo)
                 refresh_opponents()
+
+        if rollout_idx % args.checkpoint_freq == 0:
+            ckpt_path = run_dir / "checkpoints" / f"ckpt_{global_step:012d}.pt"
+            save_checkpoint(
+                ckpt_path, model, optimizer, global_step, obs_normalizer, curriculum, trainee_elo
+            )
