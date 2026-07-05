@@ -211,3 +211,5 @@ def main(argv: list[str] | None = None) -> None:
                     )
             if advanced:
                 refresh_opponents()
+
+            obs = next_obs
