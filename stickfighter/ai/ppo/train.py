@@ -271,3 +271,7 @@ def main(argv: list[str] | None = None) -> None:
     logger.close()
     print(f"training complete: {global_step} steps, stage {curriculum.stage.name}")
     print(f"run_dir={run_dir}")
+
+
+if __name__ == "__main__":
+    main()
