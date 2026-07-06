@@ -75,3 +75,10 @@ def test_checkpoint_round_trip_reproduces_identical_actions(tmp_path):
     assert ckpt["global_step"] == 1234
     assert ckpt["trainee_elo"] == 1250.0
     assert ckpt["stage_idx"] == curriculum.stage_idx
+
+    obs = torch.randn(4, OBS_DIM)
+    with torch.no_grad():
+        _, _, _, value_before = model.get_action_and_value(obs)
+        _, _, _, value_after = reloaded.get_action_and_value(obs)
+    assert torch.allclose(value_before, value_after)
+    assert torch.allclose(model.actor(obs), reloaded.actor(obs))
