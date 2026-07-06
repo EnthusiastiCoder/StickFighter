@@ -33,3 +33,10 @@ def test_find_latest_checkpoint_is_numeric_not_lexicographic(tmp_path):
 
 def test_find_latest_checkpoint_returns_none_when_empty(tmp_path):
     assert find_latest_checkpoint(tmp_path) is None
+
+
+def test_build_opponent_uses_scripted_bot_outside_selfplay():
+    curriculum = Curriculum()  # starts at S0_static
+    league = League()
+    model = ActorCritic()
+    normalizer = RunningNormalizer((OBS_DIM,))
