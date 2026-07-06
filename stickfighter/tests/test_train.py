@@ -82,3 +82,11 @@ def test_checkpoint_round_trip_reproduces_identical_actions(tmp_path):
         _, _, _, value_after = reloaded.get_action_and_value(obs)
     assert torch.allclose(value_before, value_after)
     assert torch.allclose(model.actor(obs), reloaded.actor(obs))
+
+
+def test_duel_env_construction_matches_train_loop_shapes():
+    # sanity: the exact construction pattern train.py uses for its sub-envs
+    env = DuelEnv(opponent=IdleBot())
+    obs, _ = env.reset(seed=0)
+    assert obs.shape == (OBS_DIM,)
+    assert env.action_space.shape == (ACTION_DIM,)
