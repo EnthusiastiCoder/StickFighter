@@ -65,3 +65,6 @@ def test_checkpoint_round_trip_reproduces_identical_actions(tmp_path):
     optimizer = torch.optim.Adam(model.parameters(), lr=3e-4)
     normalizer = RunningNormalizer((OBS_DIM,))
     curriculum = Curriculum()
+
+    ckpt_path = tmp_path / "ckpt.pt"
+    save_checkpoint(ckpt_path, model, optimizer, 1234, normalizer, curriculum, trainee_elo=1250.0)
