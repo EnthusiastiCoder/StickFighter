@@ -5,3 +5,5 @@ MatchSim used everywhere else in this project.
 """
 
 import argparse
+
+import torch
