@@ -29,3 +29,7 @@ def test_find_latest_checkpoint_is_numeric_not_lexicographic(tmp_path):
     (tmp_path / "ckpt_000000000050.pt").write_bytes(b"")
     latest = find_latest_checkpoint(tmp_path)
     assert latest.name == "ckpt_000000000100.pt"
+
+
+def test_find_latest_checkpoint_returns_none_when_empty(tmp_path):
+    assert find_latest_checkpoint(tmp_path) is None
