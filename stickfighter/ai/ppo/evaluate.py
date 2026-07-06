@@ -31,3 +31,6 @@ class TrainedPolicyBot:
         self.model = model
         self.normalizer = normalizer
         self.deterministic = deterministic
+
+    def reset(self, seed: int | None = None) -> None:
+        pass
