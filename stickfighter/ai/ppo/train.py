@@ -264,3 +264,10 @@ def main(argv: list[str] | None = None) -> None:
                     f"{args.target_streak} rollouts -- stopping early at step {global_step}"
                 )
                 break
+
+    save_checkpoint(
+        run_dir / "final.pt", model, optimizer, global_step, obs_normalizer, curriculum, trainee_elo
+    )
+    logger.close()
+    print(f"training complete: {global_step} steps, stage {curriculum.stage.name}")
+    print(f"run_dir={run_dir}")
