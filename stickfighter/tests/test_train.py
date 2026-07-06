@@ -40,3 +40,7 @@ def test_build_opponent_uses_scripted_bot_outside_selfplay():
     league = League()
     model = ActorCritic()
     normalizer = RunningNormalizer((OBS_DIM,))
+
+    opponent, entry = build_opponent(curriculum, league, model, normalizer, trainee_elo=1200.0)
+    assert entry is None
+    assert opponent is not None
