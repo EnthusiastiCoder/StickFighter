@@ -13,3 +13,11 @@ from stickfighter.ai.ppo.train import (
     save_checkpoint,
 )
 from stickfighter.core.actions import ACTION_DIM
+
+
+def test_linear_schedule_interpolates_and_clamps():
+    assert linear_schedule(1.0, 0.0, 0.0) == 1.0
+    assert linear_schedule(1.0, 0.0, 1.0) == 0.0
+    assert linear_schedule(1.0, 0.0, 0.5) == 0.5
+    assert linear_schedule(1.0, 0.0, -1.0) == 1.0  # clamped
+    assert linear_schedule(1.0, 0.0, 2.0) == 0.0  # clamped
