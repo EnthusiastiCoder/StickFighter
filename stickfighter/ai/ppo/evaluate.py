@@ -34,3 +34,13 @@ class TrainedPolicyBot:
 
     def reset(self, seed: int | None = None) -> None:
         pass
+
+    def act(self, snapshot, perspective: int) -> Action:
+        obs = self.normalizer.normalize(encode_obs(snapshot, perspective))
+        obs_t = torch.as_tensor(obs, dtype=torch.float32).unsqueeze(0)
+        with torch.no_grad():
+            if self.deterministic:
+                action = self.model.actor(obs_t)
+            else:
+                action, _, _, _ = self.model.get_action_and_value(obs_t)
+        return Action.from_array(action.squeeze(0).numpy())
