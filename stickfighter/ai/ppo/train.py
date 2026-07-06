@@ -252,3 +252,15 @@ def main(argv: list[str] | None = None) -> None:
             save_checkpoint(
                 ckpt_path, model, optimizer, global_step, obs_normalizer, curriculum, trainee_elo
             )
+
+        if args.target_win_rate is not None and len(curriculum.results) >= curriculum.window:
+            if curriculum.win_rate >= args.target_win_rate:
+                target_hits += 1
+            else:
+                target_hits = 0
+            if target_hits >= args.target_streak:
+                print(
+                    f"target win rate {args.target_win_rate} sustained for "
+                    f"{args.target_streak} rollouts -- stopping early at step {global_step}"
+                )
+                break
