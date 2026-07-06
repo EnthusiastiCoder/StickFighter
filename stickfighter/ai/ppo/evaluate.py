@@ -22,3 +22,12 @@ BOT_LADDER = {
     "hard": lambda: BallisticBot(HARD),
     "perfect": lambda: BallisticBot(PERFECT),
 }
+
+
+class TrainedPolicyBot:
+    def __init__(
+        self, model: ActorCritic, normalizer: RunningNormalizer, deterministic: bool = True
+    ):
+        self.model = model
+        self.normalizer = normalizer
+        self.deterministic = deterministic
