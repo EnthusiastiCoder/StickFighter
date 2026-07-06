@@ -57,3 +57,11 @@ def test_build_opponent_seeds_and_samples_league_in_selfplay():
     assert not league.is_empty()  # the trainee itself was auto-seeded as the first entry
     assert entry is not None
     assert opponent is not None
+
+
+def test_checkpoint_round_trip_reproduces_identical_actions(tmp_path):
+    torch.manual_seed(0)
+    model = ActorCritic()
+    optimizer = torch.optim.Adam(model.parameters(), lr=3e-4)
+    normalizer = RunningNormalizer((OBS_DIM,))
+    curriculum = Curriculum()
