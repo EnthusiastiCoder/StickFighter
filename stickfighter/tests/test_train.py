@@ -68,3 +68,10 @@ def test_checkpoint_round_trip_reproduces_identical_actions(tmp_path):
 
     ckpt_path = tmp_path / "ckpt.pt"
     save_checkpoint(ckpt_path, model, optimizer, 1234, normalizer, curriculum, trainee_elo=1250.0)
+
+    reloaded = ActorCritic()
+    ckpt = torch.load(ckpt_path, weights_only=False)
+    reloaded.load_state_dict(ckpt["model"])
+    assert ckpt["global_step"] == 1234
+    assert ckpt["trainee_elo"] == 1250.0
+    assert ckpt["stage_idx"] == curriculum.stage_idx
