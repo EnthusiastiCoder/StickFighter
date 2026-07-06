@@ -52,3 +52,8 @@ def test_build_opponent_seeds_and_samples_league_in_selfplay():
     model = ActorCritic()
     normalizer = RunningNormalizer((OBS_DIM,))
     assert league.is_empty()
+
+    opponent, entry = build_opponent(curriculum, league, model, normalizer, trainee_elo=1200.0)
+    assert not league.is_empty()  # the trainee itself was auto-seeded as the first entry
+    assert entry is not None
+    assert opponent is not None
