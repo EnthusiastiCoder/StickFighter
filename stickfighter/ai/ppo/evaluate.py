@@ -14,3 +14,11 @@ from stickfighter.ai.obs import OBS_DIM, encode_obs
 from stickfighter.ai.ppo.policy import ActorCritic, RunningNormalizer
 from stickfighter.core.actions import ACTION_DIM, Action
 from stickfighter.core.match import MatchSim
+
+BOT_LADDER = {
+    "idle": IdleBot,
+    "easy": lambda: BallisticBot(EASY),
+    "medium": lambda: BallisticBot(MEDIUM),
+    "hard": lambda: BallisticBot(HARD),
+    "perfect": lambda: BallisticBot(PERFECT),
+}
