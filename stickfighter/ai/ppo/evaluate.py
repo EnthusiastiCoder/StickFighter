@@ -44,3 +44,15 @@ class TrainedPolicyBot:
             else:
                 action, _, _, _ = self.model.get_action_and_value(obs_t)
         return Action.from_array(action.squeeze(0).numpy())
+
+
+def load_checkpoint(path) -> tuple[ActorCritic, RunningNormalizer, dict]:
+    ckpt = torch.load(path, map_location="cpu", weights_only=False)
+    model = ActorCritic(OBS_DIM, ACTION_DIM)
+    model.load_state_dict(ckpt["model"])
+    model.eval()
+    normalizer = RunningNormalizer((OBS_DIM,))
+    normalizer.mean = ckpt["obs_mean"]
+    normalizer.var = ckpt["obs_var"]
+    normalizer.count = ckpt["obs_count"]
+    return model, normalizer, ckpt
