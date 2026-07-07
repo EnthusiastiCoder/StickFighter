@@ -82,3 +82,15 @@ def evaluate_win_rates(
             wins += winner == 0
         results[name] = wins / episodes
     return results
+
+
+def record_match(
+    model: ActorCritic,
+    normalizer: RunningNormalizer,
+    opponent_name: str,
+    out_path: str,
+    seed: int = 0,
+    max_steps: int = 1800,
+    fps: int = 60,
+) -> int | None:
+    import os
