@@ -56,3 +56,15 @@ def load_checkpoint(path) -> tuple[ActorCritic, RunningNormalizer, dict]:
     normalizer.var = ckpt["obs_var"]
     normalizer.count = ckpt["obs_count"]
     return model, normalizer, ckpt
+
+
+def play_match(policy_a, policy_b, seed: int, max_steps: int = 20_000) -> int | None:
+    sim = MatchSim()
+    sim.reset(seed=seed)
+    policy_a.reset(seed=seed)
+    policy_b.reset(seed=seed)
+    for _ in range(max_steps):
+        if sim.match_over:
+            break
+        sim.step(policy_a.act(sim.snapshot(), 0), policy_b.act(sim.snapshot(), 1))
+    return sim.winner
