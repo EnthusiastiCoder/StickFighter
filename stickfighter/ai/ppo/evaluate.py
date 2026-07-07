@@ -68,3 +68,17 @@ def play_match(policy_a, policy_b, seed: int, max_steps: int = 20_000) -> int | 
             break
         sim.step(policy_a.act(sim.snapshot(), 0), policy_b.act(sim.snapshot(), 1))
     return sim.winner
+
+
+def evaluate_win_rates(
+    model: ActorCritic, normalizer: RunningNormalizer, episodes: int, seed: int = 0
+) -> dict[str, float]:
+    results = {}
+    for name, factory in BOT_LADDER.items():
+        wins = 0
+        for i in range(episodes):
+            trained = TrainedPolicyBot(model, normalizer)
+            winner = play_match(trained, factory(), seed=seed + i)
+            wins += winner == 0
+        results[name] = wins / episodes
+    return results
