@@ -115,3 +115,16 @@ def record_match(
     fx = effects.EffectsSystem()
     ragdolls = ragdoll.RagdollManager()
     elapsed = 0.0
+
+    # streamed straight to disk -- buffering the whole match as a frame list
+    # first can run into gigabytes for a long/undecided match.
+    with imageio.get_writer(out_path, fps=fps) as writer:
+        for _ in range(max_steps):
+            if sim.match_over:
+                break
+            events = sim.step(trained.act(sim.snapshot(), 0), opponent.act(sim.snapshot(), 1))
+            elapsed += C.DT
+            fx.handle_events(events)
+            ragdolls.handle_events(events)
+            fx.update(C.DT, tuple(sim.arrows))
+            ragdolls.update(C.DT)
