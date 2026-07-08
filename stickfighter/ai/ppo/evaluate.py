@@ -168,3 +168,7 @@ def main(argv: list[str] | None = None) -> None:
     if args.record:
         winner = record_match(model, normalizer, args.record, args.record_out, seed=args.seed)
         print(f"recorded match vs {args.record} -> {args.record_out} (winner={winner})")
+
+
+if __name__ == "__main__":
+    main()
