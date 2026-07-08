@@ -153,3 +153,9 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--record", choices=list(BOT_LADDER), default=None)
     parser.add_argument("--record-out", default="eval_match.gif")
     args = parser.parse_args(argv)
+
+    model, normalizer, ckpt = load_checkpoint(args.ckpt)
+    print(
+        f"loaded checkpoint: step={ckpt['global_step']} stage_idx={ckpt['stage_idx']} "
+        f"elo={ckpt['trainee_elo']:.1f}"
+    )
