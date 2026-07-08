@@ -104,3 +104,10 @@ def record_match(
 
     pygame.init()
     surface = pygame.Surface((int(C.ARENA_WIDTH), int(C.ARENA_HEIGHT)))
+
+    sim = MatchSim()
+    sim.reset(seed=seed)
+    trained = TrainedPolicyBot(model, normalizer)
+    opponent = BOT_LADDER[opponent_name]()
+    trained.reset(seed=seed)
+    opponent.reset(seed=seed)
