@@ -128,3 +128,14 @@ def record_match(
             ragdolls.handle_events(events)
             fx.update(C.DT, tuple(sim.arrows))
             ragdolls.update(C.DT)
+
+            snapshot = sim.snapshot()
+            surface.fill(theme.BG)
+            draw.draw_arena(surface, snapshot.arena)
+            for archer in snapshot.archers:
+                draw.draw_archer(surface, archer, elapsed)
+            for arrow in snapshot.arrows:
+                draw.draw_arrow(surface, arrow)
+            fx.draw(surface)
+            ragdolls.draw(surface)
+            hud.draw_hud(surface, snapshot)
