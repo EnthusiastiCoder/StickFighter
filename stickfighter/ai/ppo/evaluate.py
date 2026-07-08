@@ -101,3 +101,6 @@ def record_match(
 
     from stickfighter.core import constants as C
     from stickfighter.render import draw, effects, hud, ragdoll, theme
+
+    pygame.init()
+    surface = pygame.Surface((int(C.ARENA_WIDTH), int(C.ARENA_HEIGHT)))
