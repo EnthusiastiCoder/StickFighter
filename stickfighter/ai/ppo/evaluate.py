@@ -141,3 +141,5 @@ def record_match(
             hud.draw_hud(surface, snapshot)
 
             writer.append_data(pygame.surfarray.array3d(surface).swapaxes(0, 1))
+
+    return sim.winner
