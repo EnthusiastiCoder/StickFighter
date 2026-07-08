@@ -94,3 +94,7 @@ def record_match(
     fps: int = 60,
 ) -> int | None:
     import os
+
+    os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
+    import imageio
+    import pygame
