@@ -111,3 +111,7 @@ def record_match(
     opponent = BOT_LADDER[opponent_name]()
     trained.reset(seed=seed)
     opponent.reset(seed=seed)
+
+    fx = effects.EffectsSystem()
+    ragdolls = ragdoll.RagdollManager()
+    elapsed = 0.0
