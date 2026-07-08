@@ -139,3 +139,5 @@ def record_match(
             fx.draw(surface)
             ragdolls.draw(surface)
             hud.draw_hud(surface, snapshot)
+
+            writer.append_data(pygame.surfarray.array3d(surface).swapaxes(0, 1))
