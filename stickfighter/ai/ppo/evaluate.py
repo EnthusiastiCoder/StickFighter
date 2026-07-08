@@ -143,3 +143,13 @@ def record_match(
             writer.append_data(pygame.surfarray.array3d(surface).swapaxes(0, 1))
 
     return sim.winner
+
+
+def main(argv: list[str] | None = None) -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--ckpt", required=True)
+    parser.add_argument("--episodes", type=int, default=50)
+    parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--record", choices=list(BOT_LADDER), default=None)
+    parser.add_argument("--record-out", default="eval_match.gif")
+    args = parser.parse_args(argv)
