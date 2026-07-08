@@ -164,3 +164,7 @@ def main(argv: list[str] | None = None) -> None:
     print("win rates vs bot ladder:")
     for name, win_rate in results.items():
         print(f"  {name:>8}: {win_rate:.1%}")
+
+    if args.record:
+        winner = record_match(model, normalizer, args.record, args.record_out, seed=args.seed)
+        print(f"recorded match vs {args.record} -> {args.record_out} (winner={winner})")
