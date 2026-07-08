@@ -159,3 +159,8 @@ def main(argv: list[str] | None = None) -> None:
         f"loaded checkpoint: step={ckpt['global_step']} stage_idx={ckpt['stage_idx']} "
         f"elo={ckpt['trainee_elo']:.1f}"
     )
+
+    results = evaluate_win_rates(model, normalizer, args.episodes, seed=args.seed)
+    print("win rates vs bot ladder:")
+    for name, win_rate in results.items():
+        print(f"  {name:>8}: {win_rate:.1%}")
