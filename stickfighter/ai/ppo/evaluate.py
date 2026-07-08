@@ -98,3 +98,6 @@ def record_match(
     os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
     import imageio
     import pygame
+
+    from stickfighter.core import constants as C
+    from stickfighter.render import draw, effects, hud, ragdoll, theme
