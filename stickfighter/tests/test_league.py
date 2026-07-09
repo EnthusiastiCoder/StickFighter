@@ -29,3 +29,10 @@ def test_league_prunes_weakest_entry_beyond_max_size():
     league.add_snapshot(model, "newest", elo=1200.0)
     assert len(league.entries) == 2
     assert "weak" not in {e.name for e in league.entries}
+
+
+def test_frozen_policy_bot_produces_a_valid_action():
+    league = League()
+    model = ActorCritic()
+    entry = league.add_snapshot(model, "ckpt")
+    bot = league.make_opponent(entry, OBS_DIM, ACTION_DIM)
