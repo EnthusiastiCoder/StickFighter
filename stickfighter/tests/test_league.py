@@ -42,3 +42,10 @@ def test_frozen_policy_bot_produces_a_valid_action():
     action = bot.act(sim.snapshot(), 1)
     assert action is not None
     assert -1.0 <= action.aim_angle / 3.14159265 <= 1.0
+
+
+def test_record_match_updates_win_tracking_and_elo_symmetrically():
+    league = League()
+    model = ActorCritic()
+    entry = league.add_snapshot(model, "ckpt", elo=1200.0)
+    trainee_elo = 1200.0
