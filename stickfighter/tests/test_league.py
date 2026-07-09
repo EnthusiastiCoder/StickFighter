@@ -36,3 +36,9 @@ def test_frozen_policy_bot_produces_a_valid_action():
     model = ActorCritic()
     entry = league.add_snapshot(model, "ckpt")
     bot = league.make_opponent(entry, OBS_DIM, ACTION_DIM)
+
+    sim = MatchSim()
+    sim.reset(seed=0)
+    action = bot.act(sim.snapshot(), 1)
+    assert action is not None
+    assert -1.0 <= action.aim_angle / 3.14159265 <= 1.0
