@@ -78,3 +78,7 @@ def test_pfsp_sampling_favors_entries_the_trainee_loses_to():
     for _ in range(20):
         league.record_match(strong, 1200.0, entry_won=True)
         league.record_match(weak, 1200.0, entry_won=False)
+
+    counts = {"beats_trainee_always": 0, "never_beats_trainee": 0}
+    for _ in range(500):
+        counts[league.sample_entry().name] += 1
