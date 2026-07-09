@@ -74,3 +74,7 @@ def test_pfsp_sampling_favors_entries_the_trainee_loses_to():
     model = ActorCritic()
     strong = league.add_snapshot(model, "beats_trainee_always")
     weak = league.add_snapshot(model, "never_beats_trainee")
+
+    for _ in range(20):
+        league.record_match(strong, 1200.0, entry_won=True)
+        league.record_match(weak, 1200.0, entry_won=False)
