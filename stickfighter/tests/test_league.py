@@ -49,3 +49,9 @@ def test_record_match_updates_win_tracking_and_elo_symmetrically():
     model = ActorCritic()
     entry = league.add_snapshot(model, "ckpt", elo=1200.0)
     trainee_elo = 1200.0
+
+    new_trainee_elo = league.record_match(entry, trainee_elo, entry_won=True)
+    assert entry.games == 1
+    assert entry.wins_vs_trainee == 1
+    assert entry.elo > 1200.0  # entry gained rating for beating an equally-rated trainee
+    assert new_trainee_elo < 1200.0  # trainee lost rating symmetrically
