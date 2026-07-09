@@ -61,3 +61,9 @@ def test_record_match_trainee_win_lowers_entry_elo():
     league = League()
     model = ActorCritic()
     entry = league.add_snapshot(model, "ckpt", elo=1200.0)
+
+    new_trainee_elo = league.record_match(entry, 1200.0, entry_won=False)
+    assert entry.wins_vs_trainee == 0
+    assert entry.games == 1
+    assert entry.elo < 1200.0
+    assert new_trainee_elo > 1200.0
