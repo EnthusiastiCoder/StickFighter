@@ -67,3 +67,10 @@ def test_record_match_trainee_win_lowers_entry_elo():
     assert entry.games == 1
     assert entry.elo < 1200.0
     assert new_trainee_elo > 1200.0
+
+
+def test_pfsp_sampling_favors_entries_the_trainee_loses_to():
+    league = League(pfsp_power=4.0, seed=0)
+    model = ActorCritic()
+    strong = league.add_snapshot(model, "beats_trainee_always")
+    weak = league.add_snapshot(model, "never_beats_trainee")
