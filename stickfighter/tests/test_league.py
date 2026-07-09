@@ -82,3 +82,5 @@ def test_pfsp_sampling_favors_entries_the_trainee_loses_to():
     counts = {"beats_trainee_always": 0, "never_beats_trainee": 0}
     for _ in range(500):
         counts[league.sample_entry().name] += 1
+
+    assert counts["beats_trainee_always"] > counts["never_beats_trainee"]
