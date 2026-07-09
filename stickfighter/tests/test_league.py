@@ -84,3 +84,13 @@ def test_pfsp_sampling_favors_entries_the_trainee_loses_to():
         counts[league.sample_entry().name] += 1
 
     assert counts["beats_trainee_always"] > counts["never_beats_trainee"]
+
+
+def test_elo_table_is_sorted_descending():
+    league = League()
+    model = ActorCritic()
+    league.add_snapshot(model, "low", elo=1000.0)
+    league.add_snapshot(model, "high", elo=1600.0)
+    table = league.elo_table()
+    assert table[0][0] == "high"
+    assert table[-1][0] == "low"
