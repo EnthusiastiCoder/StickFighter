@@ -19,3 +19,13 @@ def test_add_snapshot_seeds_elo_from_league_average():
     assert e1.elo == 1400.0
     assert e2.elo == 1400.0
     assert not league.is_empty()
+
+
+def test_league_prunes_weakest_entry_beyond_max_size():
+    league = League(max_size=2)
+    model = ActorCritic()
+    league.add_snapshot(model, "weak", elo=1000.0)
+    league.add_snapshot(model, "strong", elo=1500.0)
+    league.add_snapshot(model, "newest", elo=1200.0)
+    assert len(league.entries) == 2
+    assert "weak" not in {e.name for e in league.entries}
