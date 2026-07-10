@@ -20,3 +20,11 @@ def test_advances_once_win_rate_and_min_matches_are_both_satisfied():
     advanced_flags = [c.record_match(True) for _ in range(50)]
     assert any(advanced_flags)
     assert c.stage_idx == 1
+
+
+def test_does_not_advance_with_a_low_win_rate_even_past_min_matches():
+    c = Curriculum(window=10)
+    for _ in range(200):
+        c.record_match(False)
+    assert c.stage_idx == 0
+    assert c.win_rate == 0.0
