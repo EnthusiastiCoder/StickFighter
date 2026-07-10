@@ -13,8 +13,9 @@ select = ["E", "F", "I", "UP"]
 
 [tool.pytest.ini_options]
 testpaths = ["stickfighter/tests"]
+addopts = "-m \"not slow\""
 markers = [
-    "slow: integration tests that train briefly (deselect with '-m \"not slow\"')",
+    "slow: integration tests that train briefly (select with '-m slow')",
 ]
 
 [tool.setuptools.packages.find]
