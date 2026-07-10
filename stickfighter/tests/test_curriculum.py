@@ -47,3 +47,12 @@ def test_last_stage_is_selfplay_and_never_auto_advances_further():
         advanced = c.record_match(True)
     assert not advanced
     assert c.stage_idx == len(STAGES) - 1
+
+
+def test_stage_advance_resets_the_rolling_window():
+    c = Curriculum(window=10)
+    for _ in range(50):
+        c.record_match(True)
+    assert c.stage_idx == 1
+    assert c.results == []
+    assert c.matches_this_stage == 0
