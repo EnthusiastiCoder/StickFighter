@@ -37,3 +37,13 @@ def test_win_rate_is_a_rolling_window_not_a_lifetime_average():
     for _ in range(5):
         c.record_match(True)
     assert c.win_rate == 1.0  # only the last 5 (the window) count
+
+
+def test_last_stage_is_selfplay_and_never_auto_advances_further():
+    c = Curriculum(stage_idx=len(STAGES) - 1)
+    assert c.stage.name == SELFPLAY_STAGE_NAME
+    assert c.stage.opponent_factory is None
+    for _ in range(1000):
+        advanced = c.record_match(True)
+    assert not advanced
+    assert c.stage_idx == len(STAGES) - 1
