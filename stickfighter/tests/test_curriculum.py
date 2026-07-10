@@ -28,3 +28,12 @@ def test_does_not_advance_with_a_low_win_rate_even_past_min_matches():
         c.record_match(False)
     assert c.stage_idx == 0
     assert c.win_rate == 0.0
+
+
+def test_win_rate_is_a_rolling_window_not_a_lifetime_average():
+    c = Curriculum(window=5)
+    for _ in range(20):
+        c.record_match(False)
+    for _ in range(5):
+        c.record_match(True)
+    assert c.win_rate == 1.0  # only the last 5 (the window) count
