@@ -20,3 +20,9 @@ from stickfighter.ai.obs import OBS_DIM
 from stickfighter.ai.ppo.policy import ActorCritic, RunningNormalizer
 from stickfighter.ai.ppo.ppo import PPOConfig, RolloutBuffer, ppo_update
 from stickfighter.core.actions import ACTION_DIM
+
+
+@pytest.mark.slow
+def test_ppo_shows_measurable_learning_progress_on_s0_within_100k_steps():
+    torch.manual_seed(0)
+    np.random.seed(0)
