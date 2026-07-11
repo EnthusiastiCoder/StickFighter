@@ -4,3 +4,7 @@ reliably" bar (that needs far more than 100k steps for a 5D continuous
 action space) -- a directly measurable floor that would fail if the
 training loop were silently broken (wrong GAE, a reward sign flip, an
 entropy collapse, exploding KL, etc).
+
+Excluded from the default test run (pyproject.toml's pytest markers select
+"not slow" by default) since it takes on the order of a minute.
+"""
