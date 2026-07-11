@@ -56,3 +56,11 @@ def test_ppo_shows_measurable_learning_progress_on_s0_within_100k_steps():
             rollout_rewards.append(reward.mean())
             global_step += n_envs
             obs = next_obs
+
+        with torch.no_grad():
+            last_obs_t = torch.as_tensor(normalizer.normalize(obs), dtype=torch.float32)
+            last_value = model.get_value(last_obs_t)
+        buffer.compute_gae(last_value, config.gamma, config.gae_lambda)
+        stats = ppo_update(model, optimizer, buffer, config)
+        final_entropy = stats["entropy"]
+        rollout_mean_rewards.append(float(np.mean(rollout_rewards)))
