@@ -38,3 +38,21 @@ def test_ppo_shows_measurable_learning_progress_on_s0_within_100k_steps():
     normalizer = RunningNormalizer((OBS_DIM,))
     config = PPOConfig()
     buffer = RolloutBuffer(n_steps, n_envs, OBS_DIM, ACTION_DIM, device)
+
+    global_step = 0
+    rollout_mean_rewards = []
+    final_entropy = None
+    while global_step < total_steps:
+        buffer.reset()
+        rollout_rewards = []
+        for _ in range(n_steps):
+            normalizer.update(obs)
+            obs_t = torch.as_tensor(normalizer.normalize(obs), dtype=torch.float32, device=device)
+            with torch.no_grad():
+                action, log_prob, _entropy, value = model.get_action_and_value(obs_t)
+            next_obs, reward, terminated, truncated, _infos = vec_env.step(action.cpu().numpy())
+            done = np.logical_or(terminated, truncated)
+            buffer.add(obs_t, action, log_prob, reward, done.astype(np.float32), value)
+            rollout_rewards.append(reward.mean())
+            global_step += n_envs
+            obs = next_obs
