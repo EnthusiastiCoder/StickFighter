@@ -64,3 +64,6 @@ def test_ppo_shows_measurable_learning_progress_on_s0_within_100k_steps():
         stats = ppo_update(model, optimizer, buffer, config)
         final_entropy = stats["entropy"]
         rollout_mean_rewards.append(float(np.mean(rollout_rewards)))
+
+    early = np.mean(rollout_mean_rewards[:3])
+    late = np.mean(rollout_mean_rewards[-3:])
