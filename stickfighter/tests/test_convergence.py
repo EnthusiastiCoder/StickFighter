@@ -26,3 +26,8 @@ from stickfighter.core.actions import ACTION_DIM
 def test_ppo_shows_measurable_learning_progress_on_s0_within_100k_steps():
     torch.manual_seed(0)
     np.random.seed(0)
+
+    n_envs, n_steps, total_steps = 8, 128, 100_000
+    envs = [DuelEnv(opponent=IdleBot(), near_miss_scale=1.0) for _ in range(n_envs)]
+    vec_env = gym.vector.SyncVectorEnv([(lambda e=e: e) for e in envs])
+    obs, _ = vec_env.reset(seed=0)
