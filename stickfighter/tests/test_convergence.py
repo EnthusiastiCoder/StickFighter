@@ -8,3 +8,8 @@ entropy collapse, exploding KL, etc).
 Excluded from the default test run (pyproject.toml's pytest markers select
 "not slow" by default) since it takes on the order of a minute.
 """
+
+import gymnasium as gym
+import numpy as np
+import pytest
+import torch
