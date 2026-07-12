@@ -15,3 +15,14 @@ _CHECKPOINT_CANDIDATES = (
     Path("runs/stickfighter_main/best.pt"),
     Path("runs/stickfighter_main/final.pt"),
 )
+
+
+def find_trained_checkpoint() -> Path | None:
+    for candidate in _CHECKPOINT_CANDIDATES:
+        if candidate.exists():
+            return candidate
+    runs_dir = Path("runs")
+    if not runs_dir.exists():
+        return None
+    checkpoints = sorted(runs_dir.glob("*/checkpoints/ckpt_*.pt"))
+    return checkpoints[-1] if checkpoints else None
