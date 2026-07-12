@@ -7,3 +7,6 @@ trained yet.
 
 from collections.abc import Callable
 from pathlib import Path
+
+from stickfighter.ai.bots.ballistic import EASY, HARD, MEDIUM, PERFECT, BallisticBot
+from stickfighter.ai.bots.base import Policy
