@@ -30,3 +30,7 @@ def find_trained_checkpoint() -> Path | None:
 
 def make_bronze() -> Policy:
     return BallisticBot(EASY)
+
+
+def make_silver() -> Policy:
+    return BallisticBot(MEDIUM)
