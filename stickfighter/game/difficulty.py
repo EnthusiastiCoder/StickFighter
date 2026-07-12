@@ -34,3 +34,7 @@ def make_bronze() -> Policy:
 
 def make_silver() -> Policy:
     return BallisticBot(MEDIUM)
+
+
+def make_gold() -> Policy:
+    return BallisticBot(HARD)
