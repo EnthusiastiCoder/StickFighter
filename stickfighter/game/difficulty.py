@@ -26,3 +26,7 @@ def find_trained_checkpoint() -> Path | None:
         return None
     checkpoints = sorted(runs_dir.glob("*/checkpoints/ckpt_*.pt"))
     return checkpoints[-1] if checkpoints else None
+
+
+def make_bronze() -> Policy:
+    return BallisticBot(EASY)
