@@ -1,10 +1,13 @@
-"""The playable duel: human archer (P0) vs a scripted BallisticBot (P1)."""
+"""The playable duel: human archer (P0) vs a chosen difficulty's opponent."""
+
+from collections.abc import Callable
 
 import pygame
 
-from stickfighter.ai.bots.ballistic import MEDIUM, BallisticBot
+from stickfighter.ai.bots.base import Policy
 from stickfighter.core import constants as C
 from stickfighter.core.match import MatchSim
+from stickfighter.game.difficulty import make_silver
 from stickfighter.game.input import HumanInputController
 from stickfighter.render import draw, effects, hud, ragdoll, theme
 
@@ -18,11 +21,21 @@ def _font(size: int) -> pygame.font.Font:
 
 
 class DuelScene:
-    def __init__(self, seed: int | None = None) -> None:
+    """Also doubles as the AI-vs-AI spectate scene: pass a `player0_factory`
+    to replace the human with a bot, instead of duplicating this entire
+    render/effects/ragdoll pipeline in a second class."""
+
+    def __init__(
+        self,
+        opponent_factory: Callable[[], Policy] = make_silver,
+        player0_factory: Callable[[], Policy] | None = None,
+        seed: int | None = None,
+    ) -> None:
         self.sim = MatchSim()
-        self.opponent = BallisticBot(MEDIUM)
+        self.opponent = opponent_factory()
+        self.player0 = player0_factory() if player0_factory is not None else None
+        self.input = HumanInputController() if self.player0 is None else None
         self._new_match(seed)
-        self.input = HumanInputController()
         self.effects = effects.EffectsSystem()
         self.ragdolls = ragdoll.RagdollManager()
         self.elapsed = 0.0
@@ -33,9 +46,12 @@ class DuelScene:
     def _new_match(self, seed: int | None = None) -> None:
         self.sim.reset(seed=seed)
         self.opponent.reset(seed=seed)
+        if self.player0 is not None:
+            self.player0.reset(seed=seed)
 
     def handle_event(self, event: pygame.event.Event) -> None:
-        self.input.handle_pygame_event(event)
+        if self.input is not None:
+            self.input.handle_pygame_event(event)
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 self.paused = not self.paused
@@ -47,9 +63,12 @@ class DuelScene:
             return
         self.elapsed += dt
 
-        archer0 = self.sim.archers[0]
-        anchor = (archer0.x, archer0.top() + C.BOW_HEIGHT_OFFSET)
-        action0 = self.input.build_action(anchor)
+        if self.player0 is not None:
+            action0 = self.player0.act(self.sim.snapshot(), 0)
+        else:
+            archer0 = self.sim.archers[0]
+            anchor = (archer0.x, archer0.top() + C.BOW_HEIGHT_OFFSET)
+            action0 = self.input.build_action(anchor)
         action1 = self.opponent.act(self.sim.snapshot(), 1)
 
         events = self.sim.step(action0, action1)
