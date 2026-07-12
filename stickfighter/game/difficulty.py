@@ -38,3 +38,10 @@ def make_silver() -> Policy:
 
 def make_gold() -> Policy:
     return BallisticBot(HARD)
+
+
+def make_legend() -> Policy:
+    ckpt_path = find_trained_checkpoint()
+    if ckpt_path is None:
+        return BallisticBot(PERFECT)
+    from stickfighter.ai.ppo.evaluate import TrainedPolicyBot, load_checkpoint
