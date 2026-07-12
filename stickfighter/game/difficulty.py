@@ -10,3 +10,8 @@ from pathlib import Path
 
 from stickfighter.ai.bots.ballistic import EASY, HARD, MEDIUM, PERFECT, BallisticBot
 from stickfighter.ai.bots.base import Policy
+
+_CHECKPOINT_CANDIDATES = (
+    Path("runs/stickfighter_main/best.pt"),
+    Path("runs/stickfighter_main/final.pt"),
+)
