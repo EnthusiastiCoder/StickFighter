@@ -48,3 +48,11 @@ def make_legend() -> Policy:
 
     model, normalizer, _ckpt = load_checkpoint(ckpt_path)
     return TrainedPolicyBot(model, normalizer, deterministic=True)
+
+
+DIFFICULTIES: dict[str, Callable[[], Policy]] = {
+    "Bronze": make_bronze,
+    "Silver": make_silver,
+    "Gold": make_gold,
+    "Legend": make_legend,
+}
