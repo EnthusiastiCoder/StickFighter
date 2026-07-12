@@ -67,3 +67,12 @@ def test_ppo_shows_measurable_learning_progress_on_s0_within_100k_steps():
 
     early = np.mean(rollout_mean_rewards[:3])
     late = np.mean(rollout_mean_rewards[-3:])
+
+    # a working policy on this task (headshot-instakill on a stationary
+    # target, with near-miss shaping) reliably improves by >0.001 in mean
+    # per-step reward within 100k steps -- observed in practice ~0.0035.
+    assert late - early > 0.001
+    # entropy on a 5-dim Gaussian starts near ln(2*pi*e*std^2)*5/2 ~= 4.6;
+    # collapsing well below 2.0 this early would mean the policy went
+    # deterministic almost immediately, a classic PPO failure mode.
+    assert final_entropy > 2.0
