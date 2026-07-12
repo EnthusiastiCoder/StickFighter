@@ -4,3 +4,6 @@ Gold, and a real trained checkpoint for Legend whenever one exists on disk
 falling back to a perfect-play scripted bot if no checkpoint has been
 trained yet.
 """
+
+from collections.abc import Callable
+from pathlib import Path
