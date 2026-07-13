@@ -32,3 +32,7 @@ def test_accumulate_coins_persists_only_archer0s_coins(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
     scene = DuelScene(opponent_factory=IdleBot)
     assert scene.save_data.total_coins == 0
+
+    scene._accumulate_coins([CoinEarned(who=0, amount=3), CoinEarned(who=1, amount=5)])
+    assert scene.save_data.total_coins == 3
+    assert save.load().total_coins == 3
