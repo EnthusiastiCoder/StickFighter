@@ -18,3 +18,11 @@ def test_duel_scene_defaults_to_a_human_controlled_player0():
     scene = DuelScene(opponent_factory=IdleBot)
     assert scene.player0 is None
     assert scene.input is not None
+
+
+def test_duel_scene_supports_bot_vs_bot_spectate_mode():
+    scene = DuelScene(opponent_factory=IdleBot, player0_factory=lambda: BallisticBot(PERFECT))
+    assert scene.player0 is not None
+    assert scene.input is None
+    for _ in range(30):
+        scene.update(1 / 60)  # must not touch the (deliberately null) self.input
