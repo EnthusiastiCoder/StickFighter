@@ -8,3 +8,9 @@ from stickfighter.game.scenes.duel import DuelScene
 from stickfighter.render import theme
 
 _FONT_CACHE: dict[int, pygame.font.Font] = {}
+
+
+def _font(size: int) -> pygame.font.Font:
+    if size not in _FONT_CACHE:
+        _FONT_CACHE[size] = pygame.font.Font(None, size)
+    return _FONT_CACHE[size]
