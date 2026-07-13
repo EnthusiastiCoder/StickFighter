@@ -40,3 +40,12 @@ def test_accumulate_coins_persists_only_archer0s_coins(monkeypatch, tmp_path):
     scene._accumulate_coins([CoinEarned(who=0, amount=1)])
     assert scene.save_data.total_coins == 4
     assert save.load().total_coins == 4
+
+
+def test_accumulate_coins_ignores_events_for_the_other_archer(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
+    scene = DuelScene(opponent_factory=IdleBot)
+    scene._accumulate_coins([])
+    scene._accumulate_coins([CoinEarned(who=1, amount=10)])
+    assert scene.save_data.total_coins == 0
+    assert not (tmp_path / "save.json").exists()  # never wrote when nothing changed
