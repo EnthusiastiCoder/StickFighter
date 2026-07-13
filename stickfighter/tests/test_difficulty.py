@@ -22,3 +22,11 @@ def test_all_difficulties_produce_a_working_policy_without_a_trained_checkpoint(
 def test_find_trained_checkpoint_returns_none_with_no_runs_dir(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
     assert difficulty.find_trained_checkpoint() is None
+
+
+def test_find_trained_checkpoint_finds_the_latest_numeric_checkpoint(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
+    ckpt_dir = tmp_path / "runs" / "some_run" / "checkpoints"
+    ckpt_dir.mkdir(parents=True)
+    (ckpt_dir / "ckpt_000000000100.pt").write_bytes(b"")
+    (ckpt_dir / "ckpt_000000000050.pt").write_bytes(b"")
