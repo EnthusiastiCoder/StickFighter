@@ -50,3 +50,9 @@ def test_legend_loads_a_real_trained_checkpoint_when_present(monkeypatch, tmp_pa
     monkeypatch.chdir(tmp_path)
     run_dir = tmp_path / "runs" / "stickfighter_main"
     run_dir.mkdir(parents=True)
+
+    model = ActorCritic()
+    optimizer = torch.optim.Adam(model.parameters())
+    normalizer = RunningNormalizer((OBS_DIM,))
+    curriculum = Curriculum()
+    save_checkpoint(run_dir / "final.pt", model, optimizer, 1000, normalizer, curriculum, 1200.0)
