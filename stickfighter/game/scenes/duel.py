@@ -6,7 +6,9 @@ import pygame
 
 from stickfighter.ai.bots.base import Policy
 from stickfighter.core import constants as C
+from stickfighter.core.events import CoinEarned, Event
 from stickfighter.core.match import MatchSim
+from stickfighter.game import save
 from stickfighter.game.difficulty import make_silver
 from stickfighter.game.input import HumanInputController
 from stickfighter.render import draw, effects, hud, ragdoll, theme
@@ -31,12 +33,13 @@ class DuelScene:
         player0_factory: Callable[[], Policy] | None = None,
         seed: int | None = None,
     ) -> None:
+        self.save_data = save.load()
         self.sim = MatchSim()
         self.opponent = opponent_factory()
         self.player0 = player0_factory() if player0_factory is not None else None
         self.input = HumanInputController() if self.player0 is None else None
         self._new_match(seed)
-        self.effects = effects.EffectsSystem()
+        self.effects = effects.EffectsSystem(gore_enabled=self.save_data.gore_enabled)
         self.ragdolls = ragdoll.RagdollManager()
         self.elapsed = 0.0
         self.paused = False
@@ -57,6 +60,10 @@ class DuelScene:
                 self.paused = not self.paused
             elif event.key == pygame.K_RETURN and self.sim.match_over:
                 self._new_match()
+            elif event.key == pygame.K_g:
+                self.save_data.gore_enabled = not self.save_data.gore_enabled
+                self.effects.gore_enabled = self.save_data.gore_enabled
+                save.save(self.save_data)
 
     def update(self, dt: float) -> None:
         if self.paused:
@@ -73,10 +80,18 @@ class DuelScene:
 
         events = self.sim.step(action0, action1)
         self._snapshot = self.sim.snapshot()
+        if self.player0 is None:  # only a real human's coins carry over
+            self._accumulate_coins(events)
         self.effects.handle_events(events)
         self.ragdolls.handle_events(events)
         self.effects.update(dt, self._snapshot.arrows)
         self.ragdolls.update(dt)
+
+    def _accumulate_coins(self, events: list[Event]) -> None:
+        earned = sum(e.amount for e in events if isinstance(e, CoinEarned) and e.who == 0)
+        if earned:
+            self.save_data.total_coins += earned
+            save.save(self.save_data)
 
     def draw(self, surface: pygame.Surface) -> None:
         snapshot = self._snapshot
