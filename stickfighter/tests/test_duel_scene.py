@@ -26,3 +26,9 @@ def test_duel_scene_supports_bot_vs_bot_spectate_mode():
     assert scene.input is None
     for _ in range(30):
         scene.update(1 / 60)  # must not touch the (deliberately null) self.input
+
+
+def test_accumulate_coins_persists_only_archer0s_coins(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
+    scene = DuelScene(opponent_factory=IdleBot)
+    assert scene.save_data.total_coins == 0
