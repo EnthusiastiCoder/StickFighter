@@ -33,3 +33,11 @@ def test_find_trained_checkpoint_finds_the_latest_numeric_checkpoint(monkeypatch
 
     found = difficulty.find_trained_checkpoint()
     assert found.name == "ckpt_000000000100.pt"
+
+
+def test_find_trained_checkpoint_prefers_final_over_raw_checkpoints(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
+    run_dir = tmp_path / "runs" / "stickfighter_main"
+    (run_dir / "checkpoints").mkdir(parents=True)
+    (run_dir / "checkpoints" / "ckpt_000000000100.pt").write_bytes(b"")
+    (run_dir / "final.pt").write_bytes(b"")
