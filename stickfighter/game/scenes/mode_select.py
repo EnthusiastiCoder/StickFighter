@@ -25,3 +25,9 @@ class ModeSelectScene:
         total_w = len(names) * button_w + (len(names) - 1) * gap
         start_x = width / 2 - total_w / 2
         y = C.ARENA_HEIGHT / 2 - 60
+
+        self._difficulty_buttons = []
+        for i, name in enumerate(names):
+            x = round(start_x + i * (button_w + gap))
+            rect = pygame.Rect(x, round(y), round(button_w), round(button_h))
+            self._difficulty_buttons.append((rect, name))
