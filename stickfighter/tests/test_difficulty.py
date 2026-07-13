@@ -41,3 +41,6 @@ def test_find_trained_checkpoint_prefers_final_over_raw_checkpoints(monkeypatch,
     (run_dir / "checkpoints").mkdir(parents=True)
     (run_dir / "checkpoints" / "ckpt_000000000100.pt").write_bytes(b"")
     (run_dir / "final.pt").write_bytes(b"")
+
+    found = difficulty.find_trained_checkpoint()
+    assert found.name == "final.pt"
