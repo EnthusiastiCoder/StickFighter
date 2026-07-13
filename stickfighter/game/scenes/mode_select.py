@@ -45,3 +45,6 @@ class ModeSelectScene:
                 return
         if self._spectate_button.collidepoint(pos):
             self._next_scene = DuelScene(opponent_factory=make_legend, player0_factory=make_gold)
+
+    def update(self, dt: float) -> "DuelScene | None":
+        return self._next_scene
