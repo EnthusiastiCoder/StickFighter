@@ -56,7 +56,8 @@ def _get_font(size: int) -> pygame.font.Font:
 
 
 class EffectsSystem:
-    def __init__(self) -> None:
+    def __init__(self, gore_enabled: bool = True) -> None:
+        self.gore_enabled = gore_enabled
         self._trails: dict[int, deque[tuple[float, float]]] = {}
         self.floaters: list[FloatingText] = []
         self.particles: list[Particle] = []
@@ -85,6 +86,8 @@ class EffectsSystem:
                 self.shake(10.0, 0.25)
 
     def _spawn_hit_particles(self, x: float, y: float) -> None:
+        if not self.gore_enabled:
+            return
         for _ in range(8):
             angle = self._rng.uniform(0, math.tau)
             speed = self._rng.uniform(40, 160)
