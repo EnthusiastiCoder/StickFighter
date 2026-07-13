@@ -30,3 +30,6 @@ def test_find_trained_checkpoint_finds_the_latest_numeric_checkpoint(monkeypatch
     ckpt_dir.mkdir(parents=True)
     (ckpt_dir / "ckpt_000000000100.pt").write_bytes(b"")
     (ckpt_dir / "ckpt_000000000050.pt").write_bytes(b"")
+
+    found = difficulty.find_trained_checkpoint()
+    assert found.name == "ckpt_000000000100.pt"
