@@ -44,3 +44,9 @@ def test_find_trained_checkpoint_prefers_final_over_raw_checkpoints(monkeypatch,
 
     found = difficulty.find_trained_checkpoint()
     assert found.name == "final.pt"
+
+
+def test_legend_loads_a_real_trained_checkpoint_when_present(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
+    run_dir = tmp_path / "runs" / "stickfighter_main"
+    run_dir.mkdir(parents=True)
