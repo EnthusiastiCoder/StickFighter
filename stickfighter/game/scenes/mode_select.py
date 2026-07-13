@@ -48,3 +48,8 @@ class ModeSelectScene:
 
     def update(self, dt: float) -> "DuelScene | None":
         return self._next_scene
+
+    def draw(self, surface: pygame.Surface) -> None:
+        surface.fill(theme.BG)
+        title = _font(40).render("CHOOSE YOUR OPPONENT", True, theme.INK)
+        surface.blit(title, (surface.get_width() / 2 - title.get_width() / 2, 70))
