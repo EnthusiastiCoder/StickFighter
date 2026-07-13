@@ -53,3 +53,9 @@ class ModeSelectScene:
         surface.fill(theme.BG)
         title = _font(40).render("CHOOSE YOUR OPPONENT", True, theme.INK)
         surface.blit(title, (surface.get_width() / 2 - title.get_width() / 2, 70))
+
+        mouse_pos = pygame.mouse.get_pos()
+        for rect, name in self._difficulty_buttons:
+            self._draw_button(surface, rect, name, hovered=rect.collidepoint(mouse_pos))
+        spectate_hovered = self._spectate_button.collidepoint(mouse_pos)
+        self._draw_button(surface, self._spectate_button, "SPECTATE AI", hovered=spectate_hovered)
