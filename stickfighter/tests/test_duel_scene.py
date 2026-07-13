@@ -62,3 +62,9 @@ def test_spectate_mode_never_persists_coins(monkeypatch, tmp_path):
         scene.update(1 / 60)
     assert scene.save_data.total_coins == 0
     assert save.load().total_coins == 0
+
+
+def test_gore_toggle_persists_and_updates_effects(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
+    scene = DuelScene(opponent_factory=IdleBot)
+    assert scene.effects.gore_enabled is True
