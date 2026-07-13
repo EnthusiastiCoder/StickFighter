@@ -34,3 +34,14 @@ class ModeSelectScene:
 
         spectate_y = round(y + button_h + 40)
         self._spectate_button = pygame.Rect(round(width / 2 - 110), spectate_y, 220, 60)
+
+    def handle_event(self, event: pygame.event.Event) -> None:
+        if event.type != pygame.MOUSEBUTTONDOWN or event.button != 1:
+            return
+        pos = event.pos
+        for rect, name in self._difficulty_buttons:
+            if rect.collidepoint(pos):
+                self._next_scene = DuelScene(opponent_factory=DIFFICULTIES[name])
+                return
+        if self._spectate_button.collidepoint(pos):
+            self._next_scene = DuelScene(opponent_factory=make_legend, player0_factory=make_gold)
