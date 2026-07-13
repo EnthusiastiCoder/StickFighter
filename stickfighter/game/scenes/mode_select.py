@@ -31,3 +31,6 @@ class ModeSelectScene:
             x = round(start_x + i * (button_w + gap))
             rect = pygame.Rect(x, round(y), round(button_w), round(button_h))
             self._difficulty_buttons.append((rect, name))
+
+        spectate_y = round(y + button_h + 40)
+        self._spectate_button = pygame.Rect(round(width / 2 - 110), spectate_y, 220, 60)
