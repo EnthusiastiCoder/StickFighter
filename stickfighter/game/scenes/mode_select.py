@@ -59,3 +59,13 @@ class ModeSelectScene:
             self._draw_button(surface, rect, name, hovered=rect.collidepoint(mouse_pos))
         spectate_hovered = self._spectate_button.collidepoint(mouse_pos)
         self._draw_button(surface, self._spectate_button, "SPECTATE AI", hovered=spectate_hovered)
+
+    def _draw_button(
+        self, surface: pygame.Surface, rect: pygame.Rect, label: str, hovered: bool
+    ) -> None:
+        color = theme.GOLD if hovered else theme.INK
+        pygame.draw.rect(surface, color, rect, border_radius=8)
+        text_color = theme.INK if hovered else theme.WHITE
+        text = _font(26).render(label, True, text_color)
+        text_pos = (rect.centerx - text.get_width() / 2, rect.centery - text.get_height() / 2)
+        surface.blit(text, text_pos)
