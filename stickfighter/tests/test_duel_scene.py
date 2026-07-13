@@ -12,3 +12,9 @@ from stickfighter.ai.bots.idle import IdleBot  # noqa: E402
 from stickfighter.core.events import CoinEarned  # noqa: E402
 from stickfighter.game import save  # noqa: E402
 from stickfighter.game.scenes.duel import DuelScene  # noqa: E402
+
+
+def test_duel_scene_defaults_to_a_human_controlled_player0():
+    scene = DuelScene(opponent_factory=IdleBot)
+    assert scene.player0 is None
+    assert scene.input is not None
