@@ -17,3 +17,8 @@ def test_has_one_button_per_difficulty_plus_spectate():
     scene = ModeSelectScene()
     assert {name for _rect, name in scene._difficulty_buttons} == set(DIFFICULTIES)
     assert scene._spectate_button is not None
+
+
+def test_update_returns_none_until_a_button_is_clicked():
+    scene = ModeSelectScene()
+    assert scene.update(1 / 60) is None
