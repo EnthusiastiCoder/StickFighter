@@ -30,10 +30,34 @@ py -3.12 -m pip install -r requirements.txt
 py -3.12 -m pytest -q
 ```
 
-## Running things
+## Playing
 
 ```powershell
-py -3.12 -m stickfighter.game.app                          # play the game
-py -3.12 -m stickfighter.ai.ppo.train --stage 0             # train the AI
-py -3.12 -m stickfighter.ai.ppo.evaluate --ckpt <path>       # watch a trained checkpoint play
+py -3.12 -m stickfighter.game.app
 ```
+
+Title screen -> pick a difficulty (Bronze/Silver/Gold are scripted bots of increasing
+skill; Legend is whatever checkpoint training has produced so far, falling back to a
+perfect-play scripted bot if nothing has been trained yet) or Spectate to watch two AIs
+fight. Drag from your archer to aim and set draw strength; release to fire. WASD/arrows
+move and jump. Esc pauses, Enter starts a rematch after a match ends, G toggles gore.
+Coins earned in a real (non-spectate) duel persist to `save.json`.
+
+## Training the AI
+
+```powershell
+py -3.12 -m stickfighter.ai.ppo.train --run-dir runs/my_run --n-envs 8
+py -3.12 -m stickfighter.ai.ppo.train --resume runs/my_run          # continue later
+py -3.12 -m stickfighter.ai.ppo.evaluate --ckpt runs/my_run/final.pt --episodes 100 \
+    --record hard --record-out match.gif
+```
+
+Training runs a curriculum -- S0 static target practice, S1 a noisy scripted bot, S2 a
+sharp scripted bot, S3 self-play against a league of frozen past checkpoints -- advancing
+each stage automatically once a rolling win rate threshold is met. `evaluate.py` reports
+win rate against the full scripted bot ladder and can record a match through the real
+renderer as a GIF (or MP4, if `imageio-ffmpeg` is installed).
+
+Point the game's Legend difficulty at a specific run by placing its `final.pt` (or
+`best.pt`) at `runs/stickfighter_main/`, or it falls back to the newest checkpoint found
+anywhere under `runs/`.
