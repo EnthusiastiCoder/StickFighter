@@ -9,6 +9,7 @@ __pycache__/
 *.pyc
 runs/
 saves/
+save.json
 *.egg-info/
 .pytest_cache/
 .ruff_cache/
