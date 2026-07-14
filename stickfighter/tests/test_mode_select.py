@@ -29,3 +29,7 @@ def test_clicking_a_difficulty_button_starts_a_human_duel_scene():
     rect, name = scene._difficulty_buttons[0]
     click = pygame.event.Event(pygame.MOUSEBUTTONDOWN, button=1, pos=rect.center)
     scene.handle_event(click)
+
+    next_scene = scene.update(1 / 60)
+    assert isinstance(next_scene, DuelScene)
+    assert next_scene.player0 is None  # human-controlled
