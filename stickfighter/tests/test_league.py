@@ -1,3 +1,5 @@
+import math
+
 from stickfighter.ai.obs import OBS_DIM
 from stickfighter.ai.ppo.league import DEFAULT_ELO, League
 from stickfighter.ai.ppo.policy import ActorCritic
@@ -41,7 +43,7 @@ def test_frozen_policy_bot_produces_a_valid_action():
     sim.reset(seed=0)
     action = bot.act(sim.snapshot(), 1)
     assert action is not None
-    assert -1.0 <= action.aim_angle / 3.14159265 <= 1.0
+    assert -math.pi <= action.aim_angle <= math.pi
 
 
 def test_record_match_updates_win_tracking_and_elo_symmetrically():
