@@ -2,8 +2,17 @@
 self-play league, auto-advancing on a rolling win-rate threshold. The
 near-miss reward bonus is annealed to zero by S2, since a well-aimed miss
 stops being useful shaping signal once the agent can reliably land hits.
+
+REHEARSAL_PROB exists to avoid catastrophic forgetting: measured directly on
+a real training run, a policy that beat IdleBot 60% of the time right after
+clearing S0 had fallen to a 0% win rate against it by the time training
+reached S2 -- a strict linear curriculum gives the network zero incentive to
+retain a skill it no longer trains against. Mixing in occasional matches
+against already-cleared stages' opponents is the standard fix (curriculum
+learning with rehearsal).
 """
 
+import random
 from collections.abc import Callable
 from dataclasses import dataclass, field
 
@@ -12,6 +21,7 @@ from stickfighter.ai.bots.base import Policy
 from stickfighter.ai.bots.idle import IdleBot
 
 SELFPLAY_STAGE_NAME = "S3_selfplay"
+REHEARSAL_PROB = 0.25  # chance a non-selfplay match uses an earlier-cleared stage's opponent
 
 
 @dataclass(frozen=True)
@@ -49,6 +59,15 @@ class Curriculum:
     @property
     def stage(self) -> Stage:
         return STAGES[self.stage_idx]
+
+    def opponent_stage(self, rng: random.Random | None = None) -> Stage:
+        """The stage whose opponent the next match should use: usually the
+        current stage, but occasionally (REHEARSAL_PROB) an earlier-cleared
+        one, so old skills do not silently rot as training moves on."""
+        rng = rng or random
+        if self.stage_idx > 0 and rng.random() < REHEARSAL_PROB:
+            return STAGES[rng.randrange(self.stage_idx)]
+        return self.stage
 
     @property
     def win_rate(self) -> float:

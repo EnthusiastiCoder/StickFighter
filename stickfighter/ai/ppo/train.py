@@ -115,7 +115,7 @@ def build_opponent(
 ) -> tuple[Policy, object | None]:
     """Returns (opponent, league_entry). league_entry is None outside S3."""
     if curriculum.stage.name != SELFPLAY_STAGE_NAME:
-        return curriculum.stage.opponent_factory(), None
+        return curriculum.opponent_stage().opponent_factory(), None
     if league.is_empty():
         league.add_snapshot(model, name="step_0", elo=trainee_elo)
     entry = league.sample_entry()
