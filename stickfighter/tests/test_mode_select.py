@@ -52,3 +52,9 @@ def test_clicking_outside_any_button_does_nothing():
     click = pygame.event.Event(pygame.MOUSEBUTTONDOWN, button=1, pos=(0, 0))
     scene.handle_event(click)
     assert scene.update(1 / 60) is None
+
+
+def test_draw_does_not_raise():
+    scene = ModeSelectScene()
+    surface = pygame.Surface((960, 540))
+    scene.draw(surface)
