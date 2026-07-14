@@ -73,3 +73,7 @@ def test_gore_toggle_persists_and_updates_effects(monkeypatch, tmp_path):
     scene.handle_event(toggle_event)
     assert scene.effects.gore_enabled is False
     assert save.load().gore_enabled is False
+
+    scene.handle_event(toggle_event)
+    assert scene.effects.gore_enabled is True
+    assert save.load().gore_enabled is True
