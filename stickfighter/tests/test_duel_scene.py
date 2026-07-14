@@ -68,3 +68,8 @@ def test_gore_toggle_persists_and_updates_effects(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
     scene = DuelScene(opponent_factory=IdleBot)
     assert scene.effects.gore_enabled is True
+
+    toggle_event = pygame.event.Event(pygame.KEYDOWN, key=pygame.K_g)
+    scene.handle_event(toggle_event)
+    assert scene.effects.gore_enabled is False
+    assert save.load().gore_enabled is False
