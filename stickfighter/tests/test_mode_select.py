@@ -33,3 +33,11 @@ def test_clicking_a_difficulty_button_starts_a_human_duel_scene():
     next_scene = scene.update(1 / 60)
     assert isinstance(next_scene, DuelScene)
     assert next_scene.player0 is None  # human-controlled
+
+
+def test_clicking_spectate_starts_a_bot_vs_bot_duel_scene():
+    scene = ModeSelectScene()
+    click = pygame.event.Event(
+        pygame.MOUSEBUTTONDOWN, button=1, pos=scene._spectate_button.center
+    )
+    scene.handle_event(click)
