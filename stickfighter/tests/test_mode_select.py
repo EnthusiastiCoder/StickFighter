@@ -45,3 +45,10 @@ def test_clicking_spectate_starts_a_bot_vs_bot_duel_scene():
     next_scene = scene.update(1 / 60)
     assert isinstance(next_scene, DuelScene)
     assert next_scene.player0 is not None  # bot-controlled
+
+
+def test_clicking_outside_any_button_does_nothing():
+    scene = ModeSelectScene()
+    click = pygame.event.Event(pygame.MOUSEBUTTONDOWN, button=1, pos=(0, 0))
+    scene.handle_event(click)
+    assert scene.update(1 / 60) is None
