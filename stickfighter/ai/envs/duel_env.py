@@ -47,6 +47,7 @@ class DuelEnv(gym.Env):
         self.max_episode_steps = max_episode_steps
         self._fixed_arena = arena
         self._elapsed_steps = 0
+        self._prev_aim_angle: float | None = None
 
         self.observation_space = gym.spaces.Box(
             low=-10.0, high=10.0, shape=(OBS_DIM,), dtype=np.float32
@@ -60,6 +61,7 @@ class DuelEnv(gym.Env):
         self.sim.reset(seed=seed, arena=self._fixed_arena)
         self.opponent.reset(seed=seed)
         self._elapsed_steps = 0
+        self._prev_aim_angle = None
         obs = encode_obs(self.sim.snapshot(), self.perspective)
         return obs, {}
 
@@ -78,7 +80,10 @@ class DuelEnv(gym.Env):
                 break
 
         snapshot = self.sim.snapshot()
-        reward = compute_reward(all_events, snapshot, self.perspective, self.near_miss_scale)
+        reward = compute_reward(
+            all_events, snapshot, self.perspective, self.near_miss_scale, self._prev_aim_angle
+        )
+        self._prev_aim_angle = snapshot.archers[self.perspective].aim_angle
         terminated = self.sim.match_over
         truncated = self._elapsed_steps >= self.max_episode_steps
         obs = encode_obs(snapshot, self.perspective)
