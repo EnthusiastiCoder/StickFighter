@@ -112,15 +112,20 @@ def linear_schedule(start: float, end: float, progress: float) -> float:
 
 def build_opponent(
     curriculum: Curriculum, league: League, model: ActorCritic, obs_normalizer, trainee_elo: float
-) -> tuple[Policy, object | None]:
-    """Returns (opponent, league_entry). league_entry is None outside S3."""
+) -> tuple[Policy, object | None, float]:
+    """Returns (opponent, league_entry, near_miss_scale). league_entry is
+    None outside S3. near_miss_scale matches whichever stage's opponent was
+    actually picked -- a rehearsal match against an easier stage's opponent
+    must get that easier stage's shaping bonus, not the current stage's
+    (usually zeroed-out) one, or rehearsal loses most of its point."""
     if curriculum.stage.name != SELFPLAY_STAGE_NAME:
-        return curriculum.opponent_stage().opponent_factory(), None
+        stage = curriculum.opponent_stage()
+        return stage.opponent_factory(), None, stage.near_miss_scale
     if league.is_empty():
         league.add_snapshot(model, name="step_0", elo=trainee_elo)
     entry = league.sample_entry()
     opponent = league.make_opponent(entry, OBS_DIM, ACTION_DIM, obs_normalizer)
-    return opponent, entry
+    return opponent, entry, curriculum.stage.near_miss_scale
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -164,9 +169,11 @@ def main(argv: list[str] | None = None) -> None:
 
     def refresh_opponents() -> None:
         for i, sub_env in enumerate(envs):
-            opponent, entry = build_opponent(curriculum, league, model, obs_normalizer, trainee_elo)
+            opponent, entry, near_miss_scale = build_opponent(
+                curriculum, league, model, obs_normalizer, trainee_elo
+            )
             sub_env.opponent = opponent
-            sub_env.near_miss_scale = curriculum.stage.near_miss_scale
+            sub_env.near_miss_scale = near_miss_scale
             league_entries[i] = entry
 
     refresh_opponents()
