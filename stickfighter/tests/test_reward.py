@@ -8,6 +8,7 @@ from stickfighter.ai.reward import (
     DAMAGE_SCALE,
     HEADSHOT_BONUS,
     NEAR_MISS_MAX_BONUS,
+    NEAR_MISS_RADIUS,
     ROUND_LOSS_PENALTY,
     ROUND_WIN_REWARD,
     STEP_PENALTY,
@@ -98,7 +99,9 @@ def test_near_miss_bonus_grows_as_an_own_arrow_approaches_the_enemy():
         )
 
     close_reward = compute_reward([], snapshot_with_arrow_at(5.0), 0, near_miss_scale=1.0)
-    far_reward = compute_reward([], snapshot_with_arrow_at(500.0), 0, near_miss_scale=1.0)
+    far_reward = compute_reward(
+        [], snapshot_with_arrow_at(NEAR_MISS_RADIUS + 200.0), 0, near_miss_scale=1.0
+    )
     assert close_reward > far_reward
     assert far_reward == pytest.approx(STEP_PENALTY)
     assert close_reward <= STEP_PENALTY + NEAR_MISS_MAX_BONUS + 1e-9
