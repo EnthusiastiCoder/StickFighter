@@ -41,9 +41,12 @@ def test_build_opponent_uses_scripted_bot_outside_selfplay():
     model = ActorCritic()
     normalizer = RunningNormalizer((OBS_DIM,))
 
-    opponent, entry = build_opponent(curriculum, league, model, normalizer, trainee_elo=1200.0)
+    opponent, entry, near_miss_scale = build_opponent(
+        curriculum, league, model, normalizer, trainee_elo=1200.0
+    )
     assert entry is None
     assert opponent is not None
+    assert near_miss_scale == curriculum.stage.near_miss_scale
 
 
 def test_build_opponent_seeds_and_samples_league_in_selfplay():
@@ -53,10 +56,32 @@ def test_build_opponent_seeds_and_samples_league_in_selfplay():
     normalizer = RunningNormalizer((OBS_DIM,))
     assert league.is_empty()
 
-    opponent, entry = build_opponent(curriculum, league, model, normalizer, trainee_elo=1200.0)
+    opponent, entry, near_miss_scale = build_opponent(
+        curriculum, league, model, normalizer, trainee_elo=1200.0
+    )
     assert not league.is_empty()  # the trainee itself was auto-seeded as the first entry
     assert entry is not None
-    assert opponent is not None
+    assert near_miss_scale == curriculum.stage.near_miss_scale
+
+
+def test_build_opponent_matches_near_miss_scale_to_the_rehearsed_stage_not_the_current_one():
+    # S2's near_miss_scale is 0.0; a rehearsal match against S0's opponent
+    # (IdleBot) must still carry S0's near_miss_scale (1.0), or the whole
+    # point of rehearsing an easier stage -- getting shaping signal back --
+    # is lost.
+    curriculum = Curriculum(stage_idx=2)
+    assert curriculum.stage.near_miss_scale == 0.0
+    league = League()
+    model = ActorCritic()
+    normalizer = RunningNormalizer((OBS_DIM,))
+
+    seen_scales = set()
+    for _ in range(200):
+        _opponent, _entry, near_miss_scale = build_opponent(
+            curriculum, league, model, normalizer, trainee_elo=1200.0
+        )
+        seen_scales.add(near_miss_scale)
+    assert seen_scales == {s.near_miss_scale for s in STAGES[: curriculum.stage_idx + 1]}
 
 
 def test_checkpoint_round_trip_reproduces_identical_actions(tmp_path):
