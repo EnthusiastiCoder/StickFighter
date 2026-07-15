@@ -26,8 +26,8 @@ ROUND_LOSS_PENALTY = -1.0
 DAMAGE_SCALE = 0.5 / 100.0  # +/-0.5 reward per 100 damage dealt/taken
 HEADSHOT_BONUS = 0.15  # on top of the round win a kill already causes
 
-NEAR_MISS_RADIUS = 60.0  # px; an own arrow within this of the enemy gets a shaping bonus
-NEAR_MISS_MAX_BONUS = 0.02  # per step, at radius == 0 and scale == 1.0
+NEAR_MISS_RADIUS = 300.0  # px; an own arrow within this of the enemy gets a shaping bonus
+NEAR_MISS_MAX_BONUS = 0.02  # per step, at distance == 0 and scale == 1.0
 
 AIRBORNE_PENALTY = 0.0008  # per step spent not grounded -- discourages nonstop bunny-hopping
 AIM_JITTER_PENALTY = 0.03  # scaled by |aim change| / pi -- discourages wildly swinging aim
