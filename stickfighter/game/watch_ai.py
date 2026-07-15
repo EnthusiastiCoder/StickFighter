@@ -6,3 +6,5 @@ specific matchup of trained/scripted difficulties play live.
 """
 
 import argparse
+
+import pygame
