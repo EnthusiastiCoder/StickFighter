@@ -4,12 +4,23 @@ ArrowState, never mutates them."""
 import math
 
 import pygame
+import pygame.gfxdraw
 
 from stickfighter.core import constants as C
 from stickfighter.core.arena import Arena
 from stickfighter.core.ballistics import bow_origin
 from stickfighter.core.entities import ArcherState, ArrowState
 from stickfighter.render import theme
+
+
+def draw_aa_circle(
+    surface: pygame.Surface, center: tuple[float, float], radius: float, color
+) -> None:
+    """pygame.draw.circle has no anti-aliasing and looks visibly blocky at
+    this game's scale; gfxdraw's filled + outlined circle does."""
+    x, y, r = round(center[0]), round(center[1]), round(radius)
+    pygame.gfxdraw.filled_circle(surface, x, y, r, color)
+    pygame.gfxdraw.aacircle(surface, x, y, r, color)
 
 PLATFORM_THICKNESS = 14.0
 
@@ -64,7 +75,7 @@ def draw_archer(surface: pygame.Surface, archer: ArcherState, elapsed: float) ->
     _draw_bow_and_arms(surface, archer, shoulder)
 
     pygame.draw.line(surface, theme.INK, shoulder, hip, LINE_WIDTH)
-    pygame.draw.circle(surface, theme.INK, (round(head[0]), round(head[1])), round(HEAD_RADIUS))
+    draw_aa_circle(surface, head, HEAD_RADIUS, theme.INK)
 
 
 def _draw_legs(surface, archer: ArcherState, hip, feet_y: float, elapsed: float) -> None:
@@ -103,7 +114,7 @@ def _draw_bow_and_arms(surface, archer: ArcherState, shoulder: tuple[float, floa
     pull = STRING_PULL_BASE + STRING_PULL_MAX * draw
     nock = (bow_x - forward[0] * pull, bow_y - forward[1] * pull)
 
-    pygame.draw.lines(surface, theme.INK, False, _quad_bezier(tip_a, control, tip_b), 3)
+    pygame.draw.aalines(surface, theme.INK, False, _quad_bezier(tip_a, control, tip_b))
     pygame.draw.line(surface, theme.INK, tip_a, nock, 2)
     pygame.draw.line(surface, theme.INK, tip_b, nock, 2)
     pygame.draw.line(surface, theme.INK, shoulder, (bow_x, bow_y), LINE_WIDTH)

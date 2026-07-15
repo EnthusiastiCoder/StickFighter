@@ -12,6 +12,7 @@ import pymunk
 from stickfighter.core import constants as C
 from stickfighter.core.events import Death, Event
 from stickfighter.render import theme
+from stickfighter.render.draw import draw_aa_circle
 
 RAGDOLL_LIFETIME = 2.5
 LINE_WIDTH = 5
@@ -78,7 +79,7 @@ class Ragdoll:
 
     def draw(self, surface: pygame.Surface) -> None:
         hx, hy = self.head_body.position
-        pygame.draw.circle(surface, theme.INK, (round(hx), round(hy)), round(C.HEAD_RADIUS))
+        draw_aa_circle(surface, (hx, hy), C.HEAD_RADIUS, theme.INK)
         self._draw_segment(surface, self.torso_body, self._torso_local)
         self._draw_segment(surface, self.leg1_body, self._leg1_local)
         self._draw_segment(surface, self.leg2_body, self._leg2_local)

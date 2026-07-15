@@ -1,10 +1,12 @@
 """HUD: coins, round score, HP bars, a round timer, wind indicator, pause."""
 
 import pygame
+import pygame.gfxdraw
 
 from stickfighter.core import constants as C
 from stickfighter.core.match import MatchSnapshot
 from stickfighter.render import theme
+from stickfighter.render.draw import draw_aa_circle
 
 _font_cache: dict[int, pygame.font.Font] = {}
 
@@ -41,8 +43,8 @@ def draw_hud(surface: pygame.Surface, snapshot: MatchSnapshot) -> None:
     font_small = _get_font(26)
     width = C.ARENA_WIDTH
 
-    pygame.draw.circle(surface, theme.GOLD, (26, 26), 10)
-    pygame.draw.circle(surface, theme.INK, (26, 26), 10, 2)
+    draw_aa_circle(surface, (26, 26), 10, theme.GOLD)
+    pygame.gfxdraw.aacircle(surface, 26, 26, 10, theme.INK)
     coin_text = font_small.render(str(snapshot.archers[0].coins), True, theme.WHITE)
     surface.blit(coin_text, (44, 14))
 
