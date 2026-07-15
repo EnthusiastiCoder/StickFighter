@@ -4,6 +4,14 @@ Round outcomes (not raw deaths) carry the win/loss signal, since RoundOver
 already correctly captures every way a round ends -- a kill, or a timeout
 decided by HP -- with no risk of double-counting a kill as both a death
 penalty and a separate win/loss term.
+
+AIRBORNE_PENALTY and AIM_JITTER_PENALTY exist because a real trained
+checkpoint was observed live: with nothing discouraging it, PPO found that
+camping the arena wall while bunny-hopping nonstop and firing in wildly
+swinging directions was an effective (if degenerate and ugly) strategy
+against fixed-rule scripted bots. Both penalties are small relative to the
+combat terms -- they nudge away from the specific exploit without
+overwhelming the actual objective (hit the enemy, don't get hit, win).
 """
 
 import math
@@ -21,12 +29,20 @@ HEADSHOT_BONUS = 0.15  # on top of the round win a kill already causes
 NEAR_MISS_RADIUS = 60.0  # px; an own arrow within this of the enemy gets a shaping bonus
 NEAR_MISS_MAX_BONUS = 0.02  # per step, at radius == 0 and scale == 1.0
 
+AIRBORNE_PENALTY = 0.0008  # per step spent not grounded -- discourages nonstop bunny-hopping
+AIM_JITTER_PENALTY = 0.03  # scaled by |aim change| / pi -- discourages wildly swinging aim
+
 
 def compute_reward(
-    events: list[Event], snapshot: MatchSnapshot, perspective: int, near_miss_scale: float = 0.0
+    events: list[Event],
+    snapshot: MatchSnapshot,
+    perspective: int,
+    near_miss_scale: float = 0.0,
+    prev_aim_angle: float | None = None,
 ) -> float:
     enemy = 1 - perspective
     reward = STEP_PENALTY
+    self_archer = snapshot.archers[perspective]
 
     for e in events:
         if isinstance(e, ArrowHit):
@@ -46,6 +62,16 @@ def compute_reward(
 
     if near_miss_scale > 0.0:
         reward += _near_miss_bonus(snapshot, perspective, near_miss_scale)
+
+    if not self_archer.grounded:
+        reward -= AIRBORNE_PENALTY
+
+    if prev_aim_angle is not None:
+        delta = math.atan2(
+            math.sin(self_archer.aim_angle - prev_aim_angle),
+            math.cos(self_archer.aim_angle - prev_aim_angle),
+        )
+        reward -= AIM_JITTER_PENALTY * (abs(delta) / math.pi)
 
     return reward
 
