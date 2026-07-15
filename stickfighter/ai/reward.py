@@ -30,7 +30,13 @@ NEAR_MISS_RADIUS = 300.0  # px; an own arrow within this of the enemy gets a sha
 NEAR_MISS_MAX_BONUS = 0.02  # per step, at distance == 0 and scale == 1.0
 
 AIRBORNE_PENALTY = 0.0008  # per step spent not grounded -- discourages nonstop bunny-hopping
-AIM_JITTER_PENALTY = 0.03  # scaled by |aim change| / pi -- discourages wildly swinging aim
+# Scaled by |aim change| / pi. 0.03 (the original value) was strong enough
+# that a real trained checkpoint found the reward-minimizing move was to
+# saturate aim_angle at the actor's tanh boundary (exactly +/-pi) and never
+# adjust it again -- cheaper than tracking the enemy -- rather than genuinely
+# aiming well. Kept an order of magnitude smaller so it still damps noisy
+# thrashing without outweighing the incentive to actually correct aim.
+AIM_JITTER_PENALTY = 0.005
 
 
 def compute_reward(
