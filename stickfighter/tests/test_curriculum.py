@@ -1,3 +1,5 @@
+import random
+
 from stickfighter.ai.ppo.curriculum import SELFPLAY_STAGE_NAME, STAGES, Curriculum
 
 
@@ -56,3 +58,24 @@ def test_stage_advance_resets_the_rolling_window():
     assert c.stage_idx == 1
     assert c.results == []
     assert c.matches_this_stage == 0
+
+
+def test_opponent_stage_is_always_current_stage_at_s0():
+    c = Curriculum(stage_idx=0)
+    rng = random.Random(0)
+    for _ in range(100):
+        assert c.opponent_stage(rng).name == STAGES[0].name  # nothing earlier to rehearse
+
+
+def test_opponent_stage_sometimes_rehearses_an_earlier_stage():
+    c = Curriculum(stage_idx=2)
+    rng = random.Random(0)
+    seen = {c.opponent_stage(rng).name for _ in range(200)}
+    assert seen == {STAGES[0].name, STAGES[1].name, STAGES[2].name}
+
+
+def test_opponent_stage_mostly_returns_the_current_stage():
+    c = Curriculum(stage_idx=2)
+    rng = random.Random(0)
+    current = sum(1 for _ in range(500) if c.opponent_stage(rng).name == STAGES[2].name)
+    assert current > 300  # roughly 1 - REHEARSAL_PROB of 500 trials
