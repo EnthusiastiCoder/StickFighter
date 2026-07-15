@@ -8,3 +8,7 @@ specific matchup of trained/scripted difficulties play live.
 import argparse
 
 import pygame
+
+from stickfighter.core import constants as C
+from stickfighter.game.difficulty import DIFFICULTIES
+from stickfighter.game.scenes.duel import DuelScene
