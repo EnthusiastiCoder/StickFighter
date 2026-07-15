@@ -77,6 +77,23 @@ def test_near_miss_scale_is_off_by_default():
     assert env.near_miss_scale == 0.0
 
 
+def test_swinging_aim_between_steps_costs_more_than_holding_steady():
+    steady_aim = Action(move=0.0, jump=False, aim_angle=0.0, draw=0.0, release=False).to_array()
+    swung_aim = Action(move=0.0, jump=False, aim_angle=1.0, draw=0.0, release=False).to_array()
+
+    env = DuelEnv(opponent=IdleBot(), arena=_FLAT, frame_skip=1)
+    env.reset(seed=0)
+    env.step(steady_aim)
+    _, steady_reward, _, _, _ = env.step(steady_aim)
+
+    env2 = DuelEnv(opponent=IdleBot(), arena=_FLAT, frame_skip=1)
+    env2.reset(seed=0)
+    env2.step(steady_aim)
+    _, swung_reward, _, _, _ = env2.step(swung_aim)
+
+    assert swung_reward < steady_reward
+
+
 def test_max_episode_steps_truncates_a_stalemate():
     env = DuelEnv(opponent=IdleBot(), arena=_FLAT, max_episode_steps=10, frame_skip=1)
     env.reset(seed=0)

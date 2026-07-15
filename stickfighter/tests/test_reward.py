@@ -1,6 +1,10 @@
+import math
+
 import pytest
 
 from stickfighter.ai.reward import (
+    AIM_JITTER_PENALTY,
+    AIRBORNE_PENALTY,
     DAMAGE_SCALE,
     HEADSHOT_BONUS,
     NEAR_MISS_MAX_BONUS,
@@ -98,3 +102,36 @@ def test_near_miss_bonus_grows_as_an_own_arrow_approaches_the_enemy():
     assert close_reward > far_reward
     assert far_reward == pytest.approx(STEP_PENALTY)
     assert close_reward <= STEP_PENALTY + NEAR_MISS_MAX_BONUS + 1e-9
+
+
+def test_airborne_incurs_a_small_penalty_beyond_the_step_penalty():
+    snap = _base_snapshot()
+    snap.archers[0].grounded = True
+    grounded_reward = compute_reward([], snap, 0)
+    snap.archers[0].grounded = False
+    airborne_reward = compute_reward([], snap, 0)
+
+    assert grounded_reward == pytest.approx(STEP_PENALTY)
+    assert airborne_reward == pytest.approx(STEP_PENALTY - AIRBORNE_PENALTY)
+
+
+def test_aim_jitter_penalty_scales_with_angle_change_and_wraps_correctly():
+    snap = _base_snapshot()
+
+    snap.archers[0].aim_angle = 0.0
+    no_change = compute_reward([], snap, 0, prev_aim_angle=0.0)
+    assert no_change == pytest.approx(STEP_PENALTY)
+
+    snap.archers[0].aim_angle = math.pi
+    full_flip = compute_reward([], snap, 0, prev_aim_angle=0.0)
+    assert full_flip == pytest.approx(STEP_PENALTY - AIM_JITTER_PENALTY)
+
+    # 3.0 -> -3.0 wraps the short way around +/-pi (a small ~0.28 rad turn),
+    # not the naive ~6.0 rad difference -- must not blow past the max penalty
+    snap.archers[0].aim_angle = -3.0
+    wrapped = compute_reward([], snap, 0, prev_aim_angle=3.0)
+    assert wrapped >= STEP_PENALTY - AIM_JITTER_PENALTY - 1e-9
+
+    # with no prev_aim_angle (first step of an episode), no jitter penalty applies
+    no_prev = compute_reward([], snap, 0, prev_aim_angle=None)
+    assert no_prev == pytest.approx(STEP_PENALTY)
