@@ -17,3 +17,4 @@ save.json
 *.mp4
 *.gif
 frame*.png
+*_log.jsonl
