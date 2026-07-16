@@ -49,3 +49,7 @@ class MeleeEnemyState:
 
     def top(self) -> float:
         return self.y - C.CHAR_HEIGHT
+
+    def __post_init__(self) -> None:
+        if self.hp <= 0.0:
+            self.hp = self.config.hp
