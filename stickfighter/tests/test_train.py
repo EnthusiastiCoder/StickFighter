@@ -10,6 +10,7 @@ from stickfighter.ai.ppo.train import (
     build_opponent,
     find_latest_checkpoint,
     linear_schedule,
+    make_run_dir,
     save_checkpoint,
 )
 from stickfighter.core.actions import ACTION_DIM
@@ -107,3 +108,26 @@ def test_duel_env_construction_matches_train_loop_shapes():
     obs, _ = env.reset(seed=0)
     assert obs.shape == (OBS_DIM,)
     assert env.action_space.shape == (ACTION_DIM,)
+
+
+def test_make_run_dir_reuses_the_resumed_directory_by_default(tmp_path):
+    # a bare --resume with no --run-dir must keep writing into the resumed
+    # run, not silently fork a fresh runs/<timestamp>/ that leaves the
+    # checkpoints difficulty.py looks for stale forever.
+    resumed_from = tmp_path / "stickfighter_main"
+    run_dir = make_run_dir(None, str(resumed_from))
+    assert run_dir == resumed_from
+
+
+def test_make_run_dir_explicit_run_dir_wins_over_resume(tmp_path):
+    resumed_from = tmp_path / "stickfighter_main"
+    explicit = tmp_path / "explicit_dir"
+    run_dir = make_run_dir(str(explicit), str(resumed_from))
+    assert run_dir == explicit
+
+
+def test_make_run_dir_generates_a_timestamped_dir_with_neither_arg(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    run_dir = make_run_dir(None, None)
+    assert run_dir.parent.name == "runs"
+    assert run_dir.name.startswith("stickfighter_")
