@@ -1,26 +1,36 @@
 """PPO training CLI: curriculum-driven learning from scripted bots through a
 self-play league of frozen past checkpoints.
 
-Uses gymnasium's SyncVectorEnv exclusively. AsyncVectorEnv (real
-multiprocessing workers, see envs/vec.py) is not just unhelpful here but
-actively dangerous on a machine with a CUDA build of torch installed: every
-worker process independently loads the full cuBLAS/cuFFT DLL stack (never
-even used, since training runs on CPU), and spawning more than a couple of
-such processes has been observed to exhaust this machine's paging file
-(WinError 1455) badly enough to crash unrelated processes system-wide.
-Running everything in one process sidesteps that entirely, and also means a
-self-play opponent's weights can just be swapped in place
-(`sub_env.opponent = ...`), with no cross-process weight-sync needed.
+Uses gymnasium's SyncVectorEnv, deliberately, after directly measuring the
+alternative. AsyncVectorEnv (real OS worker processes, see envs/vec.py) was
+benchmarked head-to-head against SyncVectorEnv at equal worker counts on
+this machine: Async barely beat Sync even at n=16 (10157 vs 9370 steps/sec,
++8%), while Sync alone scales up cheaply with zero multiprocessing risk and
+plateaus around ~12000 steps/sec by n_envs=128-256 -- higher than Async ever
+reached. Async also crashes this machine's paging file (WinError 1455) at
+n=20 workers even with a CPU-only torch build, a real ceiling from running
+substantial concurrent desktop software on 16GB total RAM, not merely a
+CUDA-DLL issue (an earlier, incomplete theory). Given cheap hand-rolled
+physics, the real per-step cost here is small enough that IPC/process
+overhead eats most of Async's multi-core benefit, so it is not worth the
+crash risk or the added complexity of cross-process self-play weight-swaps
+(sub_env.opponent = ... only works because every env lives in this one
+process). A full, real train.py run (not a synthetic loop) measured ~7000
+steps/sec end-to-end at n_envs=64 including all logging/curriculum
+bookkeeping -- a 40M-step run finishes in under two hours at that rate, so
+Sync was never actually the bottleneck; it was simply run with too few
+envs before.
 
 On CPU, the right thread count is different for the two halves of a
 rollout, benchmarked here on this machine: collecting the rollout does one
 tiny inference call (batch = n_envs) per env-step, and multi-threaded BLAS's
 own synchronization overhead exceeds the payoff at that size -- 1 thread
-measured faster than 8 at every n_envs tried. ppo_update instead runs full
-epochs over the whole rollout in much larger minibatches, where more
-threads measured ~3x faster (1084ms -> 367ms at 1 vs 8 threads on this
-machine). So thread count is switched around the update call rather than
-fixed for the whole run.
+measured faster than 8 at every n_envs tried, including at n_envs=256. This
+still holds even though PPO update's minibatches use every core: PPO update
+instead runs full epochs over the whole rollout in much larger minibatches,
+where more threads measured ~3x faster (1084ms -> 367ms at 1 vs 8 threads
+on this machine). So thread count is switched around the update call
+rather than fixed for the whole run.
 """
 
 import argparse
@@ -47,7 +57,7 @@ from stickfighter.core.actions import ACTION_DIM
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser()
-    p.add_argument("--n-envs", type=int, default=64)
+    p.add_argument("--n-envs", type=int, default=128)
     p.add_argument("--n-steps", type=int, default=256, help="steps per env per rollout")
     p.add_argument("--total-steps", type=int, default=2_000_000)
     p.add_argument("--seed", type=int, default=0)
@@ -60,7 +70,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--ent-coef", type=float, default=0.01)
     p.add_argument("--ent-coef-final", type=float, default=0.001)
     p.add_argument("--n-epochs", type=int, default=4)
-    p.add_argument("--n-minibatches", type=int, default=4)
+    p.add_argument("--n-minibatches", type=int, default=8)
     p.add_argument("--run-dir", default=None)
     p.add_argument("--resume", default=None, help="a run directory to resume from")
     p.add_argument("--checkpoint-freq", type=int, default=20, help="rollouts between checkpoints")
