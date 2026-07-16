@@ -11,7 +11,7 @@ import torch
 from stickfighter.ai.bots.ballistic import EASY, HARD, MEDIUM, PERFECT, BallisticBot
 from stickfighter.ai.bots.idle import IdleBot
 from stickfighter.ai.obs import OBS_DIM, encode_obs
-from stickfighter.ai.ppo.policy import ActorCritic, RunningNormalizer
+from stickfighter.ai.ppo.policy import ActorCritic
 from stickfighter.core.actions import ACTION_DIM, Action
 from stickfighter.core.match import MatchSim
 
@@ -25,18 +25,15 @@ BOT_LADDER = {
 
 
 class TrainedPolicyBot:
-    def __init__(
-        self, model: ActorCritic, normalizer: RunningNormalizer, deterministic: bool = True
-    ):
+    def __init__(self, model: ActorCritic, deterministic: bool = True):
         self.model = model
-        self.normalizer = normalizer
         self.deterministic = deterministic
 
     def reset(self, seed: int | None = None) -> None:
         pass
 
     def act(self, snapshot, perspective: int) -> Action:
-        obs = self.normalizer.normalize(encode_obs(snapshot, perspective))
+        obs = encode_obs(snapshot, perspective)
         obs_t = torch.as_tensor(obs, dtype=torch.float32).unsqueeze(0)
         with torch.no_grad():
             if self.deterministic:
@@ -46,16 +43,12 @@ class TrainedPolicyBot:
         return Action.from_array(action.squeeze(0).numpy())
 
 
-def load_checkpoint(path) -> tuple[ActorCritic, RunningNormalizer, dict]:
+def load_checkpoint(path) -> tuple[ActorCritic, dict]:
     ckpt = torch.load(path, map_location="cpu", weights_only=False)
     model = ActorCritic(OBS_DIM, ACTION_DIM)
     model.load_state_dict(ckpt["model"])
     model.eval()
-    normalizer = RunningNormalizer((OBS_DIM,))
-    normalizer.mean = ckpt["obs_mean"]
-    normalizer.var = ckpt["obs_var"]
-    normalizer.count = ckpt["obs_count"]
-    return model, normalizer, ckpt
+    return model, ckpt
 
 
 def play_match(policy_a, policy_b, seed: int, max_steps: int = 20_000) -> int | None:
@@ -70,14 +63,12 @@ def play_match(policy_a, policy_b, seed: int, max_steps: int = 20_000) -> int | 
     return sim.winner
 
 
-def evaluate_win_rates(
-    model: ActorCritic, normalizer: RunningNormalizer, episodes: int, seed: int = 0
-) -> dict[str, float]:
+def evaluate_win_rates(model: ActorCritic, episodes: int, seed: int = 0) -> dict[str, float]:
     results = {}
     for name, factory in BOT_LADDER.items():
         wins = 0
         for i in range(episodes):
-            trained = TrainedPolicyBot(model, normalizer)
+            trained = TrainedPolicyBot(model)
             winner = play_match(trained, factory(), seed=seed + i)
             wins += winner == 0
         results[name] = wins / episodes
@@ -86,7 +77,6 @@ def evaluate_win_rates(
 
 def record_match(
     model: ActorCritic,
-    normalizer: RunningNormalizer,
     opponent_name: str,
     out_path: str,
     seed: int = 0,
@@ -107,7 +97,7 @@ def record_match(
 
     sim = MatchSim()
     sim.reset(seed=seed)
-    trained = TrainedPolicyBot(model, normalizer)
+    trained = TrainedPolicyBot(model)
     opponent = BOT_LADDER[opponent_name]()
     trained.reset(seed=seed)
     opponent.reset(seed=seed)
@@ -154,19 +144,19 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--record-out", default="eval_match.gif")
     args = parser.parse_args(argv)
 
-    model, normalizer, ckpt = load_checkpoint(args.ckpt)
+    model, ckpt = load_checkpoint(args.ckpt)
     print(
         f"loaded checkpoint: step={ckpt['global_step']} stage_idx={ckpt['stage_idx']} "
         f"elo={ckpt['trainee_elo']:.1f}"
     )
 
-    results = evaluate_win_rates(model, normalizer, args.episodes, seed=args.seed)
+    results = evaluate_win_rates(model, args.episodes, seed=args.seed)
     print("win rates vs bot ladder:")
     for name, win_rate in results.items():
         print(f"  {name:>8}: {win_rate:.1%}")
 
     if args.record:
-        winner = record_match(model, normalizer, args.record, args.record_out, seed=args.seed)
+        winner = record_match(model, args.record, args.record_out, seed=args.seed)
         print(f"recorded match vs {args.record} -> {args.record_out} (winner={winner})")
 
 
