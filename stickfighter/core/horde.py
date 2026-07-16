@@ -12,3 +12,8 @@ render/ragdoll.py RagdollManager work on this scenario with no changes --
 both are already driven purely by event data, not by any "there are exactly
 2 archers" assumption.
 """
+
+import argparse
+import math
+import random
+from dataclasses import dataclass, field
