@@ -46,3 +46,6 @@ class MeleeEnemyState:
     alive: bool = True
     grounded: bool = True  # ground-only entity; kept so draw._draw_legs can be reused as-is
     attack_cooldown: float = 0.0
+
+    def top(self) -> float:
+        return self.y - C.CHAR_HEIGHT
