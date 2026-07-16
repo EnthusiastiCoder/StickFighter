@@ -54,3 +54,5 @@ def run(argv: list[str] | None = None) -> None:
 
         scene.draw(screen)
         pygame.display.flip()
+
+    pygame.quit()
