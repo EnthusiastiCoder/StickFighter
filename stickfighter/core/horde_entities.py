@@ -11,3 +11,13 @@ an archer, so folding them into ArcherState would just add dead fields there.
 from dataclasses import dataclass
 
 from stickfighter.core import constants as C
+
+
+@dataclass(frozen=True)
+class EnemyConfig:
+    name: str
+    hp: float
+    speed: float  # px/s, walking toward the hero
+    melee_range: float  # px from the hero at which it stops and attacks
+    melee_damage: float
+    has_shield: bool  # blocks torso/limb hits; a headshot still kills
