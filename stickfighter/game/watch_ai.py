@@ -56,3 +56,7 @@ def run(argv: list[str] | None = None) -> None:
         pygame.display.flip()
 
     pygame.quit()
+
+
+if __name__ == "__main__":
+    run()
