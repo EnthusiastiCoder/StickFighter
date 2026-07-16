@@ -41,3 +41,9 @@ def run(argv: list[str] | None = None) -> None:
     while running:
         frame_dt = min(clock.tick(240) / 1000.0, MAX_FRAME_DT)
         accumulator += frame_dt
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            else:
+                scene.handle_event(event)
