@@ -17,7 +17,7 @@ import torch
 from stickfighter.ai.bots.idle import IdleBot
 from stickfighter.ai.envs.duel_env import DuelEnv
 from stickfighter.ai.obs import OBS_DIM
-from stickfighter.ai.ppo.policy import ActorCritic, RunningNormalizer
+from stickfighter.ai.ppo.policy import ActorCritic
 from stickfighter.ai.ppo.ppo import PPOConfig, RolloutBuffer, ppo_update
 from stickfighter.core.actions import ACTION_DIM
 
@@ -35,7 +35,6 @@ def test_ppo_shows_measurable_learning_progress_on_s0_within_100k_steps():
     device = torch.device("cpu")
     model = ActorCritic(OBS_DIM, ACTION_DIM).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=3e-4)
-    normalizer = RunningNormalizer((OBS_DIM,))
     config = PPOConfig()
     buffer = RolloutBuffer(n_steps, n_envs, OBS_DIM, ACTION_DIM, device)
 
@@ -46,8 +45,7 @@ def test_ppo_shows_measurable_learning_progress_on_s0_within_100k_steps():
         buffer.reset()
         rollout_rewards = []
         for _ in range(n_steps):
-            normalizer.update(obs)
-            obs_t = torch.as_tensor(normalizer.normalize(obs), dtype=torch.float32, device=device)
+            obs_t = torch.as_tensor(obs, dtype=torch.float32, device=device)
             with torch.no_grad():
                 action, log_prob, _entropy, value = model.get_action_and_value(obs_t)
             next_obs, reward, terminated, truncated, _infos = vec_env.step(action.cpu().numpy())
@@ -58,7 +56,7 @@ def test_ppo_shows_measurable_learning_progress_on_s0_within_100k_steps():
             obs = next_obs
 
         with torch.no_grad():
-            last_obs_t = torch.as_tensor(normalizer.normalize(obs), dtype=torch.float32)
+            last_obs_t = torch.as_tensor(obs, dtype=torch.float32)
             last_value = model.get_value(last_obs_t)
         buffer.compute_gae(last_value, config.gamma, config.gae_lambda)
         stats = ppo_update(model, optimizer, buffer, config)
