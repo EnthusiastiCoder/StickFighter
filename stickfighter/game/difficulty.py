@@ -46,8 +46,8 @@ def make_legend() -> Policy:
         return BallisticBot(PERFECT)
     from stickfighter.ai.ppo.evaluate import TrainedPolicyBot, load_checkpoint
 
-    model, normalizer, _ckpt = load_checkpoint(ckpt_path)
-    return TrainedPolicyBot(model, normalizer, deterministic=True)
+    model, _ckpt = load_checkpoint(ckpt_path)
+    return TrainedPolicyBot(model, deterministic=True)
 
 
 DIFFICULTIES: dict[str, Callable[[], Policy]] = {
