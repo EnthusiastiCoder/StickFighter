@@ -14,3 +14,11 @@ from stickfighter.game.difficulty import DIFFICULTIES
 from stickfighter.game.scenes.duel import DuelScene
 
 MAX_FRAME_DT = 0.25
+
+
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--left", choices=list(DIFFICULTIES), default="Legend")
+    parser.add_argument("--right", choices=list(DIFFICULTIES), default="Gold")
+    parser.add_argument("--seed", type=int, default=None)
+    return parser.parse_args(argv)
