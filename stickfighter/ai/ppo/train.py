@@ -2,15 +2,29 @@
 self-play league of frozen past checkpoints.
 
 Uses gymnasium's SyncVectorEnv exclusively. AsyncVectorEnv (real
-multiprocessing workers, see envs/vec.py) was benchmarked against it and did
-NOT outperform it at this project's scale -- the sim + bot computation is
-cheap enough that multiprocessing IPC overhead ate the theoretical
-parallelism gain. Running everything in one process also means a self-play
-opponent's weights can just be swapped in place (`sub_env.opponent = ...`),
-with no cross-process weight-sync mechanism needed at all.
+multiprocessing workers, see envs/vec.py) is not just unhelpful here but
+actively dangerous on a machine with a CUDA build of torch installed: every
+worker process independently loads the full cuBLAS/cuFFT DLL stack (never
+even used, since training runs on CPU), and spawning more than a couple of
+such processes has been observed to exhaust this machine's paging file
+(WinError 1455) badly enough to crash unrelated processes system-wide.
+Running everything in one process sidesteps that entirely, and also means a
+self-play opponent's weights can just be swapped in place
+(`sub_env.opponent = ...`), with no cross-process weight-sync needed.
+
+On CPU, the right thread count is different for the two halves of a
+rollout, benchmarked here on this machine: collecting the rollout does one
+tiny inference call (batch = n_envs) per env-step, and multi-threaded BLAS's
+own synchronization overhead exceeds the payoff at that size -- 1 thread
+measured faster than 8 at every n_envs tried. ppo_update instead runs full
+epochs over the whole rollout in much larger minibatches, where more
+threads measured ~3x faster (1084ms -> 367ms at 1 vs 8 threads on this
+machine). So thread count is switched around the update call rather than
+fixed for the whole run.
 """
 
 import argparse
+import os
 import time
 from pathlib import Path
 
@@ -33,7 +47,7 @@ from stickfighter.core.actions import ACTION_DIM
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser()
-    p.add_argument("--n-envs", type=int, default=8)
+    p.add_argument("--n-envs", type=int, default=64)
     p.add_argument("--n-steps", type=int, default=256, help="steps per env per rollout")
     p.add_argument("--total-steps", type=int, default=2_000_000)
     p.add_argument("--seed", type=int, default=0)
@@ -131,6 +145,9 @@ def build_opponent(
 def main(argv: list[str] | None = None) -> None:
     args = parse_args(argv)
     device = resolve_device(args.device)
+    rollout_threads, update_threads = 1, (os.cpu_count() or 8)
+    if device.type == "cpu":
+        torch.set_num_threads(rollout_threads)
     set_seed(args.seed)
     lr_final = args.lr_final if args.lr_final is not None else args.lr * 0.1
 
@@ -233,7 +250,11 @@ def main(argv: list[str] | None = None) -> None:
             group["lr"] = linear_schedule(args.lr, lr_final, progress)
         ppo_config.ent_coef = linear_schedule(args.ent_coef, args.ent_coef_final, progress)
 
+        if device.type == "cpu":
+            torch.set_num_threads(update_threads)
         stats = ppo_update(model, optimizer, buffer, ppo_config)
+        if device.type == "cpu":
+            torch.set_num_threads(rollout_threads)
         rollout_idx += 1
 
         logger.log(
