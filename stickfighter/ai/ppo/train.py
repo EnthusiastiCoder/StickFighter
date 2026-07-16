@@ -87,10 +87,17 @@ def resolve_device(name: str) -> torch.device:
     return torch.device(name)
 
 
-def make_run_dir(run_dir_arg: str | None) -> Path:
-    run_dir = Path(run_dir_arg) if run_dir_arg else Path("runs") / time.strftime(
-        "stickfighter_%Y%m%d_%H%M%S"
-    )
+def make_run_dir(run_dir_arg: str | None, resume_arg: str | None = None) -> Path:
+    # a bare --resume with no --run-dir must keep writing into the resumed
+    # directory -- otherwise every resume silently forks a fresh, empty
+    # runs/<timestamp>/ and leaves the checkpoints difficulty.py and future
+    # resumes look for (runs/stickfighter_main/final.pt) stale forever.
+    if run_dir_arg:
+        run_dir = Path(run_dir_arg)
+    elif resume_arg:
+        run_dir = Path(resume_arg)
+    else:
+        run_dir = Path("runs") / time.strftime("stickfighter_%Y%m%d_%H%M%S")
     (run_dir / "checkpoints").mkdir(parents=True, exist_ok=True)
     (run_dir / "eval").mkdir(exist_ok=True)
     (run_dir / "best").mkdir(exist_ok=True)
@@ -157,7 +164,7 @@ def main(argv: list[str] | None = None) -> None:
     set_seed(args.seed)
     lr_final = args.lr_final if args.lr_final is not None else args.lr * 0.1
 
-    run_dir = make_run_dir(args.run_dir)
+    run_dir = make_run_dir(args.run_dir, args.resume)
     logger = TrainingLogger(run_dir / "logs")
 
     model = ActorCritic(OBS_DIM, ACTION_DIM).to(device)
