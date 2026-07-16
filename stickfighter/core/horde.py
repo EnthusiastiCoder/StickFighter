@@ -17,3 +17,22 @@ import argparse
 import math
 import random
 from dataclasses import dataclass, field
+
+from stickfighter.core import constants as C
+from stickfighter.core.ballistics import (
+    segment_hits_circle,
+    segment_hits_rect,
+    solve_launch_angle,
+    spawn_arrow,
+    step_arrow,
+)
+from stickfighter.core.entities import (
+    ArcherState,
+    ArrowState,
+    head_hitbox,
+    limb_hitbox,
+    torso_hitbox,
+)
+from stickfighter.core.events import ArrowFired, ArrowHit, ArrowMiss, CoinEarned, Death, Event
+from stickfighter.core.horde_entities import SHIELDBEARER, SPEARMAN, SWORDSMAN, MeleeEnemyState
+from stickfighter.core.rules import coins_for_part, damage_for_part
