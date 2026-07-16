@@ -36,3 +36,10 @@ from stickfighter.core.entities import (
 from stickfighter.core.events import ArrowFired, ArrowHit, ArrowMiss, CoinEarned, Death, Event
 from stickfighter.core.horde_entities import SHIELDBEARER, SPEARMAN, SWORDSMAN, MeleeEnemyState
 from stickfighter.core.rules import coins_for_part, damage_for_part
+
+HERO_X = 90.0
+TOTAL_ENEMIES = 15
+MAX_ACTIVE = 3
+ATTACK_COOLDOWN = 0.6
+ENEMY_MIX = ((SWORDSMAN, 0.5), (SPEARMAN, 0.3), (SHIELDBEARER, 0.2))
+SPAWN_X_JITTER = (20.0, 150.0)
