@@ -5,7 +5,7 @@ from stickfighter.ai.envs.duel_env import DuelEnv
 from stickfighter.ai.obs import OBS_DIM
 from stickfighter.ai.ppo.curriculum import STAGES, Curriculum
 from stickfighter.ai.ppo.league import League
-from stickfighter.ai.ppo.policy import ActorCritic, RunningNormalizer
+from stickfighter.ai.ppo.policy import ActorCritic
 from stickfighter.ai.ppo.train import (
     build_opponent,
     find_latest_checkpoint,
@@ -39,11 +39,8 @@ def test_build_opponent_uses_scripted_bot_outside_selfplay():
     curriculum = Curriculum()  # starts at S0_static
     league = League()
     model = ActorCritic()
-    normalizer = RunningNormalizer((OBS_DIM,))
 
-    opponent, entry, near_miss_scale = build_opponent(
-        curriculum, league, model, normalizer, trainee_elo=1200.0
-    )
+    opponent, entry, near_miss_scale = build_opponent(curriculum, league, model, trainee_elo=1200.0)
     assert entry is None
     assert opponent is not None
     assert near_miss_scale == curriculum.stage.near_miss_scale
@@ -53,12 +50,9 @@ def test_build_opponent_seeds_and_samples_league_in_selfplay():
     curriculum = Curriculum(stage_idx=len(STAGES) - 1)
     league = League()
     model = ActorCritic()
-    normalizer = RunningNormalizer((OBS_DIM,))
     assert league.is_empty()
 
-    opponent, entry, near_miss_scale = build_opponent(
-        curriculum, league, model, normalizer, trainee_elo=1200.0
-    )
+    opponent, entry, near_miss_scale = build_opponent(curriculum, league, model, trainee_elo=1200.0)
     assert not league.is_empty()  # the trainee itself was auto-seeded as the first entry
     assert entry is not None
     assert near_miss_scale == curriculum.stage.near_miss_scale
@@ -73,12 +67,11 @@ def test_build_opponent_matches_near_miss_scale_to_the_rehearsed_stage_not_the_c
     assert curriculum.stage.near_miss_scale == 0.0
     league = League()
     model = ActorCritic()
-    normalizer = RunningNormalizer((OBS_DIM,))
 
     seen_scales = set()
     for _ in range(200):
         _opponent, _entry, near_miss_scale = build_opponent(
-            curriculum, league, model, normalizer, trainee_elo=1200.0
+            curriculum, league, model, trainee_elo=1200.0
         )
         seen_scales.add(near_miss_scale)
     assert seen_scales == {s.near_miss_scale for s in STAGES[: curriculum.stage_idx + 1]}
@@ -88,11 +81,10 @@ def test_checkpoint_round_trip_reproduces_identical_actions(tmp_path):
     torch.manual_seed(0)
     model = ActorCritic()
     optimizer = torch.optim.Adam(model.parameters(), lr=3e-4)
-    normalizer = RunningNormalizer((OBS_DIM,))
     curriculum = Curriculum()
 
     ckpt_path = tmp_path / "ckpt.pt"
-    save_checkpoint(ckpt_path, model, optimizer, 1234, normalizer, curriculum, trainee_elo=1250.0)
+    save_checkpoint(ckpt_path, model, optimizer, 1234, curriculum, trainee_elo=1250.0)
 
     reloaded = ActorCritic()
     ckpt = torch.load(ckpt_path, weights_only=False)
