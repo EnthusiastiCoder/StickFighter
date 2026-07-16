@@ -9,3 +9,5 @@ an archer, so folding them into ArcherState would just add dead fields there.
 """
 
 from dataclasses import dataclass
+
+from stickfighter.core import constants as C
