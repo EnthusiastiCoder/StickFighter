@@ -1,10 +1,9 @@
 import torch
 
 from stickfighter.ai.bots.ballistic import BallisticBot
-from stickfighter.ai.obs import OBS_DIM
 from stickfighter.ai.ppo.curriculum import Curriculum
 from stickfighter.ai.ppo.evaluate import TrainedPolicyBot
-from stickfighter.ai.ppo.policy import ActorCritic, RunningNormalizer
+from stickfighter.ai.ppo.policy import ActorCritic
 from stickfighter.ai.ppo.train import save_checkpoint
 from stickfighter.game import difficulty
 
@@ -53,9 +52,8 @@ def test_legend_loads_a_real_trained_checkpoint_when_present(monkeypatch, tmp_pa
 
     model = ActorCritic()
     optimizer = torch.optim.Adam(model.parameters())
-    normalizer = RunningNormalizer((OBS_DIM,))
     curriculum = Curriculum()
-    save_checkpoint(run_dir / "final.pt", model, optimizer, 1000, normalizer, curriculum, 1200.0)
+    save_checkpoint(run_dir / "final.pt", model, optimizer, 1000, curriculum, 1200.0)
 
     bot = difficulty.make_legend()
     assert isinstance(bot, TrainedPolicyBot)
