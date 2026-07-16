@@ -51,3 +51,6 @@ def run(argv: list[str] | None = None) -> None:
         while accumulator >= C.DT:
             scene.update(C.DT)
             accumulator -= C.DT
+
+        scene.draw(screen)
+        pygame.display.flip()
