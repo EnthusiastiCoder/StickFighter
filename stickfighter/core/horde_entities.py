@@ -32,3 +32,17 @@ SPEARMAN = EnemyConfig(
 SHIELDBEARER = EnemyConfig(
     name="shieldbearer", hp=30.0, speed=90.0, melee_range=45.0, melee_damage=45.0, has_shield=True
 )
+
+
+@dataclass
+class MeleeEnemyState:
+    enemy_id: int
+    config: EnemyConfig
+    x: float
+    y: float  # feet position, same convention as ArcherState
+    vx: float = 0.0
+    facing: int = -1  # enemies walk in from the right, facing left, toward the hero
+    hp: float = 0.0
+    alive: bool = True
+    grounded: bool = True  # ground-only entity; kept so draw._draw_legs can be reused as-is
+    attack_cooldown: float = 0.0
