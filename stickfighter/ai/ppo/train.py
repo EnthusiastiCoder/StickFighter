@@ -39,7 +39,7 @@ from stickfighter.ai.obs import OBS_DIM
 from stickfighter.ai.ppo.curriculum import SELFPLAY_STAGE_NAME, Curriculum
 from stickfighter.ai.ppo.league import DEFAULT_ELO, League
 from stickfighter.ai.ppo.logging import TrainingLogger
-from stickfighter.ai.ppo.policy import ActorCritic, RunningNormalizer
+from stickfighter.ai.ppo.policy import ActorCritic
 from stickfighter.ai.ppo.ppo import PPOConfig, RolloutBuffer, ppo_update
 from stickfighter.ai.seeding import set_seed
 from stickfighter.core.actions import ACTION_DIM
@@ -100,7 +100,6 @@ def save_checkpoint(
     model: ActorCritic,
     optimizer: torch.optim.Optimizer,
     global_step: int,
-    obs_normalizer: RunningNormalizer,
     curriculum: Curriculum,
     trainee_elo: float,
 ) -> None:
@@ -109,9 +108,6 @@ def save_checkpoint(
             "model": model.state_dict(),
             "optimizer": optimizer.state_dict(),
             "global_step": global_step,
-            "obs_mean": obs_normalizer.mean,
-            "obs_var": obs_normalizer.var,
-            "obs_count": obs_normalizer.count,
             "stage_idx": curriculum.stage_idx,
             "trainee_elo": trainee_elo,
         },
@@ -125,7 +121,7 @@ def linear_schedule(start: float, end: float, progress: float) -> float:
 
 
 def build_opponent(
-    curriculum: Curriculum, league: League, model: ActorCritic, obs_normalizer, trainee_elo: float
+    curriculum: Curriculum, league: League, model: ActorCritic, trainee_elo: float
 ) -> tuple[Policy, object | None, float]:
     """Returns (opponent, league_entry, near_miss_scale). league_entry is
     None outside S3. near_miss_scale matches whichever stage's opponent was
@@ -138,7 +134,7 @@ def build_opponent(
     if league.is_empty():
         league.add_snapshot(model, name="step_0", elo=trainee_elo)
     entry = league.sample_entry()
-    opponent = league.make_opponent(entry, OBS_DIM, ACTION_DIM, obs_normalizer)
+    opponent = league.make_opponent(entry, OBS_DIM, ACTION_DIM)
     return opponent, entry, curriculum.stage.near_miss_scale
 
 
@@ -156,7 +152,6 @@ def main(argv: list[str] | None = None) -> None:
 
     model = ActorCritic(OBS_DIM, ACTION_DIM).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
-    obs_normalizer = RunningNormalizer((OBS_DIM,))
     curriculum = Curriculum()
     if args.stage is not None:
         curriculum.stage_idx = args.stage
@@ -172,9 +167,6 @@ def main(argv: list[str] | None = None) -> None:
         model.load_state_dict(ckpt["model"])
         optimizer.load_state_dict(ckpt["optimizer"])
         global_step = ckpt["global_step"]
-        obs_normalizer.mean = ckpt["obs_mean"]
-        obs_normalizer.var = ckpt["obs_var"]
-        obs_normalizer.count = ckpt["obs_count"]
         curriculum.stage_idx = ckpt["stage_idx"]
         trainee_elo = ckpt["trainee_elo"]
         print(f"resumed from {ckpt_path} at step {global_step}, stage {curriculum.stage.name}")
@@ -187,7 +179,7 @@ def main(argv: list[str] | None = None) -> None:
     def refresh_opponents() -> None:
         for i, sub_env in enumerate(envs):
             opponent, entry, near_miss_scale = build_opponent(
-                curriculum, league, model, obs_normalizer, trainee_elo
+                curriculum, league, model, trainee_elo
             )
             sub_env.opponent = opponent
             sub_env.near_miss_scale = near_miss_scale
@@ -211,9 +203,7 @@ def main(argv: list[str] | None = None) -> None:
     while global_step < args.total_steps:
         buffer.reset()
         for _ in range(args.n_steps):
-            obs_normalizer.update(obs)
-            normed_obs = obs_normalizer.normalize(obs)
-            obs_t = torch.as_tensor(normed_obs, dtype=torch.float32, device=device)
+            obs_t = torch.as_tensor(obs, dtype=torch.float32, device=device)
             with torch.no_grad():
                 action, log_prob, _entropy, value = model.get_action_and_value(obs_t)
             next_obs, reward, terminated, truncated, _infos = vec_env.step(
@@ -239,9 +229,7 @@ def main(argv: list[str] | None = None) -> None:
             obs = next_obs
 
         with torch.no_grad():
-            last_obs_t = torch.as_tensor(
-                obs_normalizer.normalize(obs), dtype=torch.float32, device=device
-            )
+            last_obs_t = torch.as_tensor(obs, dtype=torch.float32, device=device)
             last_value = model.get_value(last_obs_t)
         buffer.compute_gae(last_value, ppo_config.gamma, ppo_config.gae_lambda)
 
@@ -277,9 +265,7 @@ def main(argv: list[str] | None = None) -> None:
 
         if rollout_idx % args.checkpoint_freq == 0:
             ckpt_path = run_dir / "checkpoints" / f"ckpt_{global_step:012d}.pt"
-            save_checkpoint(
-                ckpt_path, model, optimizer, global_step, obs_normalizer, curriculum, trainee_elo
-            )
+            save_checkpoint(ckpt_path, model, optimizer, global_step, curriculum, trainee_elo)
 
         if args.target_win_rate is not None and len(curriculum.results) >= curriculum.window:
             if curriculum.win_rate >= args.target_win_rate:
@@ -293,9 +279,7 @@ def main(argv: list[str] | None = None) -> None:
                 )
                 break
 
-    save_checkpoint(
-        run_dir / "final.pt", model, optimizer, global_step, obs_normalizer, curriculum, trainee_elo
-    )
+    save_checkpoint(run_dir / "final.pt", model, optimizer, global_step, curriculum, trainee_elo)
     logger.close()
     print(f"training complete: {global_step} steps, stage {curriculum.stage.name}")
     print(f"run_dir={run_dir}")
