@@ -30,3 +30,14 @@ def run(argv: list[str] | None = None) -> None:
     pygame.display.set_caption(f"StickFighter -- {args.left} vs {args.right}")
     screen = pygame.display.set_mode((int(C.ARENA_WIDTH), int(C.ARENA_HEIGHT)))
     clock = pygame.time.Clock()
+
+    scene = DuelScene(
+        opponent_factory=DIFFICULTIES[args.right],
+        player0_factory=DIFFICULTIES[args.left],
+        seed=args.seed,
+    )
+    accumulator = 0.0
+    running = True
+    while running:
+        frame_dt = min(clock.tick(240) / 1000.0, MAX_FRAME_DT)
+        accumulator += frame_dt
