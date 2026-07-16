@@ -8,6 +8,7 @@ prompts/
 __pycache__/
 *.pyc
 runs/
+.venv-train/
 saves/
 save.json
 *.egg-info/
