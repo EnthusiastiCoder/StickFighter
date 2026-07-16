@@ -3,6 +3,18 @@ state-independent log_std, orthogonal init -- the standard modern
 continuous-control PPO recipe (as in CleanRL's ppo_continuous_action.py),
 adapted with a final Tanh on the policy mean since our action space is
 bounded to [-1, 1] rather than unbounded.
+
+No running observation normalizer here (a previous version had one, since
+removed): encode_obs already divides every feature by a fixed, known scale
+(ARENA_WIDTH, ARENA_HEIGHT, max speeds, sin/cos for angles), and a directed
+quantity like "enemy is to my right" needs that sign preserved. A z-score
+normalizer built from this game's actual play data learns a mean far from
+zero for such a feature -- self-play keeps the enemy on the same relative
+side almost always -- which flips its sign for any distance closer than the
+learned average, telling the network the enemy is on the wrong side for
+most real engagement ranges. That silently broke aim and movement for an
+entire training run before being diagnosed from the live symptom (aiming
+and running away from the enemy, universally, regardless of arena or wind).
 """
 
 import numpy as np
@@ -61,32 +73,3 @@ class ActorCritic(nn.Module):
         entropy = dist.entropy().sum(-1)
         value = self.get_value(obs)
         return action, log_prob, entropy, value
-
-
-class RunningNormalizer:
-    """Online mean/variance tracker (Welford/Chan's parallel-variance merge)
-    for observation normalization, updated from rollout data as it arrives."""
-
-    def __init__(self, shape: tuple[int, ...], epsilon: float = 1e-4) -> None:
-        self.mean = np.zeros(shape, dtype=np.float64)
-        self.var = np.ones(shape, dtype=np.float64)
-        self.count = epsilon
-
-    def update(self, x: np.ndarray) -> None:
-        batch_mean = x.mean(axis=0)
-        batch_var = x.var(axis=0)
-        batch_count = x.shape[0]
-
-        delta = batch_mean - self.mean
-        total_count = self.count + batch_count
-        new_mean = self.mean + delta * batch_count / total_count
-        m_a = self.var * self.count
-        m_b = batch_var * batch_count
-        m2 = m_a + m_b + (delta**2) * self.count * batch_count / total_count
-        self.mean = new_mean
-        self.var = m2 / total_count
-        self.count = total_count
-
-    def normalize(self, x: np.ndarray, clip: float = 10.0) -> np.ndarray:
-        normed = (x - self.mean) / np.sqrt(self.var + 1e-8)
-        return np.clip(normed, -clip, clip).astype(np.float32)
