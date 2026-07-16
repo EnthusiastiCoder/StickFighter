@@ -6,7 +6,7 @@ progression across the league.
 
 import copy
 import random
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 import numpy as np
 import torch
@@ -34,7 +34,6 @@ class FrozenPolicyBot:
     """Wraps a frozen ActorCritic snapshot as a Policy for match play."""
 
     model: ActorCritic
-    obs_normalizer: object | None = field(default=None)
 
     def __post_init__(self) -> None:
         self.model.eval()
@@ -44,8 +43,6 @@ class FrozenPolicyBot:
 
     def act(self, snapshot: MatchSnapshot, perspective: int) -> Action:
         obs = encode_obs(snapshot, perspective)
-        if self.obs_normalizer is not None:
-            obs = self.obs_normalizer.normalize(obs)
         obs_t = torch.as_tensor(obs, dtype=torch.float32).unsqueeze(0)
         with torch.no_grad():
             action, _, _, _ = self.model.get_action_and_value(obs_t)
@@ -91,12 +88,10 @@ class League:
         weights = [wr**self.pfsp_power + 1e-3 for wr in win_rates]
         return self._rng.choices(self.entries, weights=weights, k=1)[0]
 
-    def make_opponent(
-        self, entry: LeagueEntry, obs_dim: int, action_dim: int, obs_normalizer=None
-    ) -> FrozenPolicyBot:
+    def make_opponent(self, entry: LeagueEntry, obs_dim: int, action_dim: int) -> FrozenPolicyBot:
         model = ActorCritic(obs_dim, action_dim)
         model.load_state_dict(entry.state_dict)
-        return FrozenPolicyBot(model, obs_normalizer)
+        return FrozenPolicyBot(model)
 
     def record_match(self, entry: LeagueEntry, trainee_elo: float, entry_won: bool) -> float:
         """Updates PFSP bookkeeping and both Elo ratings; returns the
