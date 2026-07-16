@@ -7,3 +7,5 @@ separate dataclass from ArcherState (not a reuse/subclass) -- these enemies
 have no bow, no draw/reload cycle, and a shield flag that has no meaning for
 an archer, so folding them into ArcherState would just add dead fields there.
 """
+
+from dataclasses import dataclass
