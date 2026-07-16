@@ -47,3 +47,7 @@ def run(argv: list[str] | None = None) -> None:
                 running = False
             else:
                 scene.handle_event(event)
+
+        while accumulator >= C.DT:
+            scene.update(C.DT)
+            accumulator -= C.DT
