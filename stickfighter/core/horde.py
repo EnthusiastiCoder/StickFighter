@@ -43,3 +43,12 @@ MAX_ACTIVE = 3
 ATTACK_COOLDOWN = 0.6
 ENEMY_MIX = ((SWORDSMAN, 0.5), (SPEARMAN, 0.3), (SHIELDBEARER, 0.2))
 SPAWN_X_JITTER = (20.0, 150.0)
+
+
+@dataclass(frozen=True)
+class HordeSnapshot:
+    hero: ArcherState
+    enemies: tuple[MeleeEnemyState, ...]
+    arrows: tuple[ArrowState, ...]
+    total_kills: int
+    cleared: bool
