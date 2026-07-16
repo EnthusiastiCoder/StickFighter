@@ -12,3 +12,5 @@ import pygame
 from stickfighter.core import constants as C
 from stickfighter.game.difficulty import DIFFICULTIES
 from stickfighter.game.scenes.duel import DuelScene
+
+MAX_FRAME_DT = 0.25
