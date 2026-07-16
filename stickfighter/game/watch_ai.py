@@ -22,3 +22,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--right", choices=list(DIFFICULTIES), default="Gold")
     parser.add_argument("--seed", type=int, default=None)
     return parser.parse_args(argv)
+
+
+def run(argv: list[str] | None = None) -> None:
+    args = parse_args(argv)
+    pygame.init()
+    pygame.display.set_caption(f"StickFighter -- {args.left} vs {args.right}")
+    screen = pygame.display.set_mode((int(C.ARENA_WIDTH), int(C.ARENA_HEIGHT)))
+    clock = pygame.time.Clock()
