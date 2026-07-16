@@ -21,3 +21,14 @@ class EnemyConfig:
     melee_range: float  # px from the hero at which it stops and attacks
     melee_damage: float
     has_shield: bool  # blocks torso/limb hits; a headshot still kills
+
+
+SWORDSMAN = EnemyConfig(
+    name="swordsman", hp=30.0, speed=150.0, melee_range=45.0, melee_damage=25.0, has_shield=False
+)
+SPEARMAN = EnemyConfig(
+    name="spearman", hp=30.0, speed=130.0, melee_range=65.0, melee_damage=30.0, has_shield=False
+)
+SHIELDBEARER = EnemyConfig(
+    name="shieldbearer", hp=30.0, speed=90.0, melee_range=45.0, melee_damage=45.0, has_shield=True
+)
