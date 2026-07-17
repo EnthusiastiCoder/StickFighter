@@ -122,3 +122,10 @@ class HordeSim:
         self._update_enemies(events)
         self._update_arrows(events)
         self._spawn_up_to_max()
+
+        if self.total_kills >= TOTAL_ENEMIES and not self._queue and not any(
+            e.alive for e in self.enemies
+        ):
+            self.cleared = True
+        self.tick += 1
+        return events
