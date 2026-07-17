@@ -94,3 +94,21 @@ class HordeSim:
         self.log = []
         self._claimed_targets = {}
         self._spawn_up_to_max()
+
+    def _spawn_up_to_max(self) -> None:
+        active = sum(1 for e in self.enemies if e.alive)
+        while active < MAX_ACTIVE and self._queue:
+            config = self._queue.pop(0)
+            x = C.ARENA_WIDTH + self.rng.uniform(*SPAWN_X_JITTER)
+            self.enemies.append(
+                MeleeEnemyState(
+                    enemy_id=self._next_enemy_id,
+                    config=config,
+                    x=x,
+                    y=C.GROUND_Y,
+                    hp=config.hp,
+                    facing=-1,
+                )
+            )
+            self._next_enemy_id += 1
+            active += 1
