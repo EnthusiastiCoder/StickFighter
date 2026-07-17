@@ -160,3 +160,6 @@ class HordeSim:
         else:
             hb = torso_hitbox(target)
             tx, ty = (hb.left + hb.right) / 2.0, (hb.top + hb.bottom) / 2.0
+
+        bow_x = self.hero.x + self.hero.facing * C.BOW_FORWARD_OFFSET
+        bow_y = self.hero.top() + C.BOW_HEIGHT_OFFSET
