@@ -144,3 +144,9 @@ class HordeSim:
         claimed_ids = set(self._claimed_targets.values())
         pool = [e for e in alive if e.enemy_id not in claimed_ids] or alive
         return min(pool, key=lambda e: abs(e.x - self.hero.x))
+
+    def _act_hero(self, events: list[Event]) -> None:
+        self.hero.reload_timer = max(0.0, self.hero.reload_timer - C.DT)
+        target = self._nearest_target()
+        self.hero.draw = 1.0 if target is not None else 0.0
+        self.hero.facing = 1
