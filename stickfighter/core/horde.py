@@ -63,3 +63,19 @@ def _weighted_choice(rng: random.Random, mix: tuple) -> object:
         if r <= upto:
             return cfg
     return mix[-1][0]
+
+
+@dataclass
+class HordeSim:
+    rng: random.Random = field(default_factory=random.Random)
+    hero: ArcherState = field(default_factory=lambda: ArcherState(x=HERO_X, y=C.GROUND_Y))
+    enemies: list[MeleeEnemyState] = field(default_factory=list)
+    arrows: list[ArrowState] = field(default_factory=list)
+    _queue: list = field(default_factory=list)
+    _next_arrow_id: int = 0
+    _next_enemy_id: int = 0
+    total_kills: int = 0
+    cleared: bool = False
+    tick: int = 0
+    log: list[dict] = field(default_factory=list)
+    _claimed_targets: dict = field(default_factory=dict)  # arrow_id -> enemy_id already en route
