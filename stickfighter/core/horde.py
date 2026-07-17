@@ -112,3 +112,8 @@ class HordeSim:
             )
             self._next_enemy_id += 1
             active += 1
+
+    def step(self) -> list[Event]:
+        events: list[Event] = []
+        if self.cleared or not self.hero.alive:
+            return events
