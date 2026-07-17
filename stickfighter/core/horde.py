@@ -79,3 +79,18 @@ class HordeSim:
     tick: int = 0
     log: list[dict] = field(default_factory=list)
     _claimed_targets: dict = field(default_factory=dict)  # arrow_id -> enemy_id already en route
+
+    def reset(self, seed: int | None = None) -> None:
+        self.rng = random.Random(seed)
+        self.hero = ArcherState(x=HERO_X, y=C.GROUND_Y, facing=1, grounded=True)
+        self.enemies = []
+        self.arrows = []
+        self._queue = [_weighted_choice(self.rng, ENEMY_MIX) for _ in range(TOTAL_ENEMIES)]
+        self._next_arrow_id = 0
+        self._next_enemy_id = 0
+        self.total_kills = 0
+        self.cleared = False
+        self.tick = 0
+        self.log = []
+        self._claimed_targets = {}
+        self._spawn_up_to_max()
