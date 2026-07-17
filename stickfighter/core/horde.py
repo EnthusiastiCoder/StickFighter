@@ -117,3 +117,8 @@ class HordeSim:
         events: list[Event] = []
         if self.cleared or not self.hero.alive:
             return events
+
+        self._act_hero(events)
+        self._update_enemies(events)
+        self._update_arrows(events)
+        self._spawn_up_to_max()
