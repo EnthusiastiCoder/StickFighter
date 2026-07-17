@@ -52,3 +52,14 @@ class HordeSnapshot:
     arrows: tuple[ArrowState, ...]
     total_kills: int
     cleared: bool
+
+
+def _weighted_choice(rng: random.Random, mix: tuple) -> object:
+    total = sum(w for _cfg, w in mix)
+    r = rng.uniform(0.0, total)
+    upto = 0.0
+    for cfg, w in mix:
+        upto += w
+        if r <= upto:
+            return cfg
+    return mix[-1][0]
