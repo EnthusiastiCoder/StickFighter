@@ -150,3 +150,6 @@ class HordeSim:
         target = self._nearest_target()
         self.hero.draw = 1.0 if target is not None else 0.0
         self.hero.facing = 1
+
+        if target is None:
+            return
