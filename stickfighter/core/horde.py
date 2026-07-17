@@ -153,3 +153,10 @@ class HordeSim:
 
         if target is None:
             return
+
+        if target.config.has_shield:
+            hb = head_hitbox(target)
+            tx, ty = hb.cx, hb.cy
+        else:
+            hb = torso_hitbox(target)
+            tx, ty = (hb.left + hb.right) / 2.0, (hb.top + hb.bottom) / 2.0
