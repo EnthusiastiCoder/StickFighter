@@ -181,3 +181,19 @@ class HordeSim:
         if angle is None:
             angle = math.atan2(dy, dx)
         self.hero.aim_angle = angle
+
+        ready = self.hero.reload_timer <= 0.0 and self.hero.draw >= C.MIN_DRAW
+        if ready:
+            arrow = spawn_arrow(self.hero, owner=0, arrow_id=self._next_arrow_id)
+            self._next_arrow_id += 1
+            self.arrows.append(arrow)
+            self._claimed_targets[arrow.id] = target.enemy_id
+            self.hero.reload_timer = C.RELOAD_TIME
+            self.hero.draw = 0.0
+            events.append(ArrowFired(owner=0, x=arrow.x, y=arrow.y, vx=arrow.vx, vy=arrow.vy))
+            self.log.append({
+                "tick": self.tick, "event": "fire", "arrow_id": arrow.id,
+                "target_id": target.enemy_id, "target_type": target.config.name,
+                "target_x": target.x, "target_vx": target.vx,
+                "predicted_target_x": tx, "aim_angle": angle,
+            })
