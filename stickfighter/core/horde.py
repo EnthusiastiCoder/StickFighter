@@ -163,3 +163,21 @@ class HordeSim:
 
         bow_x = self.hero.x + self.hero.facing * C.BOW_FORWARD_OFFSET
         bow_y = self.hero.top() + C.BOW_HEIGHT_OFFSET
+
+        # lead prediction: aim where the (still-walking) target will be when
+        # the arrow arrives, not where it is now -- same one-iteration
+        # time-of-flight approximation bots/ballistic.py uses. The previous
+        # version aimed at the target's current position with no lead term
+        # at all, which is wrong on physics grounds alone (nonzero flight
+        # time + nonzero target velocity = the target has moved by impact)
+        # independent of whether it explains the specific misses reported.
+        dist = math.hypot(tx - bow_x, ty - bow_y)
+        time_of_flight = dist / C.ARROW_SPEED_MAX
+        tx += target.vx * time_of_flight
+        dx, dy = tx - bow_x, ty - bow_y
+        angle = solve_launch_angle(dx, dy, C.ARROW_SPEED_MAX, C.GRAVITY, prefer_low=True)
+        if angle is None:
+            angle = solve_launch_angle(dx, dy, C.ARROW_SPEED_MAX, C.GRAVITY, prefer_low=False)
+        if angle is None:
+            angle = math.atan2(dy, dx)
+        self.hero.aim_angle = angle
