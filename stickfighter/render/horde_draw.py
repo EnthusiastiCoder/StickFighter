@@ -25,3 +25,6 @@ def draw_melee_enemy(surface: pygame.Surface, enemy: MeleeEnemyState, elapsed: f
     shoulder = (enemy.x, top + C.TORSO_TOP_Y + 4.0)
     hip = (enemy.x, top + C.TORSO_BOTTOM_Y)
     feet_y = enemy.y
+
+    _draw_legs(surface, enemy, hip, feet_y, elapsed)
+    _draw_weapon(surface, enemy, shoulder)
