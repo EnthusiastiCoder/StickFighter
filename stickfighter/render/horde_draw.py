@@ -15,3 +15,13 @@ SWORD_LENGTH = 22.0
 SPEAR_LENGTH = 38.0
 SHIELD_WIDTH = 10.0
 SHIELD_HEIGHT = 34.0
+
+
+def draw_melee_enemy(surface: pygame.Surface, enemy: MeleeEnemyState, elapsed: float) -> None:
+    if not enemy.alive:
+        return
+    top = enemy.top()
+    head = (enemy.x, top + C.HEAD_CENTER_Y)
+    shoulder = (enemy.x, top + C.TORSO_TOP_Y + 4.0)
+    hip = (enemy.x, top + C.TORSO_BOTTOM_Y)
+    feet_y = enemy.y
