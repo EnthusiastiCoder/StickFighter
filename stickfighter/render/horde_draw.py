@@ -28,3 +28,6 @@ def draw_melee_enemy(surface: pygame.Surface, enemy: MeleeEnemyState, elapsed: f
 
     _draw_legs(surface, enemy, hip, feet_y, elapsed)
     _draw_weapon(surface, enemy, shoulder)
+
+    pygame.draw.line(surface, theme.INK, shoulder, hip, LINE_WIDTH)
+    draw_aa_circle(surface, head, HEAD_RADIUS, theme.INK)
