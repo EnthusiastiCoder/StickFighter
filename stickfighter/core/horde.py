@@ -327,3 +327,16 @@ class HordeSim:
             total_kills=self.total_kills,
             cleared=self.cleared,
         )
+
+
+def _selftest() -> None:
+    sim = HordeSim()
+    sim.reset(seed=0)
+    steps = 0
+    while not sim.cleared and sim.hero.alive and steps < 20_000:
+        sim.step()
+        steps += 1
+    print(
+        f"cleared={sim.cleared} hero_alive={sim.hero.alive} "
+        f"kills={sim.total_kills} steps={steps}"
+    )
