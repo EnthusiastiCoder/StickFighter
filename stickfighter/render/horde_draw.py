@@ -31,3 +31,6 @@ def draw_melee_enemy(surface: pygame.Surface, enemy: MeleeEnemyState, elapsed: f
 
     pygame.draw.line(surface, theme.INK, shoulder, hip, LINE_WIDTH)
     draw_aa_circle(surface, head, HEAD_RADIUS, theme.INK)
+
+    if enemy.config.has_shield:
+        _draw_shield(surface, enemy, shoulder, hip)
