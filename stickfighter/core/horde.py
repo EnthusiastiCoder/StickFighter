@@ -225,3 +225,13 @@ class HordeSim:
                                 facing=self.hero.facing,
                             )
                         )
+
+    def _update_arrows(self, events: list[Event]) -> None:
+        surviving: list[ArrowState] = []
+        for arrow in self.arrows:
+            prev = step_arrow(arrow, C.DT, wind=0.0)
+            if self._resolve_arrow(arrow, prev, events):
+                self._claimed_targets.pop(arrow.id, None)
+            else:
+                surviving.append(arrow)
+        self.arrows = surviving
