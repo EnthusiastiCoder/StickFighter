@@ -318,3 +318,12 @@ class HordeSim:
                     facing=enemy.facing,
                 )
             )
+
+    def snapshot(self) -> HordeSnapshot:
+        return HordeSnapshot(
+            hero=self.hero,
+            enemies=tuple(e for e in self.enemies if e.alive),
+            arrows=tuple(self.arrows),
+            total_kills=self.total_kills,
+            cleared=self.cleared,
+        )
