@@ -10,3 +10,8 @@ from stickfighter.core import constants as C
 from stickfighter.core.horde_entities import MeleeEnemyState
 from stickfighter.render import theme
 from stickfighter.render.draw import HEAD_RADIUS, LINE_WIDTH, _draw_legs, draw_aa_circle
+
+SWORD_LENGTH = 22.0
+SPEAR_LENGTH = 38.0
+SHIELD_WIDTH = 10.0
+SHIELD_HEIGHT = 34.0
