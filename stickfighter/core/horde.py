@@ -288,3 +288,33 @@ class HordeSim:
             })
             return True
         return False
+
+    def _apply_hit(
+        self, enemy: MeleeEnemyState, part: str, point: tuple[float, float], events: list[Event]
+    ) -> None:
+        damage = damage_for_part(part)
+        enemy.hp = max(0.0, enemy.hp - damage)
+        events.append(
+            ArrowHit(
+                owner=0, target=enemy.enemy_id, part=part, damage=damage, x=point[0], y=point[1]
+            )
+        )
+        events.append(CoinEarned(who=0, amount=coins_for_part(part)))
+        killed = enemy.hp <= 0.0 and enemy.alive
+        self.log.append({
+            "tick": self.tick, "event": "hit", "target_id": enemy.enemy_id,
+            "part": part, "damage": damage, "point": point, "killed": killed,
+        })
+        if killed:
+            enemy.alive = False
+            self.total_kills += 1
+            events.append(
+                Death(
+                    who=enemy.enemy_id,
+                    killer=0,
+                    headshot=(part == "head"),
+                    x=enemy.x,
+                    y=enemy.y,
+                    facing=enemy.facing,
+                )
+            )
