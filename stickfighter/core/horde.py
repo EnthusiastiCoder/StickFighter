@@ -197,3 +197,31 @@ class HordeSim:
                 "target_x": target.x, "target_vx": target.vx,
                 "predicted_target_x": tx, "aim_angle": angle,
             })
+
+    def _update_enemies(self, events: list[Event]) -> None:
+        for enemy in self.enemies:
+            if not enemy.alive:
+                continue
+            gap = enemy.x - self.hero.x
+            if gap > enemy.config.melee_range:
+                enemy.vx = -enemy.config.speed
+                enemy.x += enemy.vx * C.DT
+                enemy.attack_cooldown = 0.0
+            else:
+                enemy.vx = 0.0
+                enemy.attack_cooldown -= C.DT
+                if enemy.attack_cooldown <= 0.0:
+                    enemy.attack_cooldown = ATTACK_COOLDOWN
+                    self.hero.hp = max(0.0, self.hero.hp - enemy.config.melee_damage)
+                    if self.hero.hp <= 0.0 and self.hero.alive:
+                        self.hero.alive = False
+                        events.append(
+                            Death(
+                                who=0,
+                                killer=-1,
+                                headshot=False,
+                                x=self.hero.x,
+                                y=self.hero.y,
+                                facing=self.hero.facing,
+                            )
+                        )
