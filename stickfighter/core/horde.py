@@ -235,3 +235,56 @@ class HordeSim:
             else:
                 surviving.append(arrow)
         self.arrows = surviving
+
+    def _resolve_arrow(
+        self, arrow: ArrowState, prev: tuple[float, float], events: list[Event]
+    ) -> bool:
+        cur = (arrow.x, arrow.y)
+        for enemy in self.enemies:
+            if not enemy.alive:
+                continue
+            for part, hitbox, test in (
+                ("head", head_hitbox(enemy), segment_hits_circle),
+                ("torso", torso_hitbox(enemy), segment_hits_rect),
+                ("limb", limb_hitbox(enemy), segment_hits_rect),
+            ):
+                point = test(prev, cur, hitbox, C.ARROW_COLLIDE_RADIUS)
+                if point is None:
+                    continue
+                if part != "head" and enemy.config.has_shield:
+                    # ArrowHit, not ArrowMiss: effects.py only leaves a
+                    # permanent "stuck arrow" decal for ArrowMiss, which for
+                    # a block on a *moving* enemy left decals floating in
+                    # mid-air, detached from the shield that actually caught
+                    # it -- confirmed by rendering and watching the video,
+                    # not guessed. ArrowHit still gets the hit-particle burst
+                    # and screen shake, just with 0 damage and no kill.
+                    events.append(
+                        ArrowHit(
+                            owner=0, target=enemy.enemy_id, part="shield",
+                            damage=0.0, x=point[0], y=point[1],
+                        )
+                    )
+                    self.log.append({
+                        "tick": self.tick, "event": "shield_block", "arrow_id": arrow.id,
+                        "target_id": enemy.enemy_id, "point": point,
+                    })
+                    return True
+                self._apply_hit(enemy, part, point, events)
+                return True
+        if arrow.y >= C.GROUND_Y:
+            events.append(ArrowMiss(owner=0, x=arrow.x, y=C.GROUND_Y))
+            self.log.append({
+                "tick": self.tick, "event": "miss", "arrow_id": arrow.id,
+                "reason": "ground", "point": (arrow.x, C.GROUND_Y),
+            })
+            return True
+        m = C.OUT_OF_BOUNDS_MARGIN
+        if arrow.x < -m or arrow.x > C.ARENA_WIDTH + m or arrow.y < -m:
+            events.append(ArrowMiss(owner=0, x=arrow.x, y=arrow.y))
+            self.log.append({
+                "tick": self.tick, "event": "miss", "arrow_id": arrow.id,
+                "reason": "out_of_bounds", "point": (arrow.x, arrow.y),
+            })
+            return True
+        return False
