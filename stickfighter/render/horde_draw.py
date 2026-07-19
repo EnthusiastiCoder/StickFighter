@@ -5,3 +5,8 @@ line for spearmen's reach, and a shield block in front of shieldbearers.
 """
 
 import pygame
+
+from stickfighter.core import constants as C
+from stickfighter.core.horde_entities import MeleeEnemyState
+from stickfighter.render import theme
+from stickfighter.render.draw import HEAD_RADIUS, LINE_WIDTH, _draw_legs, draw_aa_circle
