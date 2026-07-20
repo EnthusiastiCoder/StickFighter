@@ -81,3 +81,16 @@ def record(out_path: str, seed: int = 0, fps: int = 60, max_steps: int = 20_000)
             _draw_kill_counter(surface, snap.total_kills, font)
 
             writer.append_data(pygame.surfarray.array3d(surface).swapaxes(0, 1))
+
+        # hold on a victory pose so the video ends on a beat instead of
+        # cutting off the instant the last enemy dies
+        if sim.cleared:
+            snap = sim.snapshot()
+            for _ in range(int(fps * 1.5)):
+                elapsed += C.DT
+                surface.fill(theme.BG)
+                ground_rect = pygame.Rect(0, round(C.GROUND_Y), int(C.ARENA_WIDTH), 40)
+                pygame.draw.rect(surface, theme.INK, ground_rect)
+                _draw_hero(surface, snap.hero, elapsed, victory=True)
+                _draw_kill_counter(surface, snap.total_kills, font)
+                writer.append_data(pygame.surfarray.array3d(surface).swapaxes(0, 1))
