@@ -108,3 +108,6 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--fps", type=int, default=60)
     args = parser.parse_args(argv)
+
+    result = record(args.out, seed=args.seed, fps=args.fps)
+    print(f"wrote {args.out}: {result}")
