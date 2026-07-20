@@ -29,3 +29,10 @@ def test_hero_never_takes_damage_at_the_default_pacing():
         while not sim.cleared and sim.hero.alive:
             sim.step()
         assert sim.hero.hp == 100.0
+
+
+def test_determinism_same_seed_same_outcome():
+    sim_a = HordeSim()
+    steps_a = _run_to_completion(sim_a, seed=7)
+    sim_b = HordeSim()
+    steps_b = _run_to_completion(sim_b, seed=7)
