@@ -34,3 +34,13 @@ def draw_melee_enemy(surface: pygame.Surface, enemy: MeleeEnemyState, elapsed: f
 
     if enemy.config.has_shield:
         _draw_shield(surface, enemy, shoulder, hip)
+
+
+def _draw_weapon(
+    surface: pygame.Surface, enemy: MeleeEnemyState, shoulder: tuple[float, float]
+) -> None:
+    length = SPEAR_LENGTH if enemy.config.name == "spearman" else SWORD_LENGTH
+    hand = (shoulder[0] + enemy.facing * 8.0, shoulder[1] + 6.0)
+    tip = (hand[0] + enemy.facing * length, hand[1] - 4.0)
+    pygame.draw.line(surface, theme.INK, shoulder, hand, LINE_WIDTH)
+    pygame.draw.line(surface, theme.INK, hand, tip, 3)
