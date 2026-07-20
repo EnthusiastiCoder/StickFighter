@@ -49,3 +49,9 @@ def record(out_path: str, seed: int = 0, fps: int = 60, max_steps: int = 20_000)
     pygame.init()
     font = pygame.font.Font(None, 32)
     surface = pygame.Surface((int(C.ARENA_WIDTH), int(C.ARENA_HEIGHT)))
+
+    sim = HordeSim()
+    sim.reset(seed=seed)
+    fx = effects.EffectsSystem()
+    ragdolls = ragdoll.RagdollManager()
+    elapsed = 0.0
