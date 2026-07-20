@@ -55,3 +55,14 @@ def record(out_path: str, seed: int = 0, fps: int = 60, max_steps: int = 20_000)
     fx = effects.EffectsSystem()
     ragdolls = ragdoll.RagdollManager()
     elapsed = 0.0
+
+    with imageio.get_writer(out_path, fps=fps) as writer:
+        steps = 0
+        while not sim.cleared and sim.hero.alive and steps < max_steps:
+            events = sim.step()
+            elapsed += C.DT
+            steps += 1
+            fx.handle_events(events)
+            ragdolls.handle_events(events)
+            fx.update(C.DT, sim.snapshot().arrows)
+            ragdolls.update(C.DT)
