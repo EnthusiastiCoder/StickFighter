@@ -13,3 +13,9 @@ os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
 
 import imageio
 import pygame
+
+from stickfighter.core import constants as C
+from stickfighter.core.horde import TOTAL_ENEMIES, HordeSim
+from stickfighter.render import effects, ragdoll, theme
+from stickfighter.render.draw import draw_arrow
+from stickfighter.render.horde_draw import draw_melee_enemy
