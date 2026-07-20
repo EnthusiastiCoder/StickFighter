@@ -8,3 +8,5 @@ types core/match.py does.
 import argparse
 import json
 import os
+
+os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
