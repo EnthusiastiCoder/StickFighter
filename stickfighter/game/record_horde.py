@@ -30,3 +30,11 @@ def _draw_hero(surface, hero, elapsed, victory: bool = False) -> None:
 
         _ARCHER_DRAW = draw_archer
     _ARCHER_DRAW(surface, hero, elapsed, victory=victory)
+
+
+def _write_log(out_path: str, log: list[dict]) -> str:
+    log_path = os.path.splitext(out_path)[0] + "_log.jsonl"
+    with open(log_path, "w") as f:
+        for entry in log:
+            f.write(json.dumps(entry) + "\n")
+    return log_path
