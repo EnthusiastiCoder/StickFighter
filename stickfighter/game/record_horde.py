@@ -19,3 +19,5 @@ from stickfighter.core.horde import TOTAL_ENEMIES, HordeSim
 from stickfighter.render import effects, ragdoll, theme
 from stickfighter.render.draw import draw_arrow
 from stickfighter.render.horde_draw import draw_melee_enemy
+
+_ARCHER_DRAW = None  # lazy import to avoid a hard pygame dependency at module load for tests
