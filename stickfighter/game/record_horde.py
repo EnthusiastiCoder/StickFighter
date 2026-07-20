@@ -100,3 +100,11 @@ def record(out_path: str, seed: int = 0, fps: int = 60, max_steps: int = 20_000)
         "cleared": sim.cleared, "hero_alive": sim.hero.alive, "kills": sim.total_kills,
         "steps": steps, "log_path": log_path,
     }
+
+
+def main(argv: list[str] | None = None) -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--out", default="horde.mp4")
+    parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--fps", type=int, default=60)
+    args = parser.parse_args(argv)
