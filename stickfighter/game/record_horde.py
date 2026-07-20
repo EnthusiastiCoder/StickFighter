@@ -79,3 +79,5 @@ def record(out_path: str, seed: int = 0, fps: int = 60, max_steps: int = 20_000)
             fx.draw(surface)
             ragdolls.draw(surface)
             _draw_kill_counter(surface, snap.total_kills, font)
+
+            writer.append_data(pygame.surfarray.array3d(surface).swapaxes(0, 1))
