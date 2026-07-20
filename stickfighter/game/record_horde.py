@@ -27,3 +27,6 @@ def _draw_hero(surface, hero, elapsed, victory: bool = False) -> None:
     global _ARCHER_DRAW
     if _ARCHER_DRAW is None:
         from stickfighter.render.draw import draw_archer
+
+        _ARCHER_DRAW = draw_archer
+    _ARCHER_DRAW(surface, hero, elapsed, victory=victory)
