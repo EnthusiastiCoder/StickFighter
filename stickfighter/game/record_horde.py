@@ -21,3 +21,9 @@ from stickfighter.render.draw import draw_arrow
 from stickfighter.render.horde_draw import draw_melee_enemy
 
 _ARCHER_DRAW = None  # lazy import to avoid a hard pygame dependency at module load for tests
+
+
+def _draw_hero(surface, hero, elapsed, victory: bool = False) -> None:
+    global _ARCHER_DRAW
+    if _ARCHER_DRAW is None:
+        from stickfighter.render.draw import draw_archer
