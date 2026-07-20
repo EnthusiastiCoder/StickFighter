@@ -44,3 +44,17 @@ def _draw_weapon(
     tip = (hand[0] + enemy.facing * length, hand[1] - 4.0)
     pygame.draw.line(surface, theme.INK, shoulder, hand, LINE_WIDTH)
     pygame.draw.line(surface, theme.INK, hand, tip, 3)
+
+
+def _draw_shield(
+    surface: pygame.Surface,
+    enemy: MeleeEnemyState,
+    shoulder: tuple[float, float],
+    hip: tuple[float, float],
+) -> None:
+    cx = enemy.x + enemy.facing * (C.CHAR_HALF_WIDTH + SHIELD_WIDTH / 2.0)
+    cy = (shoulder[1] + hip[1]) / 2.0
+    rect = pygame.Rect(0, 0, int(SHIELD_WIDTH), int(SHIELD_HEIGHT))
+    rect.center = (round(cx), round(cy))
+    pygame.draw.rect(surface, theme.INK, rect, border_radius=3)
+    pygame.draw.rect(surface, theme.GOLD, rect, width=2, border_radius=3)
