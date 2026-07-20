@@ -66,3 +66,16 @@ def record(out_path: str, seed: int = 0, fps: int = 60, max_steps: int = 20_000)
             ragdolls.handle_events(events)
             fx.update(C.DT, sim.snapshot().arrows)
             ragdolls.update(C.DT)
+
+            snap = sim.snapshot()
+            surface.fill(theme.BG)
+            ground_rect = pygame.Rect(0, round(C.GROUND_Y), int(C.ARENA_WIDTH), 40)
+            pygame.draw.rect(surface, theme.INK, ground_rect)
+            for enemy in snap.enemies:
+                draw_melee_enemy(surface, enemy, elapsed)
+            _draw_hero(surface, snap.hero, elapsed)
+            for arrow in snap.arrows:
+                draw_arrow(surface, arrow)
+            fx.draw(surface)
+            ragdolls.draw(surface)
+            _draw_kill_counter(surface, snap.total_kills, font)
