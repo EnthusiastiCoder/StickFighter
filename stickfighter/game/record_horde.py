@@ -4,3 +4,7 @@ renderer records" split as evaluate.py::record_match, reusing the existing
 EffectsSystem/RagdollManager unchanged since HordeSim emits the same Event
 types core/match.py does.
 """
+
+import argparse
+import json
+import os
