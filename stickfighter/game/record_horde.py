@@ -38,3 +38,8 @@ def _write_log(out_path: str, log: list[dict]) -> str:
         for entry in log:
             f.write(json.dumps(entry) + "\n")
     return log_path
+
+
+def _draw_kill_counter(surface: pygame.Surface, kills: int, font: pygame.font.Font) -> None:
+    text = font.render(f"KILLS: {kills}/{TOTAL_ENEMIES}", True, theme.INK)
+    surface.blit(text, (16, 12))
