@@ -43,3 +43,9 @@ def _write_log(out_path: str, log: list[dict]) -> str:
 def _draw_kill_counter(surface: pygame.Surface, kills: int, font: pygame.font.Font) -> None:
     text = font.render(f"KILLS: {kills}/{TOTAL_ENEMIES}", True, theme.INK)
     surface.blit(text, (16, 12))
+
+
+def record(out_path: str, seed: int = 0, fps: int = 60, max_steps: int = 20_000) -> dict:
+    pygame.init()
+    font = pygame.font.Font(None, 32)
+    surface = pygame.Surface((int(C.ARENA_WIDTH), int(C.ARENA_HEIGHT)))
