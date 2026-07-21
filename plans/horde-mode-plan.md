@@ -21,3 +21,6 @@ module tree so it cannot regress the 1v1 duel game or training pipeline.
 - Enemy count/pacing/exact numbers: mine to decide (below).
 
 ## Design
+
+**Arena**: flat ground only (`GROUND_Y`), no platforms — hero is stationary, so
+no character-vs-platform physics is needed for this mode at all.
