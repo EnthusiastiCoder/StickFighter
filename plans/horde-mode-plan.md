@@ -64,3 +64,20 @@ retuning, not a bug to hide.
 
 ## New files (all additive, nothing existing touched except a small draw.py
 reuse of `_draw_legs`)
+
+1. `stickfighter/core/horde_entities.py` — `MeleeEnemyState` dataclass +
+   `EnemyConfig` presets (SWORDSMAN/SPEARMAN/SHIELDBEARER).
+2. `stickfighter/core/horde_events.py` — `EnemySpawned`, `EnemyHit`,
+   `ShieldBlocked`, `EnemyKilled`, `HeroHit`, `HeroDown`, `HordeCleared`.
+3. `stickfighter/core/horde.py` — `HordeSim`: `reset(seed)`, `step()`,
+   `snapshot()`. Pure, headless, deterministic (no pygame/torch imports),
+   consistent with the rest of `core/`.
+4. `stickfighter/render/horde_draw.py` — `draw_melee_enemy()` (reuses
+   `draw._draw_legs` for the walk cycle; new head/torso/weapon/shield drawing).
+5. `stickfighter/game/record_horde.py` — CLI: runs `HordeSim` headlessly,
+   renders each frame to an off-screen pygame surface (`SDL_VIDEODRIVER=dummy`,
+   same pattern as `evaluate.py::record_match`), writes an MP4 via imageio.
+6. `stickfighter/tests/test_horde.py` — determinism (same seed ⇒ identical
+   state tape), shield blocks torso/limb but not head, a full 15-enemy horde
+   is clearable within a bounded step budget, hero HP never reaches 0 at the
+   default config.
