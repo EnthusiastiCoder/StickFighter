@@ -31,3 +31,5 @@ if it has a raised shield (bypasses the block), otherwise the torso (bigger
 target, same 0-miss `solve_launch_angle` math — this is flavor, not accuracy,
 since the hero never actually misses). Reuses `solve_launch_angle`,
 `spawn_arrow`, `step_arrow`, `segment_hits_circle/rect` unchanged.
+
+**Enemy types** (hardcoded presets, same spirit as `BallisticBotConfig`):
