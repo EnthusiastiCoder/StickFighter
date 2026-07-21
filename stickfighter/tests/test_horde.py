@@ -71,3 +71,10 @@ def test_no_arrow_wastes_a_shot_on_an_already_claimed_target():
     sim.reset(seed=0)
     while not sim.cleared and sim.hero.alive:
         sim.step()
+
+    fires = [e for e in sim.log if e["event"] == "fire"]
+    misses = [e for e in sim.log if e["event"] == "miss"]
+    # not zero-tolerance (a called shot at spawn-distance range can still
+    # legitimately miss), but double-targeting waste should be rare/absent
+    assert len(misses) <= 1
+    assert len(fires) <= TOTAL_ENEMIES + 3
