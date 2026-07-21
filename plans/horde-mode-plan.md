@@ -90,3 +90,5 @@ reuse of `_draw_legs`)
 4. `feat(horde): render melee enemies (sword/spear/shield)`
 5. `feat(horde): record_horde CLI -- render a full run to MP4`
 6. `test(horde): determinism, shield blocking, full-clear, hero survives`
+
+## Acceptance
