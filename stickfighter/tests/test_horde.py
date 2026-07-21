@@ -36,3 +36,9 @@ def test_determinism_same_seed_same_outcome():
     steps_a = _run_to_completion(sim_a, seed=7)
     sim_b = HordeSim()
     steps_b = _run_to_completion(sim_b, seed=7)
+
+    assert steps_a == steps_b
+    assert sim_a.total_kills == sim_b.total_kills
+    assert [(e["event"], e.get("arrow_id")) for e in sim_a.log] == [
+        (e["event"], e.get("arrow_id")) for e in sim_b.log
+    ]
