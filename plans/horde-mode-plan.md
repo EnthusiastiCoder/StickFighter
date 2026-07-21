@@ -19,3 +19,5 @@ module tree so it cannot regress the 1v1 duel game or training pipeline.
 - Hero uses the existing `PERFECT` ballistic-bot tier: 0 aim noise, 0 reaction
   delay, full draw, headshot-capable.
 - Enemy count/pacing/exact numbers: mine to decide (below).
+
+## Design
