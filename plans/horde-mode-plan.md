@@ -12,3 +12,10 @@ No neural net anywhere in this feature. Reuses the existing pure-sim primitives
 module tree so it cannot regress the 1v1 duel game or training pipeline.
 
 ## Confirmed decisions (from user)
+
+- Multiple enemies on screen simultaneously (not one-at-a-time gauntlet).
+- Enemies are melee (sword/spear), not archers — no bow, no ranged threat back.
+  Some carry shields. Melee damage is high (a real, if rare, threat to the hero).
+- Hero uses the existing `PERFECT` ballistic-bot tier: 0 aim noise, 0 reaction
+  delay, full draw, headshot-capable.
+- Enemy count/pacing/exact numbers: mine to decide (below).
