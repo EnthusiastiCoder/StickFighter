@@ -39,3 +39,12 @@ since the hero never actually misses). Reuses `solve_launch_angle`,
 | swordsman | 30 | 150 | 45px | 25 | no |
 | spearman | 30 | 130 | 65px (reach) | 30 | no |
 | shieldbearer | 30 | 90 | 45px | 45 | yes (blocks torso/limb, not head) |
+
+HP=30 means any unblocked hit (head/torso/limb, all ≥ `DAMAGE_LIMB`=16... torso
+34/head 9999 both exceed 30, limb 16 does not — so limb needs 2 hits) — the
+hero always goes for head-or-torso, both one-shot, so in practice every enemy
+dies in exactly one arrow, except a shield-blocked torso shot bounces and does
+nothing (a visible beat: shot bounces off shield → hero's next shot, still
+tracking nearest-enemy each tick, naturally reassesses and can go head instead
+since `has_shield` is already known — no separate "recognize the shield" state
+needed, the per-tick target-part rule already conditions on it).
