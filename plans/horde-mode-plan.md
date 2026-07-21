@@ -24,3 +24,10 @@ module tree so it cannot regress the 1v1 duel game or training pipeline.
 
 **Arena**: flat ground only (`GROUND_Y`), no platforms — hero is stationary, so
 no character-vs-platform physics is needed for this mode at all.
+
+**Hero**: fixed position near the left edge, never moves. Each tick: if reload
+ready and any enemy alive, target the *nearest* alive enemy; aim for the head
+if it has a raised shield (bypasses the block), otherwise the torso (bigger
+target, same 0-miss `solve_launch_angle` math — this is flavor, not accuracy,
+since the hero never actually misses). Reuses `solve_launch_angle`,
+`spawn_arrow`, `step_arrow`, `segment_hits_circle/rect` unchanged.
