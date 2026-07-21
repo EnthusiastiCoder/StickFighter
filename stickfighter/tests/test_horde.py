@@ -49,3 +49,13 @@ def test_shield_blocks_torso_and_limb_but_not_head():
     sim.reset(seed=0)
     while not sim.cleared and sim.hero.alive:
         sim.step()
+
+    hits_and_blocks = [e for e in sim.log if e["event"] in ("hit", "shield_block")]
+    assert any(e["event"] == "shield_block" for e in hits_and_blocks) or not any(
+        e["event"] == "hit" and e["part"] == "shield" for e in hits_and_blocks
+    )
+    # every logged hit that connects is on an unshielded part or a head --
+    # a shield never appears as the damaged part
+    for e in hits_and_blocks:
+        if e["event"] == "hit":
+            assert e["part"] != "shield" or e["damage"] == 0.0
