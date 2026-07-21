@@ -61,3 +61,6 @@ close the ~800px gap at 90-150px/s).
 safety net, but the pacing above is chosen so the hero should not take a hit in
 practice — if it ever does, that's a real signal the wave pacing needs
 retuning, not a bug to hide.
+
+## New files (all additive, nothing existing touched except a small draw.py
+reuse of `_draw_legs`)
