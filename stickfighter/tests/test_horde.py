@@ -42,3 +42,10 @@ def test_determinism_same_seed_same_outcome():
     assert [(e["event"], e.get("arrow_id")) for e in sim_a.log] == [
         (e["event"], e.get("arrow_id")) for e in sim_b.log
     ]
+
+
+def test_shield_blocks_torso_and_limb_but_not_head():
+    sim = HordeSim()
+    sim.reset(seed=0)
+    while not sim.cleared and sim.hero.alive:
+        sim.step()
