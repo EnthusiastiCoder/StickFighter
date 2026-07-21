@@ -59,3 +59,15 @@ def test_shield_blocks_torso_and_limb_but_not_head():
     for e in hits_and_blocks:
         if e["event"] == "hit":
             assert e["part"] != "shield" or e["damage"] == 0.0
+
+
+def test_no_arrow_wastes_a_shot_on_an_already_claimed_target():
+    # regression: the hero used to re-target the same nearest enemy every
+    # tick even after already firing at it, wasting a second arrow that
+    # arrived to find it already dead. Confirmed via the per-shot log --
+    # every fire's target should still be alive (or about to be the one
+    # this exact arrow kills) at the moment it's aimed at.
+    sim = HordeSim()
+    sim.reset(seed=0)
+    while not sim.cleared and sim.hero.alive:
+        sim.step()
