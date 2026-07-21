@@ -33,3 +33,9 @@ since the hero never actually misses). Reuses `solve_launch_angle`,
 `spawn_arrow`, `step_arrow`, `segment_hits_circle/rect` unchanged.
 
 **Enemy types** (hardcoded presets, same spirit as `BallisticBotConfig`):
+
+| type | hp | speed (px/s) | melee range | melee dmg | shield |
+|---|---|---|---|---|---|
+| swordsman | 30 | 150 | 45px | 25 | no |
+| spearman | 30 | 130 | 65px (reach) | 30 | no |
+| shieldbearer | 30 | 90 | 45px | 45 | yes (blocks torso/limb, not head) |
