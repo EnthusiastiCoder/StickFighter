@@ -81,3 +81,5 @@ reuse of `_draw_legs`)
    state tape), shield blocks torso/limb but not head, a full 15-enemy horde
    is clearable within a bounded step budget, hero HP never reaches 0 at the
    default config.
+
+## Commits (one per file, tests last)
