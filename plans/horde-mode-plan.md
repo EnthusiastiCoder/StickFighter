@@ -48,3 +48,11 @@ nothing (a visible beat: shot bounces off shield → hero's next shot, still
 tracking nearest-enemy each tick, naturally reassesses and can go head instead
 since `has_shield` is already known — no separate "recognize the shield" state
 needed, the per-tick target-part rule already conditions on it).
+
+**Waves**: 15 enemies total, mix 50% swordsman / 30% spearman / 20%
+shieldbearer (seeded RNG). Spawn off the right edge, staggered so at most 3 are
+"active" (spawned) at once; when active count drops below 3 and the queue
+isn't empty, spawn the next one. Keeps 2-3 visible/approaching at all times
+without ever truly swarming the hero (hero's fire rate, `RELOAD_TIME`=0.45s ⇒
+~2.2 shots/sec, comfortably clears 3 approaching enemies well before they
+close the ~800px gap at 90-150px/s).
