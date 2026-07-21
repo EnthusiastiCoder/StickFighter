@@ -56,3 +56,8 @@ isn't empty, spawn the next one. Keeps 2-3 visible/approaching at all times
 without ever truly swarming the hero (hero's fire rate, `RELOAD_TIME`=0.45s ⇒
 ~2.2 shots/sec, comfortably clears 3 approaching enemies well before they
 close the ~800px gap at 90-150px/s).
+
+**Hero HP/death**: kept as a real mechanic (not scripted-invincible) as a
+safety net, but the pacing above is chosen so the hero should not take a hit in
+practice — if it ever does, that's a real signal the wave pacing needs
+retuning, not a bug to hide.
