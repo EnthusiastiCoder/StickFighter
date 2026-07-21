@@ -78,3 +78,12 @@ def test_no_arrow_wastes_a_shot_on_an_already_claimed_target():
     # legitimately miss), but double-targeting waste should be rare/absent
     assert len(misses) <= 1
     assert len(fires) <= TOTAL_ENEMIES + 3
+
+
+def test_snapshot_only_reports_alive_enemies():
+    sim = HordeSim()
+    sim.reset(seed=0)
+    for _ in range(50):
+        sim.step()
+    snap = sim.snapshot()
+    assert all(e.alive for e in snap.enemies)
