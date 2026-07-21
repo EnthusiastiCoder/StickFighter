@@ -83,3 +83,10 @@ reuse of `_draw_legs`)
    default config.
 
 ## Commits (one per file, tests last)
+
+1. `feat(horde): melee enemy state and hardcoded type presets`
+2. `feat(horde): horde-specific event types`
+3. `feat(horde): HordeSim -- hero-vs-waves headless simulation`
+4. `feat(horde): render melee enemies (sword/spear/shield)`
+5. `feat(horde): record_horde CLI -- render a full run to MP4`
+6. `test(horde): determinism, shield blocking, full-clear, hero survives`
