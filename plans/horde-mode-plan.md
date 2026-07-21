@@ -10,3 +10,5 @@ shieldbearer) walking in from the right. Output is an MP4.
 No neural net anywhere in this feature. Reuses the existing pure-sim primitives
 (arrow ballistics, hitboxes, damage table) but is otherwise a new, self-contained
 module tree so it cannot regress the 1v1 duel game or training pipeline.
+
+## Confirmed decisions (from user)
