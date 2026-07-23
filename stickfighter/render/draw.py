@@ -22,6 +22,36 @@ def draw_aa_circle(
     pygame.gfxdraw.filled_circle(surface, x, y, r, color)
     pygame.gfxdraw.aacircle(surface, x, y, r, color)
 
+
+# -- render-scale support -----------------------------------------------
+# All geometry below is computed in the game's native 960x540 coordinate
+# space (unchanged math, same as the live 60fps window) and only converted
+# to screen pixels at the point of drawing, via these wrappers. This lets a
+# caller (record_horde.py) render at e.g. 3x for a genuinely higher-fidelity
+# video export -- more source pixels for anti-aliasing to work with, not
+# just an upscaled blur of the same small image -- without touching
+# core/constants.py, which core/horde.py's *simulation* (hitboxes,
+# ballistics) also reads: scaling those globally would silently change
+# actual gameplay math, not just how it's drawn.
+def _pt(p: tuple[float, float], scale: float) -> tuple[float, float]:
+    return (p[0] * scale, p[1] * scale)
+
+
+def _line(surface, scale: float, color, p0, p1, width: float) -> None:
+    pygame.draw.line(surface, color, _pt(p0, scale), _pt(p1, scale), max(1, round(width * scale)))
+
+
+def _aalines(surface, scale: float, color, points) -> None:
+    pygame.draw.aalines(surface, color, False, [_pt(p, scale) for p in points])
+
+
+def _polygon(surface, scale: float, color, points) -> None:
+    pygame.draw.polygon(surface, color, [_pt(p, scale) for p in points])
+
+
+def _circle(surface, scale: float, center, radius: float, color) -> None:
+    draw_aa_circle(surface, _pt(center, scale), radius * scale, color)
+
 PLATFORM_THICKNESS = 14.0
 
 LINE_WIDTH = 5
