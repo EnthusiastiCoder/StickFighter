@@ -92,3 +92,8 @@ reuse of `_draw_legs`)
 6. `test(horde): determinism, shield blocking, full-clear, hero survives`
 
 ## Acceptance
+
+- `python -m stickfighter.game.record_horde --out horde.mp4` produces a video
+  of the hero killing all 15 enemies, ending with `HordeCleared`.
+- `pytest stickfighter/tests/test_horde.py` green.
+- No existing test regresses (`pytest -q` still fully green).
