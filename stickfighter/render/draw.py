@@ -99,7 +99,11 @@ def _leg_points(
 
 
 def draw_archer(
-    surface: pygame.Surface, archer: ArcherState, elapsed: float, victory: bool = False
+    surface: pygame.Surface,
+    archer: ArcherState,
+    elapsed: float,
+    victory: bool = False,
+    scale: float = 1.0,
 ) -> None:
     if not archer.alive:
         return
