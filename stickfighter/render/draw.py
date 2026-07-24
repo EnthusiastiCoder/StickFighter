@@ -121,7 +121,7 @@ def draw_archer(
 
     _draw_legs(surface, archer, hip, feet_y, elapsed, scale)
     if victory:
-        _draw_victory_pose(surface, archer, shoulder)
+        _draw_victory_pose(surface, archer, shoulder, scale)
     else:
         _draw_bow_and_arms(surface, archer, shoulder)
 
