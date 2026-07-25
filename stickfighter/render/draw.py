@@ -125,8 +125,8 @@ def draw_archer(
     else:
         _draw_bow_and_arms(surface, archer, shoulder, scale)
 
-    pygame.draw.line(surface, theme.INK, shoulder, hip, LINE_WIDTH)
-    draw_aa_circle(surface, head, HEAD_RADIUS, theme.INK)
+    _line(surface, scale, theme.INK, shoulder, hip, LINE_WIDTH)
+    _circle(surface, scale, head, HEAD_RADIUS, theme.INK)
 
 
 def _draw_victory_pose(surface, archer: ArcherState, shoulder: tuple[float, float]) -> None:
