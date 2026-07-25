@@ -123,7 +123,7 @@ def draw_archer(
     if victory:
         _draw_victory_pose(surface, archer, shoulder, scale)
     else:
-        _draw_bow_and_arms(surface, archer, shoulder)
+        _draw_bow_and_arms(surface, archer, shoulder, scale)
 
     pygame.draw.line(surface, theme.INK, shoulder, hip, LINE_WIDTH)
     draw_aa_circle(surface, head, HEAD_RADIUS, theme.INK)
