@@ -134,7 +134,7 @@ def _draw_victory_pose(
 ) -> None:
     """Bow thrust overhead -- the finishing beat after the last kill."""
     raised = (shoulder[0] + archer.facing * 6.0, shoulder[1] - 34.0)
-    pygame.draw.line(surface, theme.INK, shoulder, raised, LINE_WIDTH)
+    _line(surface, scale, theme.INK, shoulder, raised, LINE_WIDTH)
     tip_a = (raised[0] - 10.0, raised[1] - 12.0)
     tip_b = (raised[0] + 10.0, raised[1] - 12.0)
     control = (raised[0], raised[1] - 6.0)
