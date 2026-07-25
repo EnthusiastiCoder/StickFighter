@@ -129,7 +129,9 @@ def draw_archer(
     _circle(surface, scale, head, HEAD_RADIUS, theme.INK)
 
 
-def _draw_victory_pose(surface, archer: ArcherState, shoulder: tuple[float, float]) -> None:
+def _draw_victory_pose(
+    surface, archer: ArcherState, shoulder: tuple[float, float], scale: float
+) -> None:
     """Bow thrust overhead -- the finishing beat after the last kill."""
     raised = (shoulder[0] + archer.facing * 6.0, shoulder[1] - 34.0)
     pygame.draw.line(surface, theme.INK, shoulder, raised, LINE_WIDTH)
