@@ -191,11 +191,11 @@ def _draw_bow_and_arms(
     pull = STRING_PULL_BASE + STRING_PULL_MAX * draw
     nock = (bow_x - forward[0] * pull, bow_y - forward[1] * pull)
 
-    pygame.draw.aalines(surface, theme.INK, False, _quad_bezier(tip_a, control, tip_b))
-    pygame.draw.line(surface, theme.INK, tip_a, nock, 2)
-    pygame.draw.line(surface, theme.INK, tip_b, nock, 2)
-    pygame.draw.line(surface, theme.INK, shoulder, (bow_x, bow_y), LINE_WIDTH)
-    pygame.draw.line(surface, theme.INK, shoulder, nock, LINE_WIDTH)
+    _aalines(surface, scale, theme.INK, _quad_bezier(tip_a, control, tip_b))
+    _line(surface, scale, theme.INK, tip_a, nock, 2)
+    _line(surface, scale, theme.INK, tip_b, nock, 2)
+    _line(surface, scale, theme.INK, shoulder, (bow_x, bow_y), LINE_WIDTH)
+    _line(surface, scale, theme.INK, shoulder, nock, LINE_WIDTH)
 
     if draw >= C.MIN_DRAW:
         _draw_nocked_arrow(surface, nock, forward)
