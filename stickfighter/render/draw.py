@@ -141,7 +141,9 @@ def _draw_victory_pose(
     _aalines(surface, scale, theme.INK, _quad_bezier(tip_a, control, tip_b))
 
 
-def _draw_legs(surface, archer: ArcherState, hip, feet_y: float, elapsed: float) -> None:
+def _draw_legs(
+    surface, archer: ArcherState, hip, feet_y: float, elapsed: float, scale: float
+) -> None:
     speed_frac = min(abs(archer.vx) / C.CHAR_MOVE_SPEED, 1.0)
     if not archer.grounded:
         legs = (
