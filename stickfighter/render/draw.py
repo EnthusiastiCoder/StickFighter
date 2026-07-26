@@ -167,15 +167,19 @@ def _draw_legs(
         _line(surface, scale, theme.INK, b, c, LINE_WIDTH)
 
 
-def _draw_bow_and_arms(surface, archer: ArcherState, shoulder: tuple[float, float]) -> None:
-    """The bow's own limbs stay a fixed, vertical-ish shape anchored to the
-    extended arm (facing direction only) -- rotating the whole silhouette to
-    track aim_angle looked fine at a horizontal aim but collapsed into an
-    unreadable flat wedge at steep up/down angles (confirmed by rendering
-    sample frames, not by inspecting the vector math). Only the string's
-    nock point and the arrow itself swing along aim_angle, which is exactly
-    what a real draw looks like: the bow stays put in the hand, the string
-    hand moves to point at the target."""
+def _draw_bow_and_arms(
+    surface, archer: ArcherState, shoulder: tuple[float, float], scale: float
+) -> None:
+    """The two tips and the nock must all rotate together as one rigid body
+    around aim_angle -- that is what makes the two string segments
+    (tip_a-to-nock, tip_b-to-nock) provably equal length for any aim angle,
+    since tip_a/tip_b are then mirror images of each other across the
+    forward axis and the nock sits exactly on that axis. Decoupling the
+    tips from aim_angle (an earlier version of this function) broke that:
+    the string went visibly asymmetric the moment the archer aimed off
+    horizontal. The wedge-like look that decoupling was meant to fix was a
+    proportions problem (too thin, too small a curve), not a rotation
+    problem -- fixed here by making both bigger instead."""
     bow_x, bow_y = bow_origin(archer)
     forward, _ = _aim_vectors(archer.aim_angle)
     draw = archer.draw
