@@ -184,8 +184,8 @@ def _draw_bow_and_arms(
     forward, perp = _aim_vectors(archer.aim_angle)
     draw = archer.draw
 
-    tip_a = (bow_x, bow_y - BOW_HALF_LEN)
-    tip_b = (bow_x, bow_y + BOW_HALF_LEN)
+    tip_a = (bow_x + perp[0] * BOW_HALF_LEN, bow_y + perp[1] * BOW_HALF_LEN)
+    tip_b = (bow_x - perp[0] * BOW_HALF_LEN, bow_y - perp[1] * BOW_HALF_LEN)
     curve = BOW_CURVE_BASE + BOW_CURVE_DRAW * draw
     control = (bow_x + archer.facing * curve, bow_y)  # bulges away from the body (the bow's back)
     pull = STRING_PULL_BASE + STRING_PULL_MAX * draw
