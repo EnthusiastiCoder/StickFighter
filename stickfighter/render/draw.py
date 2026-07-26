@@ -163,8 +163,8 @@ def _draw_legs(
             _leg_points(hip, feet_y, x_offset=-6.0, bend=-2.0),
         )
     for a, b, c in legs:
-        pygame.draw.line(surface, theme.INK, a, b, LINE_WIDTH)
-        pygame.draw.line(surface, theme.INK, b, c, LINE_WIDTH)
+        _line(surface, scale, theme.INK, a, b, LINE_WIDTH)
+        _line(surface, scale, theme.INK, b, c, LINE_WIDTH)
 
 
 def _draw_bow_and_arms(surface, archer: ArcherState, shoulder: tuple[float, float]) -> None:
