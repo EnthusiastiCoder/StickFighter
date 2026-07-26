@@ -181,7 +181,7 @@ def _draw_bow_and_arms(
     proportions problem (too thin, too small a curve), not a rotation
     problem -- fixed here by making both bigger instead."""
     bow_x, bow_y = bow_origin(archer)
-    forward, _ = _aim_vectors(archer.aim_angle)
+    forward, perp = _aim_vectors(archer.aim_angle)
     draw = archer.draw
 
     tip_a = (bow_x, bow_y - BOW_HALF_LEN)
