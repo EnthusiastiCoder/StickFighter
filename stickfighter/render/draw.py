@@ -138,7 +138,7 @@ def _draw_victory_pose(
     tip_a = (raised[0] - 10.0, raised[1] - 12.0)
     tip_b = (raised[0] + 10.0, raised[1] - 12.0)
     control = (raised[0], raised[1] - 6.0)
-    pygame.draw.aalines(surface, theme.INK, False, _quad_bezier(tip_a, control, tip_b))
+    _aalines(surface, scale, theme.INK, _quad_bezier(tip_a, control, tip_b))
 
 
 def _draw_legs(surface, archer: ArcherState, hip, feet_y: float, elapsed: float) -> None:
