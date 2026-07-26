@@ -198,7 +198,7 @@ def _draw_bow_and_arms(
     _line(surface, scale, theme.INK, shoulder, nock, LINE_WIDTH)
 
     if draw >= C.MIN_DRAW:
-        _draw_nocked_arrow(surface, nock, forward)
+        _draw_nocked_arrow(surface, nock, forward, scale)
 
 
 def _draw_nocked_arrow(surface, nock: tuple[float, float], forward: tuple[float, float]) -> None:
