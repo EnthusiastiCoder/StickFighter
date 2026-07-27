@@ -236,7 +236,7 @@ def draw_arrow(surface: pygame.Surface, arrow: ArrowState, scale: float = 1.0) -
     perp = (-dy, dx)
     head_a = (shaft_back[0] + perp[0] * ARROWHEAD_WIDTH, shaft_back[1] + perp[1] * ARROWHEAD_WIDTH)
     head_b = (shaft_back[0] - perp[0] * ARROWHEAD_WIDTH, shaft_back[1] - perp[1] * ARROWHEAD_WIDTH)
-    pygame.draw.polygon(surface, theme.INK, (tip, head_a, head_b))
+    _polygon(surface, scale, theme.INK, (tip, head_a, head_b))
 
     fletch_a = (tail[0] + perp[0] * 5.0, tail[1] + perp[1] * 5.0)
     fletch_b = (tail[0] - perp[0] * 5.0, tail[1] - perp[1] * 5.0)
