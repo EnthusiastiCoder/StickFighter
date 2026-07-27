@@ -231,7 +231,7 @@ def draw_arrow(surface: pygame.Surface, arrow: ArrowState, scale: float = 1.0) -
     shaft_back = (arrow.x - dx * shaft_len, arrow.y - dy * shaft_len)
     tail = (arrow.x - dx * C.ARROW_LENGTH, arrow.y - dy * C.ARROW_LENGTH)
     tip = (arrow.x, arrow.y)
-    pygame.draw.line(surface, theme.INK, tail, shaft_back, 4)
+    _line(surface, scale, theme.INK, tail, shaft_back, 4)
 
     perp = (-dy, dx)
     head_a = (shaft_back[0] + perp[0] * ARROWHEAD_WIDTH, shaft_back[1] + perp[1] * ARROWHEAD_WIDTH)
