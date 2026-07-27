@@ -51,6 +51,7 @@ from stickfighter.core.rules import coins_for_part, damage_for_part
 
 HERO_X = 90.0
 TOTAL_ENEMIES = 15
+ARCHER_TOTAL = 4
 MAX_ACTIVE = 4
 ATTACK_COOLDOWN = 0.6
 ENEMY_MIX = ((SWORDSMAN, 0.5), (SPEARMAN, 0.3), (SHIELDBEARER, 0.2))
