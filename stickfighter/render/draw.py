@@ -224,7 +224,7 @@ def draw_arena(surface: pygame.Surface, arena: Arena, scale: float = 1.0) -> Non
         pygame.draw.rect(surface, theme.INK, rect)
 
 
-def draw_arrow(surface: pygame.Surface, arrow: ArrowState) -> None:
+def draw_arrow(surface: pygame.Surface, arrow: ArrowState, scale: float = 1.0) -> None:
     speed = math.hypot(arrow.vx, arrow.vy) or 1.0
     dx, dy = arrow.vx / speed, arrow.vy / speed
     shaft_len = C.ARROW_LENGTH - ARROWHEAD_LEN
