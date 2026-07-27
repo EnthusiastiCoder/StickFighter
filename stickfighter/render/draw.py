@@ -201,7 +201,9 @@ def _draw_bow_and_arms(
         _draw_nocked_arrow(surface, nock, forward, scale)
 
 
-def _draw_nocked_arrow(surface, nock: tuple[float, float], forward: tuple[float, float]) -> None:
+def _draw_nocked_arrow(
+    surface, nock: tuple[float, float], forward: tuple[float, float], scale: float
+) -> None:
     tip = (nock[0] + forward[0] * C.ARROW_LENGTH, nock[1] + forward[1] * C.ARROW_LENGTH)
     pygame.draw.line(surface, theme.WHITE, nock, tip, 3)
     perp = (-forward[1], forward[0])
