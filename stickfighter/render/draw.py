@@ -213,7 +213,7 @@ def _draw_nocked_arrow(
     _polygon(surface, scale, theme.INK, (tip, head_a, head_b))
 
 
-def draw_arena(surface: pygame.Surface, arena: Arena) -> None:
+def draw_arena(surface: pygame.Surface, arena: Arena, scale: float = 1.0) -> None:
     for platform in arena.platforms:
         rect = pygame.Rect(
             round(platform.x), round(platform.y), round(platform.width), round(PLATFORM_THICKNESS)
