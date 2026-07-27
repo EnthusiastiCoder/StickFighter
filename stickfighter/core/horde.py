@@ -45,10 +45,19 @@ from stickfighter.core.rules import coins_for_part, damage_for_part
 
 HERO_X = 90.0
 TOTAL_ENEMIES = 15
-MAX_ACTIVE = 3
+MAX_ACTIVE = 4
 ATTACK_COOLDOWN = 0.6
 ENEMY_MIX = ((SWORDSMAN, 0.5), (SPEARMAN, 0.3), (SHIELDBEARER, 0.2))
 SPAWN_X_JITTER = (20.0, 150.0)
+# The hero's own fire cadence, decoupled from C.RELOAD_TIME (shared with the
+# real duel game -- changing that would speed up every archer everywhere).
+# At C.RELOAD_TIME (0.45s) the hero clears the "nearest" threat almost as
+# fast as anything can close in, regardless of how fast enemies move --
+# confirmed by measuring actual kill distances (300-500px from the hero,
+# nowhere near melee_range 45-65px) even after nearly doubling enemy speed.
+# A slower, horde-specific cadence plus more simultaneously active enemies
+# (MAX_ACTIVE) is what actually lets a wave close real distance.
+HERO_FIRE_COOLDOWN = 0.5
 
 
 @dataclass(frozen=True)
@@ -195,7 +204,7 @@ class HordeSim:
             self._next_arrow_id += 1
             self.arrows.append(arrow)
             self._claimed_targets[arrow.id] = target.enemy_id
-            self.hero.reload_timer = C.RELOAD_TIME
+            self.hero.reload_timer = HERO_FIRE_COOLDOWN
             self.hero.draw = 0.0
             events.append(ArrowFired(owner=0, x=arrow.x, y=arrow.y, vx=arrow.vx, vy=arrow.vy))
             self.log.append({
