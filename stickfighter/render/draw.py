@@ -205,7 +205,7 @@ def _draw_nocked_arrow(
     surface, nock: tuple[float, float], forward: tuple[float, float], scale: float
 ) -> None:
     tip = (nock[0] + forward[0] * C.ARROW_LENGTH, nock[1] + forward[1] * C.ARROW_LENGTH)
-    pygame.draw.line(surface, theme.WHITE, nock, tip, 3)
+    _line(surface, scale, theme.WHITE, nock, tip, 3)
     perp = (-forward[1], forward[0])
     back = (tip[0] - forward[0] * ARROWHEAD_LEN, tip[1] - forward[1] * ARROWHEAD_LEN)
     head_a = (back[0] + perp[0] * ARROWHEAD_WIDTH, back[1] + perp[1] * ARROWHEAD_WIDTH)
