@@ -19,16 +19,19 @@ def test_hero_clears_the_full_horde_without_dying():
         assert sim.total_kills == TOTAL_ENEMIES
 
 
-def test_hero_never_takes_damage_at_the_default_pacing():
-    # the wave size/hero fire-rate balance is tuned so 3 concurrent enemies
-    # never actually reach melee range -- if this starts failing, the pacing
-    # (MAX_ACTIVE vs RELOAD_TIME vs enemy speed) needs retuning, not a patch.
-    for seed in range(5):
+def test_hero_survives_the_horde_at_the_default_pacing():
+    # deliberately NOT zero-damage: enemies are meant to close real distance
+    # and occasionally land a hit (per user feedback -- a hero that snipes
+    # everything from 300-500px away "can't even reach close enough" to be
+    # dramatic). The guarantee is survival, not an untouched hero -- measured
+    # across 30 seeds at the current pacing: always clears, worst case 75 hp.
+    for seed in range(10):
         sim = HordeSim()
         sim.reset(seed=seed)
         while not sim.cleared and sim.hero.alive:
             sim.step()
-        assert sim.hero.hp == 100.0
+        assert sim.cleared, f"seed {seed} did not clear"
+        assert sim.hero.hp > 0.0
 
 
 def test_determinism_same_seed_same_outcome():
