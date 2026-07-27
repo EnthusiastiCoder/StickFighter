@@ -240,5 +240,5 @@ def draw_arrow(surface: pygame.Surface, arrow: ArrowState, scale: float = 1.0) -
 
     fletch_a = (tail[0] + perp[0] * 5.0, tail[1] + perp[1] * 5.0)
     fletch_b = (tail[0] - perp[0] * 5.0, tail[1] - perp[1] * 5.0)
-    pygame.draw.line(surface, theme.INK, tail, fletch_a, 2)
-    pygame.draw.line(surface, theme.INK, tail, fletch_b, 2)
+    _line(surface, scale, theme.INK, tail, fletch_a, 2)
+    _line(surface, scale, theme.INK, tail, fletch_b, 2)
