@@ -34,7 +34,13 @@ from stickfighter.core.entities import (
     torso_hitbox,
 )
 from stickfighter.core.events import ArrowFired, ArrowHit, ArrowMiss, CoinEarned, Death, Event
-from stickfighter.core.horde_entities import SHIELDBEARER, SPEARMAN, SWORDSMAN, MeleeEnemyState
+from stickfighter.core.horde_entities import (
+    SHIELDBEARER,
+    SPEARMAN,
+    SPEED_VARIANCE,
+    SWORDSMAN,
+    MeleeEnemyState,
+)
 from stickfighter.core.rules import coins_for_part, damage_for_part
 
 HERO_X = 90.0
@@ -108,6 +114,7 @@ class HordeSim:
                     y=C.GROUND_Y,
                     hp=config.hp,
                     facing=-1,
+                    speed_multiplier=self.rng.uniform(*SPEED_VARIANCE),
                 )
             )
             self._next_enemy_id += 1
@@ -204,7 +211,7 @@ class HordeSim:
                 continue
             gap = enemy.x - self.hero.x
             if gap > enemy.config.melee_range:
-                enemy.vx = -enemy.config.speed
+                enemy.vx = -enemy.speed()
                 enemy.x += enemy.vx * C.DT
                 enemy.attack_cooldown = 0.0
             else:
