@@ -44,6 +44,7 @@ from stickfighter.core.horde_entities import (
     SPEARMAN,
     SPEED_VARIANCE,
     SWORDSMAN,
+    CloudArcherState,
     MeleeEnemyState,
 )
 from stickfighter.core.rules import coins_for_part, damage_for_part
