@@ -13,6 +13,7 @@ from stickfighter.core import constants as C
 from stickfighter.core.entities import ArrowState
 from stickfighter.core.events import ArrowHit, ArrowMiss, CoinEarned, Death, Event
 from stickfighter.render import theme
+from stickfighter.render.draw import _pt
 
 TRAIL_LENGTH = 14
 TRAIL_DOT_STRIDE = 2
@@ -127,26 +128,29 @@ class EffectsSystem:
         m = self.shake_magnitude
         return (self._rng.randint(-int(m), int(m)), self._rng.randint(-int(m), int(m)))
 
-    def draw(self, surface: pygame.Surface) -> None:
+    def draw(self, surface: pygame.Surface, scale: float = 1.0) -> None:
         for trail in self._trails.values():
             pts = list(trail)
             for i in range(0, len(pts), TRAIL_DOT_STRIDE):
-                radius = max(1, round(2 * (1.0 - i / max(len(pts), 1))))
-                pos = (round(pts[i][0]), round(pts[i][1]))
+                radius = max(1, round(2 * (1.0 - i / max(len(pts), 1)) * scale))
+                pos = (round(pts[i][0] * scale), round(pts[i][1] * scale))
                 pygame.draw.circle(surface, theme.WHITE, pos, radius)
 
         for s in self.stuck:
-            pygame.draw.line(surface, theme.INK, (s.x - 10, s.y), (s.x + 10, s.y), 3)
+            a = _pt((s.x - 10, s.y), scale)
+            b = _pt((s.x + 10, s.y), scale)
+            pygame.draw.line(surface, theme.INK, a, b, max(1, round(3 * scale)))
 
         for p in self.particles:
-            radius = max(1, round(3 * (1.0 - p.age / p.lifetime)))
-            pygame.draw.circle(surface, theme.BLOOD, (round(p.x), round(p.y)), radius)
+            radius = max(1, round(3 * (1.0 - p.age / p.lifetime) * scale))
+            pygame.draw.circle(surface, theme.BLOOD, _pt((p.x, p.y), scale), radius)
 
         for f in self.floaters:
             frac = max(0.0, 1.0 - f.age / f.lifetime)
-            font = _get_font(22)
+            font = _get_font(round(22 * scale))
             text_surf = font.render(f.text, True, f.color)
             text_surf.set_alpha(round(255 * frac))
+            fx, fy = _pt((f.x, f.y), scale)
             surface.blit(
-                text_surf, (f.x - text_surf.get_width() / 2, f.y - text_surf.get_height() / 2)
+                text_surf, (fx - text_surf.get_width() / 2, fy - text_surf.get_height() / 2)
             )
