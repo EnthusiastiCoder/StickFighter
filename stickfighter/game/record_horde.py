@@ -23,13 +23,13 @@ from stickfighter.render.horde_draw import draw_melee_enemy
 _ARCHER_DRAW = None  # lazy import to avoid a hard pygame dependency at module load for tests
 
 
-def _draw_hero(surface, hero, elapsed, victory: bool = False) -> None:
+def _draw_hero(surface, hero, elapsed, scale: float, victory: bool = False) -> None:
     global _ARCHER_DRAW
     if _ARCHER_DRAW is None:
         from stickfighter.render.draw import draw_archer
 
         _ARCHER_DRAW = draw_archer
-    _ARCHER_DRAW(surface, hero, elapsed, victory=victory)
+    _ARCHER_DRAW(surface, hero, elapsed, victory=victory, scale=scale)
 
 
 def _write_log(out_path: str, log: list[dict]) -> str:
@@ -40,15 +40,35 @@ def _write_log(out_path: str, log: list[dict]) -> str:
     return log_path
 
 
-def _draw_kill_counter(surface: pygame.Surface, kills: int, font: pygame.font.Font) -> None:
+def _draw_kill_counter(
+    surface: pygame.Surface, kills: int, font: pygame.font.Font, scale: float
+) -> None:
     text = font.render(f"KILLS: {kills}/{TOTAL_ENEMIES}", True, theme.INK)
-    surface.blit(text, (16, 12))
+    surface.blit(text, (round(16 * scale), round(12 * scale)))
 
 
-def record(out_path: str, seed: int = 0, fps: int = 60, max_steps: int = 20_000) -> dict:
+def _draw_ground(surface: pygame.Surface, scale: float) -> None:
+    ground_rect = pygame.Rect(
+        0, round(C.GROUND_Y * scale), round(C.ARENA_WIDTH * scale), round(40 * scale)
+    )
+    pygame.draw.rect(surface, theme.INK, ground_rect)
+
+
+def record(
+    out_path: str, seed: int = 0, fps: int = 60, max_steps: int = 20_000, scale: float = 3.0
+) -> dict:
+    """scale renders the whole scene at scale*960 x scale*540 -- genuinely
+    more source pixels for every anti-aliased line/circle to work with, not
+    just an upscaled blur of a small image. Every draw call in the pipeline
+    (hero, enemies, arrows, particles, ragdolls) takes the same scale so
+    everything lands in the same place relative to each other; only
+    core/constants.py (read by the *simulation*, not just rendering) stays
+    untouched, since scaling those would silently change hitboxes/ballistics
+    instead of just how the frame looks.
+    """
     pygame.init()
-    font = pygame.font.Font(None, 32)
-    surface = pygame.Surface((int(C.ARENA_WIDTH), int(C.ARENA_HEIGHT)))
+    font = pygame.font.Font(None, round(32 * scale))
+    surface = pygame.Surface((round(C.ARENA_WIDTH * scale), round(C.ARENA_HEIGHT * scale)))
 
     sim = HordeSim()
     sim.reset(seed=seed)
@@ -69,16 +89,15 @@ def record(out_path: str, seed: int = 0, fps: int = 60, max_steps: int = 20_000)
 
             snap = sim.snapshot()
             surface.fill(theme.BG)
-            ground_rect = pygame.Rect(0, round(C.GROUND_Y), int(C.ARENA_WIDTH), 40)
-            pygame.draw.rect(surface, theme.INK, ground_rect)
+            _draw_ground(surface, scale)
             for enemy in snap.enemies:
-                draw_melee_enemy(surface, enemy, elapsed)
-            _draw_hero(surface, snap.hero, elapsed)
+                draw_melee_enemy(surface, enemy, elapsed, scale=scale)
+            _draw_hero(surface, snap.hero, elapsed, scale)
             for arrow in snap.arrows:
-                draw_arrow(surface, arrow)
-            fx.draw(surface)
-            ragdolls.draw(surface)
-            _draw_kill_counter(surface, snap.total_kills, font)
+                draw_arrow(surface, arrow, scale=scale)
+            fx.draw(surface, scale)
+            ragdolls.draw(surface, scale)
+            _draw_kill_counter(surface, snap.total_kills, font, scale)
 
             writer.append_data(pygame.surfarray.array3d(surface).swapaxes(0, 1))
 
@@ -89,10 +108,9 @@ def record(out_path: str, seed: int = 0, fps: int = 60, max_steps: int = 20_000)
             for _ in range(int(fps * 1.5)):
                 elapsed += C.DT
                 surface.fill(theme.BG)
-                ground_rect = pygame.Rect(0, round(C.GROUND_Y), int(C.ARENA_WIDTH), 40)
-                pygame.draw.rect(surface, theme.INK, ground_rect)
-                _draw_hero(surface, snap.hero, elapsed, victory=True)
-                _draw_kill_counter(surface, snap.total_kills, font)
+                _draw_ground(surface, scale)
+                _draw_hero(surface, snap.hero, elapsed, scale, victory=True)
+                _draw_kill_counter(surface, snap.total_kills, font, scale)
                 writer.append_data(pygame.surfarray.array3d(surface).swapaxes(0, 1))
 
     log_path = _write_log(out_path, sim.log)
@@ -107,9 +125,10 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--out", default="horde.mp4")
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--fps", type=int, default=60)
+    parser.add_argument("--scale", type=float, default=3.0, help="render resolution multiplier")
     args = parser.parse_args(argv)
 
-    result = record(args.out, seed=args.seed, fps=args.fps)
+    result = record(args.out, seed=args.seed, fps=args.fps, scale=args.scale)
     print(f"wrote {args.out}: {result}")
 
 
