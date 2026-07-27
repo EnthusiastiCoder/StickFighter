@@ -251,15 +251,18 @@ def draw_arena(surface: pygame.Surface, arena: Arena, scale: float = 1.0) -> Non
 def draw_arrow(surface: pygame.Surface, arrow: ArrowState, scale: float = 1.0) -> None:
     speed = math.hypot(arrow.vx, arrow.vy) or 1.0
     dx, dy = arrow.vx / speed, arrow.vy / speed
-    shaft_len = C.ARROW_LENGTH - ARROWHEAD_LEN
-    shaft_back = (arrow.x - dx * shaft_len, arrow.y - dy * shaft_len)
-    tail = (arrow.x - dx * C.ARROW_LENGTH, arrow.y - dy * C.ARROW_LENGTH)
     tip = (arrow.x, arrow.y)
-    _line(surface, scale, theme.INK, tail, shaft_back, 4)
+    tail = (arrow.x - dx * C.ARROW_LENGTH, arrow.y - dy * C.ARROW_LENGTH)
+    # where the shaft ends and the arrowhead begins: ARROWHEAD_LEN back from
+    # the tip, not from the tail -- using the wrong end here previously made
+    # the "arrowhead" cover most of the arrow's length instead of a small
+    # point at the front, confirmed by rendering a single arrow up close.
+    head_base = (arrow.x - dx * ARROWHEAD_LEN, arrow.y - dy * ARROWHEAD_LEN)
+    _line(surface, scale, theme.INK, tail, head_base, 4)
 
     perp = (-dy, dx)
-    head_a = (shaft_back[0] + perp[0] * ARROWHEAD_WIDTH, shaft_back[1] + perp[1] * ARROWHEAD_WIDTH)
-    head_b = (shaft_back[0] - perp[0] * ARROWHEAD_WIDTH, shaft_back[1] - perp[1] * ARROWHEAD_WIDTH)
+    head_a = (head_base[0] + perp[0] * ARROWHEAD_WIDTH, head_base[1] + perp[1] * ARROWHEAD_WIDTH)
+    head_b = (head_base[0] - perp[0] * ARROWHEAD_WIDTH, head_base[1] - perp[1] * ARROWHEAD_WIDTH)
     _polygon(surface, scale, theme.INK, (tip, head_a, head_b))
 
     fletch_a = (tail[0] + perp[0] * 5.0, tail[1] + perp[1] * 5.0)
