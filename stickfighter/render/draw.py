@@ -210,7 +210,7 @@ def _draw_nocked_arrow(
     back = (tip[0] - forward[0] * ARROWHEAD_LEN, tip[1] - forward[1] * ARROWHEAD_LEN)
     head_a = (back[0] + perp[0] * ARROWHEAD_WIDTH, back[1] + perp[1] * ARROWHEAD_WIDTH)
     head_b = (back[0] - perp[0] * ARROWHEAD_WIDTH, back[1] - perp[1] * ARROWHEAD_WIDTH)
-    pygame.draw.polygon(surface, theme.INK, (tip, head_a, head_b))
+    _polygon(surface, scale, theme.INK, (tip, head_a, head_b))
 
 
 def draw_arena(surface: pygame.Surface, arena: Arena) -> None:
