@@ -35,6 +35,11 @@ from stickfighter.core.entities import (
 )
 from stickfighter.core.events import ArrowFired, ArrowHit, ArrowMiss, CoinEarned, Death, Event
 from stickfighter.core.horde_entities import (
+    CLOUD_ARCHER_DRIFT_SPEED,
+    CLOUD_ARCHER_FIRE_COOLDOWN,
+    CLOUD_ARCHER_HEIGHT,
+    CLOUD_ARCHER_HP,
+    CLOUD_ARCHER_STANDOFF,
     SHIELDBEARER,
     SPEARMAN,
     SPEED_VARIANCE,
