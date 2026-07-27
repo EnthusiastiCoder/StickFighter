@@ -24,13 +24,13 @@ class EnemyConfig:
 
 
 SWORDSMAN = EnemyConfig(
-    name="swordsman", hp=30.0, speed=210.0, melee_range=45.0, melee_damage=25.0, has_shield=False
+    name="swordsman", hp=30.0, speed=380.0, melee_range=45.0, melee_damage=25.0, has_shield=False
 )
 SPEARMAN = EnemyConfig(
-    name="spearman", hp=30.0, speed=185.0, melee_range=65.0, melee_damage=30.0, has_shield=False
+    name="spearman", hp=30.0, speed=320.0, melee_range=65.0, melee_damage=30.0, has_shield=False
 )
 SHIELDBEARER = EnemyConfig(
-    name="shieldbearer", hp=30.0, speed=130.0, melee_range=45.0, melee_damage=45.0, has_shield=True
+    name="shieldbearer", hp=30.0, speed=230.0, melee_range=45.0, melee_damage=45.0, has_shield=True
 )
 
 SPEED_VARIANCE = (0.8, 1.25)  # per-instance multiplier so a wave doesn't move in lockstep
