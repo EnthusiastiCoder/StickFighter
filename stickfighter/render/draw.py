@@ -79,6 +79,15 @@ PLATFORM_THICKNESS = 14.0
 LINE_WIDTH = 5
 HEAD_RADIUS = C.HEAD_RADIUS + 1
 
+# Render-only leg proportion: the real torso/limb split (C.TORSO_BOTTOM_Y)
+# is also the torso/limb *hitbox* boundary used by the actual duel game's
+# collision code, so it can't be moved just to make legs look longer.
+# Confirmed by rendering a walking figure and looking: at the real hitbox
+# split, legs read as short/stubby (~43% of shoulder-to-feet height). This
+# raises the hip point used for drawing only, giving legs more of the
+# visible body without touching hitboxes at all.
+VISUAL_HIP_Y = C.TORSO_BOTTOM_Y - 10.0
+
 BOW_HALF_LEN = 21.0
 BOW_CURVE_BASE = 5.0
 BOW_CURVE_DRAW = 6.0
@@ -140,7 +149,7 @@ def draw_archer(
 
     head = (archer.x - archer.facing * recoil, top + C.HEAD_CENTER_Y + sway)
     shoulder = (archer.x - archer.facing * recoil, top + C.TORSO_TOP_Y + 4.0 + sway)
-    hip = (archer.x, top + C.TORSO_BOTTOM_Y)
+    hip = (archer.x, top + VISUAL_HIP_Y)
     feet_y = archer.y
 
     _draw_legs(surface, archer, hip, feet_y, elapsed, scale)

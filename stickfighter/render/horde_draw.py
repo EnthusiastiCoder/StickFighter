@@ -12,6 +12,7 @@ from stickfighter.render import theme
 from stickfighter.render.draw import (
     HEAD_RADIUS,
     LINE_WIDTH,
+    VISUAL_HIP_Y,
     _circle,
     _draw_legs,
     _line,
@@ -31,7 +32,7 @@ def draw_melee_enemy(
     top = enemy.top()
     head = (enemy.x, top + C.HEAD_CENTER_Y)
     shoulder = (enemy.x, top + C.TORSO_TOP_Y + 4.0)
-    hip = (enemy.x, top + C.TORSO_BOTTOM_Y)
+    hip = (enemy.x, top + VISUAL_HIP_Y)
     feet_y = enemy.y
 
     _draw_legs(surface, enemy, hip, feet_y, elapsed, scale)
