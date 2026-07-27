@@ -12,7 +12,7 @@ import pymunk
 from stickfighter.core import constants as C
 from stickfighter.core.events import Death, Event
 from stickfighter.render import theme
-from stickfighter.render.draw import draw_aa_circle
+from stickfighter.render.draw import _circle, _line
 
 RAGDOLL_LIFETIME = 2.5
 LINE_WIDTH = 5
@@ -77,17 +77,19 @@ class Ragdoll:
         self.age += dt
         return self.age < RAGDOLL_LIFETIME
 
-    def draw(self, surface: pygame.Surface) -> None:
+    def draw(self, surface: pygame.Surface, scale: float = 1.0) -> None:
         hx, hy = self.head_body.position
-        draw_aa_circle(surface, (hx, hy), C.HEAD_RADIUS, theme.INK)
-        self._draw_segment(surface, self.torso_body, self._torso_local)
-        self._draw_segment(surface, self.leg1_body, self._leg1_local)
-        self._draw_segment(surface, self.leg2_body, self._leg2_local)
+        _circle(surface, scale, (hx, hy), C.HEAD_RADIUS, theme.INK)
+        self._draw_segment(surface, self.torso_body, self._torso_local, scale)
+        self._draw_segment(surface, self.leg1_body, self._leg1_local, scale)
+        self._draw_segment(surface, self.leg2_body, self._leg2_local, scale)
 
-    def _draw_segment(self, surface: pygame.Surface, body: pymunk.Body, local_pts) -> None:
+    def _draw_segment(
+        self, surface: pygame.Surface, body: pymunk.Body, local_pts, scale: float
+    ) -> None:
         a = body.local_to_world(local_pts[0])
         b = body.local_to_world(local_pts[1])
-        pygame.draw.line(surface, theme.INK, (a.x, a.y), (b.x, b.y), LINE_WIDTH)
+        _line(surface, scale, theme.INK, (a.x, a.y), (b.x, b.y), LINE_WIDTH)
 
 
 class RagdollManager:
@@ -105,6 +107,6 @@ class RagdollManager:
     def update(self, dt: float) -> None:
         self.ragdolls = [r for r in self.ragdolls if r.update(dt)]
 
-    def draw(self, surface: pygame.Surface) -> None:
+    def draw(self, surface: pygame.Surface, scale: float = 1.0) -> None:
         for r in self.ragdolls:
-            r.draw(surface)
+            r.draw(surface, scale)
