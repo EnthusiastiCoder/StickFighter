@@ -24,14 +24,16 @@ class EnemyConfig:
 
 
 SWORDSMAN = EnemyConfig(
-    name="swordsman", hp=30.0, speed=150.0, melee_range=45.0, melee_damage=25.0, has_shield=False
+    name="swordsman", hp=30.0, speed=210.0, melee_range=45.0, melee_damage=25.0, has_shield=False
 )
 SPEARMAN = EnemyConfig(
-    name="spearman", hp=30.0, speed=130.0, melee_range=65.0, melee_damage=30.0, has_shield=False
+    name="spearman", hp=30.0, speed=185.0, melee_range=65.0, melee_damage=30.0, has_shield=False
 )
 SHIELDBEARER = EnemyConfig(
-    name="shieldbearer", hp=30.0, speed=90.0, melee_range=45.0, melee_damage=45.0, has_shield=True
+    name="shieldbearer", hp=30.0, speed=130.0, melee_range=45.0, melee_damage=45.0, has_shield=True
 )
+
+SPEED_VARIANCE = (0.8, 1.25)  # per-instance multiplier so a wave doesn't move in lockstep
 
 
 @dataclass
@@ -46,6 +48,10 @@ class MeleeEnemyState:
     alive: bool = True
     grounded: bool = True  # ground-only entity; kept so draw._draw_legs can be reused as-is
     attack_cooldown: float = 0.0
+    speed_multiplier: float = 1.0  # per-instance jitter, see SPEED_VARIANCE
+
+    def speed(self) -> float:
+        return self.config.speed * self.speed_multiplier
 
     def top(self) -> float:
         return self.y - C.CHAR_HEIGHT
