@@ -45,6 +45,28 @@ def _aalines(surface, scale: float, color, points) -> None:
     pygame.draw.aalines(surface, color, False, [_pt(p, scale) for p in points])
 
 
+def _thick_curve(surface, scale: float, color, points, width: float) -> None:
+    """pygame.draw.aalines has no width control -- always ~1px regardless of
+    scale, which is wrong for the bow's own wooden limb (should read as the
+    bold element; the string is what should be thin). draw.lines does take
+    a width but isn't anti-aliased on its own, so oversample: draw at 2x the
+    target size onto a small scratch surface with alpha, then smoothscale
+    down -- cheap since this is only ever a handful of points."""
+    scaled = [_pt(p, scale) for p in points]
+    xs = [p[0] for p in scaled]
+    ys = [p[1] for p in scaled]
+    pad = width * scale + 4
+    left, top = min(xs) - pad, min(ys) - pad
+    w = max(int(max(xs) - left + pad), 1)
+    h = max(int(max(ys) - top + pad), 1)
+    ss = 2
+    scratch = pygame.Surface((w * ss, h * ss), pygame.SRCALPHA)
+    local = [((x - left) * ss, (y - top) * ss) for x, y in scaled]
+    pygame.draw.lines(scratch, color, False, local, max(1, round(width * scale * ss)))
+    small = pygame.transform.smoothscale(scratch, (w, h))
+    surface.blit(small, (left, top))
+
+
 def _polygon(surface, scale: float, color, points) -> None:
     pygame.draw.polygon(surface, color, [_pt(p, scale) for p in points])
 
@@ -60,6 +82,8 @@ HEAD_RADIUS = C.HEAD_RADIUS + 1
 BOW_HALF_LEN = 21.0
 BOW_CURVE_BASE = 5.0
 BOW_CURVE_DRAW = 6.0
+BOW_LIMB_WIDTH = 3.0  # the wooden limb is the bold element
+STRING_WIDTH = 1.0  # the string is the thin one -- was drawn thicker than the limb
 STRING_PULL_BASE = 4.0
 STRING_PULL_MAX = 16.0  # kept well under ARROW_LENGTH (34) so a full draw still
 # leaves a visible shaft poking out past the grip toward the target
@@ -191,9 +215,9 @@ def _draw_bow_and_arms(
     pull = STRING_PULL_BASE + STRING_PULL_MAX * draw
     nock = (bow_x - forward[0] * pull, bow_y - forward[1] * pull)
 
-    _aalines(surface, scale, theme.INK, _quad_bezier(tip_a, control, tip_b))
-    _line(surface, scale, theme.INK, tip_a, nock, 2)
-    _line(surface, scale, theme.INK, tip_b, nock, 2)
+    _thick_curve(surface, scale, theme.INK, _quad_bezier(tip_a, control, tip_b), BOW_LIMB_WIDTH)
+    _line(surface, scale, theme.INK, tip_a, nock, STRING_WIDTH)
+    _line(surface, scale, theme.INK, tip_b, nock, STRING_WIDTH)
     _line(surface, scale, theme.INK, shoulder, (bow_x, bow_y), LINE_WIDTH)
     _line(surface, scale, theme.INK, shoulder, nock, LINE_WIDTH)
 
