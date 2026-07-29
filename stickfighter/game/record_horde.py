@@ -15,10 +15,12 @@ import imageio
 import pygame
 
 from stickfighter.core import constants as C
-from stickfighter.core.horde import TOTAL_ENEMIES, HordeSim
+from stickfighter.core.horde import ARCHER_TOTAL, TOTAL_ENEMIES, HordeSim
 from stickfighter.render import effects, ragdoll, theme
 from stickfighter.render.draw import draw_arrow
-from stickfighter.render.horde_draw import draw_melee_enemy
+from stickfighter.render.horde_draw import draw_cloud, draw_melee_enemy
+
+TOTAL_TARGETS = TOTAL_ENEMIES + ARCHER_TOTAL
 
 _ARCHER_DRAW = None  # lazy import to avoid a hard pygame dependency at module load for tests
 
@@ -43,8 +45,18 @@ def _write_log(out_path: str, log: list[dict]) -> str:
 def _draw_kill_counter(
     surface: pygame.Surface, kills: int, font: pygame.font.Font, scale: float
 ) -> None:
-    text = font.render(f"KILLS: {kills}/{TOTAL_ENEMIES}", True, theme.INK)
+    text = font.render(f"KILLS: {kills}/{TOTAL_TARGETS}", True, theme.INK)
     surface.blit(text, (round(16 * scale), round(12 * scale)))
+
+
+def _draw_archer(surface, cloud, elapsed, scale: float) -> None:
+    global _ARCHER_DRAW
+    if _ARCHER_DRAW is None:
+        from stickfighter.render.draw import draw_archer
+
+        _ARCHER_DRAW = draw_archer
+    draw_cloud(surface, cloud.state.x, cloud.state.y, scale)
+    _ARCHER_DRAW(surface, cloud.state, elapsed, scale=scale)
 
 
 def _draw_ground(surface: pygame.Surface, scale: float) -> None:
@@ -90,6 +102,8 @@ def record(
             snap = sim.snapshot()
             surface.fill(theme.BG)
             _draw_ground(surface, scale)
+            for cloud in snap.archers:
+                _draw_archer(surface, cloud, elapsed, scale)
             for enemy in snap.enemies:
                 draw_melee_enemy(surface, enemy, elapsed, scale=scale)
             _draw_hero(surface, snap.hero, elapsed, scale)
