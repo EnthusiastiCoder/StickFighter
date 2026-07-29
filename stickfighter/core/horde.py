@@ -219,11 +219,27 @@ class HordeSim:
         only worked because nothing could ever hit it from range -- cloud
         archers change that.
 
-    def _act_hero(self, events: list[Event]) -> None:
-        self.hero.reload_timer = max(0.0, self.hero.reload_timer - C.DT)
-        target = self._nearest_target()
-        self.hero.draw = 1.0 if target is not None else 0.0
-        self.hero.facing = 1
+        Deliberately strafe-only, no jump: an earlier version jumped on 50%
+        of dodges, and tracing an actual death showed exactly why that's
+        wrong here -- for a steeply lobbed, nearly-vertically-falling arrow
+        (the norm at these ranges/arc angles), jumping moves the hero's
+        head *up* into the descending arrow's path instead of away from it.
+        Confirmed from the per-shot log: hero.y climbing from 500 to 408
+        while the fatal arrow fell from y=193 to y=347 -- they met in the
+        middle because the hero jumped toward it."""
+        threat_time: float | None = None
+        for arrow in self.arrows:
+            if arrow.owner == 0 or arrow.vx >= 0.0 or arrow.x <= self.hero.x:
+                continue
+            t = (arrow.x - self.hero.x) / -arrow.vx
+            if not (DODGE_REACT_WINDOW[0] <= t <= DODGE_REACT_WINDOW[1]):
+                continue
+            future_y = arrow.y + arrow.vy * t + 0.5 * C.GRAVITY * t * t
+            hero_center_y = self.hero.top() + (C.TORSO_TOP_Y + C.TORSO_BOTTOM_Y) / 2.0
+            if abs(future_y - hero_center_y) > DODGE_DANGER_BAND:
+                continue
+            if threat_time is None or t < threat_time:
+                threat_time = t
 
         if target is None:
             return
