@@ -200,8 +200,13 @@ class HordeSim:
         self._update_arrows(events)
         self._spawn_up_to_max()
 
-        if self.total_kills >= TOTAL_ENEMIES and not self._queue and not any(
-            e.alive for e in self.enemies
+        total_target = TOTAL_ENEMIES + ARCHER_TOTAL
+        if (
+            self.total_kills >= total_target
+            and not self._queue
+            and self._archer_queue <= 0
+            and not any(e.alive for e in self.enemies)
+            and not any(a.state.alive for a in self.archers)
         ):
             self.cleared = True
         self.tick += 1
