@@ -569,21 +569,20 @@ class HordeSim:
                     return True
                 self._apply_hit_melee(enemy, part, point, events)
                 return True
-        if arrow.y >= C.GROUND_Y:
-            events.append(ArrowMiss(owner=0, x=arrow.x, y=C.GROUND_Y))
-            self.log.append({
-                "tick": self.tick, "event": "miss", "arrow_id": arrow.id,
-                "reason": "ground", "point": (arrow.x, C.GROUND_Y),
-            })
-            return True
-        m = C.OUT_OF_BOUNDS_MARGIN
-        if arrow.x < -m or arrow.x > C.ARENA_WIDTH + m or arrow.y < -m:
-            events.append(ArrowMiss(owner=0, x=arrow.x, y=arrow.y))
-            self.log.append({
-                "tick": self.tick, "event": "miss", "arrow_id": arrow.id,
-                "reason": "out_of_bounds", "point": (arrow.x, arrow.y),
-            })
-            return True
+
+        for cloud in self.archers:
+            if not cloud.state.alive:
+                continue
+            for part, hitbox, test in (
+                ("head", head_hitbox(cloud.state), segment_hits_circle),
+                ("torso", torso_hitbox(cloud.state), segment_hits_rect),
+                ("limb", limb_hitbox(cloud.state), segment_hits_rect),
+            ):
+                point = test(prev, cur, hitbox, C.ARROW_COLLIDE_RADIUS)
+                if point is None:
+                    continue
+                self._apply_hit_archer(cloud, part, point, events)
+                return True
         return False
 
     def _apply_hit(
