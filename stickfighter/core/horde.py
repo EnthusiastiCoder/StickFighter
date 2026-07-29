@@ -196,6 +196,7 @@ class HordeSim:
         self._update_hero_dodge()
         self._act_hero(events)
         self._update_enemies(events)
+        self._update_archers(events)
         self._update_arrows(events)
         self._spawn_up_to_max()
 
