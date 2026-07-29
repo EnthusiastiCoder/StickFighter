@@ -86,6 +86,7 @@ HOMING_DRIFT_SPEED = 90.0  # easing back toward HERO_X when not dodging
 # seeds (150px: 4 hero deaths; 220px: 3) before landing here.
 URGENT_MELEE_GAP = 220.0
 
+
 @dataclass(frozen=True)
 class HordeSnapshot:
     hero: ArcherState
