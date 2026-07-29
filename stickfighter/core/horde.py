@@ -339,23 +339,27 @@ class HordeSim:
         bow_x = self.hero.x + self.hero.facing * C.BOW_FORWARD_OFFSET
         bow_y = self.hero.top() + C.BOW_HEIGHT_OFFSET
 
-        # lead prediction: aim where the (still-walking) target will be when
-        # the arrow arrives, not where it is now -- same one-iteration
-        # time-of-flight approximation bots/ballistic.py uses. The previous
-        # version aimed at the target's current position with no lead term
-        # at all, which is wrong on physics grounds alone (nonzero flight
-        # time + nonzero target velocity = the target has moved by impact)
-        # independent of whether it explains the specific misses reported.
-        dist = math.hypot(tx - bow_x, ty - bow_y)
-        time_of_flight = dist / C.ARROW_SPEED_MAX
-        tx += target.vx * time_of_flight
-        dx, dy = tx - bow_x, ty - bow_y
-        angle = solve_launch_angle(dx, dy, C.ARROW_SPEED_MAX, C.GRAVITY, prefer_low=True)
-        if angle is None:
-            angle = solve_launch_angle(dx, dy, C.ARROW_SPEED_MAX, C.GRAVITY, prefer_low=False)
-        if angle is None:
-            angle = math.atan2(dy, dx)
-        self.hero.aim_angle = angle
+        chosen = None
+        for kind, target, target_key in candidates:
+            tx, ty, target_vx, target_type = self._aim_point(kind, target)
+            # lead prediction: aim where the (still-moving) target will be
+            # when the arrow arrives, not where it is now -- same
+            # one-iteration time-of-flight approximation bots/ballistic.py
+            # uses.
+            dist = math.hypot(tx - bow_x, ty - bow_y)
+            time_of_flight = dist / C.ARROW_SPEED_MAX
+            tx_led = tx + target_vx * time_of_flight
+            dx, dy = tx_led - bow_x, ty - bow_y
+            angle = solve_launch_angle(dx, dy, C.ARROW_SPEED_MAX, C.GRAVITY, prefer_low=True)
+            if angle is None:
+                angle = solve_launch_angle(dx, dy, C.ARROW_SPEED_MAX, C.GRAVITY, prefer_low=False)
+            if angle is not None:
+                target_x = target.state.x if kind == "archer" else target.x
+                chosen = {
+                    "kind": kind, "target": target, "key": target_key, "angle": angle,
+                    "type": target_type, "x": target_x, "vx": target_vx, "led_x": tx_led,
+                }
+                break
 
         ready = self.hero.reload_timer <= 0.0 and self.hero.draw >= C.MIN_DRAW
         if ready:
