@@ -246,6 +246,79 @@ class HordeSim:
             self._dodge_timer = 0.35
         self._dodge_timer = max(0.0, self._dodge_timer - C.DT)
 
+        if self._dodge_timer > 0.0:
+            self.hero.vx = self._dodge_dir * DODGE_SPEED
+        elif self.hero.x < HERO_X - 2.0:
+            self.hero.vx = HOMING_DRIFT_SPEED
+        elif self.hero.x > HERO_X + 2.0:
+            self.hero.vx = -HOMING_DRIFT_SPEED
+        else:
+            self.hero.vx = 0.0
+
+        self.hero.x += self.hero.vx * C.DT
+        self.hero.x = max(DODGE_RANGE[0], min(DODGE_RANGE[1], self.hero.x))
+
+        if not self.hero.grounded:
+            self.hero.vy += C.GRAVITY * C.DT
+            self.hero.y += self.hero.vy * C.DT
+            if self.hero.y >= C.GROUND_Y:
+                self.hero.y = C.GROUND_Y
+                self.hero.vy = 0.0
+                self.hero.grounded = True
+
+    def _pick_targets(self) -> list:
+        """Ordered candidates, most to least preferred: an urgent unclaimed
+        melee enemy (close enough to be about to reach melee_range) beats
+        everything -- always prioritizing cloud archers let melee damage
+        stack up unanswered, confirmed as the actual cause of hero deaths
+        that had no hero_hit log entry at all (i.e. died to melee, not
+        arrows). Then unclaimed cloud archers by distance, then unclaimed
+        melee by distance, then anything alive at all. Returns a list of
+        ("archer"|"melee", target, target_key) so _act_hero can fall
+        through to the next candidate when the top choice turns out to be
+        out of the bow's actual range (see _act_hero)."""
+        archers_alive = [a for a in self.archers if a.state.alive]
+        melee_alive = [e for e in self.enemies if e.alive]
+        claimed = set(self._claimed_targets.values())
+
+        unclaimed_melee = sorted(
+            (e for e in melee_alive if ("melee", e.enemy_id) not in claimed),
+            key=lambda e: abs(e.x - self.hero.x),
+        )
+        urgent_melee = [e for e in unclaimed_melee if (e.x - self.hero.x) < URGENT_MELEE_GAP]
+        unclaimed_archers = sorted(
+            (a for a in archers_alive if ("archer", a.archer_id) not in claimed),
+            key=lambda a: abs(a.state.x - self.hero.x),
+        )
+
+        def mk(kind, obj):
+            key = ("archer", obj.archer_id) if kind == "archer" else ("melee", obj.enemy_id)
+            return (kind, obj, key)
+
+        candidates = (
+            [mk("melee", e) for e in urgent_melee]
+            + [mk("archer", a) for a in unclaimed_archers]
+            + [mk("melee", e) for e in unclaimed_melee]
+            + sorted(
+                [mk("archer", a) for a in archers_alive] + [mk("melee", e) for e in melee_alive],
+                key=lambda c: abs((c[1].state.x if c[0] == "archer" else c[1].x) - self.hero.x),
+            )
+        )
+        # de-dupe while preserving order (a target can appear in multiple tiers)
+        seen = set()
+        ordered = []
+        for c in candidates:
+            if c[2] in seen:
+                continue
+            seen.add(c[2])
+            ordered.append(c)
+        return ordered
+
+    def _aim_point(self, kind: str, target) -> tuple[float, float, float, str]:
+        if kind == "archer":
+            hb = torso_hitbox(target.state)
+            tx, ty = (hb.left + hb.right) / 2.0, (hb.top + hb.bottom) / 2.0
+            return tx, ty, target.state.vx, "cloud_archer"
         if target.config.has_shield:
             hb = head_hitbox(target)
             tx, ty = hb.cx, hb.cy
