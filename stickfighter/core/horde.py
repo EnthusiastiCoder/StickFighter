@@ -132,6 +132,7 @@ class HordeSim:
         self.rng = random.Random(seed)
         self.hero = ArcherState(x=HERO_X, y=C.GROUND_Y, facing=1, grounded=True)
         self.enemies = []
+        self.archers = []
         self.arrows = []
         self._queue = [_weighted_choice(self.rng, ENEMY_MIX) for _ in range(TOTAL_ENEMIES)]
         self._next_arrow_id = 0
