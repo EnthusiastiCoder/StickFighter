@@ -361,6 +361,20 @@ class HordeSim:
                 }
                 break
 
+        if chosen is None:
+            # nothing currently in range -- confirmed real (not a fallback
+            # bug): a cloud archer can spawn well beyond the bow's actual
+            # max range (speed^2/gravity, less for an elevated target), and
+            # the old atan2-with-no-gravity fallback fired a doomed shot
+            # every time this happened instead of just waiting a beat.
+            kind, target, _ = candidates[0]
+            _tx, ty, _vx, _ = self._aim_point(kind, target)
+            tgt_x = target.state.x if kind == "archer" else target.x
+            self.hero.aim_angle = math.atan2(ty - bow_y, tgt_x - bow_x)
+            return
+
+        self.hero.aim_angle = chosen["angle"]
+
         ready = self.hero.reload_timer <= 0.0 and self.hero.draw >= C.MIN_DRAW
         if ready:
             arrow = spawn_arrow(self.hero, owner=0, arrow_id=self._next_arrow_id)
