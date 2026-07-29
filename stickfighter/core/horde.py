@@ -135,6 +135,7 @@ class HordeSim:
         self.archers = []
         self.arrows = []
         self._queue = [_weighted_choice(self.rng, ENEMY_MIX) for _ in range(TOTAL_ENEMIES)]
+        self._archer_queue = ARCHER_TOTAL
         self._next_arrow_id = 0
         self._next_enemy_id = 0
         self.total_kills = 0
