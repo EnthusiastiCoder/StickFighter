@@ -650,6 +650,7 @@ class HordeSim:
         return HordeSnapshot(
             hero=self.hero,
             enemies=tuple(e for e in self.enemies if e.alive),
+            archers=tuple(a for a in self.archers if a.state.alive),
             arrows=tuple(self.arrows),
             total_kills=self.total_kills,
             cleared=self.cleared,
