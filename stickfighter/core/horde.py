@@ -615,6 +615,37 @@ class HordeSim:
                 )
             )
 
+    def _apply_hit_archer(
+        self, cloud: CloudArcherState, part: str, point: tuple[float, float], events: list[Event]
+    ) -> None:
+        archer = cloud.state
+        damage = damage_for_part(part)
+        archer.hp = max(0.0, archer.hp - damage)
+        events.append(
+            ArrowHit(
+                owner=0, target=cloud.archer_id, part=part, damage=damage, x=point[0], y=point[1]
+            )
+        )
+        events.append(CoinEarned(who=0, amount=coins_for_part(part)))
+        killed = archer.hp <= 0.0 and archer.alive
+        self.log.append({
+            "tick": self.tick, "event": "archer_hit", "target_id": cloud.archer_id,
+            "part": part, "damage": damage, "point": point, "killed": killed,
+        })
+        if killed:
+            archer.alive = False
+            self.total_kills += 1
+            events.append(
+                Death(
+                    who=cloud.archer_id,
+                    killer=0,
+                    headshot=(part == "head"),
+                    x=archer.x,
+                    y=archer.y,
+                    facing=archer.facing,
+                )
+            )
+
     def snapshot(self) -> HordeSnapshot:
         return HordeSnapshot(
             hero=self.hero,
