@@ -144,6 +144,8 @@ class HordeSim:
         self.tick = 0
         self.log = []
         self._claimed_targets = {}
+        self._dodge_dir = 0.0
+        self._dodge_timer = 0.0
         self._spawn_up_to_max()
 
     def _spawn_up_to_max(self) -> None:
