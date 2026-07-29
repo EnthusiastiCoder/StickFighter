@@ -386,9 +386,9 @@ class HordeSim:
             events.append(ArrowFired(owner=0, x=arrow.x, y=arrow.y, vx=arrow.vx, vy=arrow.vy))
             self.log.append({
                 "tick": self.tick, "event": "fire", "arrow_id": arrow.id,
-                "target_id": target.enemy_id, "target_type": target.config.name,
-                "target_x": target.x, "target_vx": target.vx,
-                "predicted_target_x": tx, "aim_angle": angle,
+                "target_kind": chosen["kind"], "target_type": chosen["type"],
+                "target_x": chosen["x"], "target_vx": chosen["vx"],
+                "predicted_target_x": chosen["led_x"], "aim_angle": chosen["angle"],
             })
 
     def _update_enemies(self, events: list[Event]) -> None:
