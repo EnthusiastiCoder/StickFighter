@@ -212,20 +212,12 @@ class HordeSim:
         self.tick += 1
         return events
 
-    def _nearest_target(self) -> MeleeEnemyState | None:
-        """Nearest *unclaimed* enemy (no arrow already flying toward it) when
-        one exists, else nearest overall. Without this, the hero -- reload
-        is much faster than an arrow's flight time -- would keep re-aiming
-        at whichever enemy is nearest even after already firing at it,
-        wasting a second arrow that arrives to find it already dead from the
-        first. Confirmed from the per-shot log, not assumed: every miss in a
-        first pass at this turned out to be exactly this case."""
-        alive = [e for e in self.enemies if e.alive]
-        if not alive:
-            return None
-        claimed_ids = set(self._claimed_targets.values())
-        pool = [e for e in alive if e.enemy_id not in claimed_ids] or alive
-        return min(pool, key=lambda e: abs(e.x - self.hero.x))
+    def _update_hero_dodge(self) -> None:
+        """React to enemy (cloud archer) arrows on a collision course:
+        strafe away, then drift back toward HERO_X once nothing is
+        imminent. The hero used to be permanently anchored at HERO_X, which
+        only worked because nothing could ever hit it from range -- cloud
+        archers change that.
 
     def _act_hero(self, events: list[Event]) -> None:
         self.hero.reload_timer = max(0.0, self.hero.reload_timer - C.DT)
