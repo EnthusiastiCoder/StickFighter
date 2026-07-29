@@ -167,6 +167,27 @@ class HordeSim:
             self._next_enemy_id += 1
             active += 1
 
+        active_archers = sum(1 for a in self.archers if a.state.alive)
+        while active_archers < MAX_ACTIVE_ARCHERS and self._archer_queue > 0:
+            x = C.ARENA_WIDTH + self.rng.uniform(*ARCHER_SPAWN_X_JITTER)
+            state = ArcherState(
+                x=x,
+                y=C.GROUND_Y - CLOUD_ARCHER_HEIGHT,
+                facing=-1,
+                grounded=True,  # airborne legs read as "falling"; hovering is its own pose
+                hp=CLOUD_ARCHER_HP,
+            )
+            self.archers.append(
+                CloudArcherState(
+                    archer_id=self._next_archer_id,
+                    state=state,
+                    fire_cooldown=self.rng.uniform(*CLOUD_ARCHER_FIRE_COOLDOWN),
+                )
+            )
+            self._next_archer_id += 1
+            self._archer_queue -= 1
+            active_archers += 1
+
     def step(self) -> list[Event]:
         events: list[Event] = []
         if self.cleared or not self.hero.alive:
