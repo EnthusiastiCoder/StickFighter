@@ -327,6 +327,15 @@ class HordeSim:
             tx, ty = (hb.left + hb.right) / 2.0, (hb.top + hb.bottom) / 2.0
         return tx, ty, target.vx, target.config.name
 
+    def _act_hero(self, events: list[Event]) -> None:
+        self.hero.reload_timer = max(0.0, self.hero.reload_timer - C.DT)
+        candidates = self._pick_targets()
+        self.hero.draw = 1.0 if candidates else 0.0
+        self.hero.facing = 1
+
+        if not candidates:
+            return
+
         bow_x = self.hero.x + self.hero.facing * C.BOW_FORWARD_OFFSET
         bow_y = self.hero.top() + C.BOW_HEIGHT_OFFSET
 
