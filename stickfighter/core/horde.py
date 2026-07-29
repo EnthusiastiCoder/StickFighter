@@ -380,7 +380,7 @@ class HordeSim:
             arrow = spawn_arrow(self.hero, owner=0, arrow_id=self._next_arrow_id)
             self._next_arrow_id += 1
             self.arrows.append(arrow)
-            self._claimed_targets[arrow.id] = target.enemy_id
+            self._claimed_targets[arrow.id] = chosen["key"]
             self.hero.reload_timer = HERO_FIRE_COOLDOWN
             self.hero.draw = 0.0
             events.append(ArrowFired(owner=0, x=arrow.x, y=arrow.y, vx=arrow.vx, vy=arrow.vy))
