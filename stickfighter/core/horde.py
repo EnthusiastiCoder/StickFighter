@@ -91,6 +91,7 @@ URGENT_MELEE_GAP = 220.0
 class HordeSnapshot:
     hero: ArcherState
     enemies: tuple[MeleeEnemyState, ...]
+    archers: tuple[CloudArcherState, ...]
     arrows: tuple[ArrowState, ...]
     total_kills: int
     cleared: bool
