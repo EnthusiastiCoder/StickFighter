@@ -585,7 +585,7 @@ class HordeSim:
                 return True
         return False
 
-    def _apply_hit(
+    def _apply_hit_melee(
         self, enemy: MeleeEnemyState, part: str, point: tuple[float, float], events: list[Event]
     ) -> None:
         damage = damage_for_part(part)
