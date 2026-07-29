@@ -68,6 +68,23 @@ ARCHER_SPAWN_X_JITTER = (60.0, 220.0)
 # (MAX_ACTIVE) is what actually lets a wave close real distance.
 HERO_FIRE_COOLDOWN = 0.5
 
+# Hero dodge: the hero used to be fully stationary (HERO_X fixed forever),
+# which only worked because nothing could ever hit it from range. Cloud
+# archers change that -- the hero now roams within DODGE_RANGE, strafing
+# (and sometimes jumping) away from an arrow it predicts will otherwise
+# connect, then drifting back toward HERO_X when nothing is imminent.
+DODGE_RANGE = (HERO_X - 55.0, HERO_X + 230.0)
+DODGE_SPEED = 260.0
+DODGE_REACT_WINDOW = (0.12, 0.5)  # seconds-to-impact that counts as "react now"
+DODGE_DANGER_BAND = 42.0  # px from hero's torso center that counts as "on course"
+HOMING_DRIFT_SPEED = 90.0  # easing back toward HERO_X when not dodging
+# A melee enemy this close (well before its own melee_range of 45-65) jumps
+# the targeting queue ahead of cloud archers -- see _pick_target. 150px
+# wasn't enough buffer: at the faster enemy speeds, a melee enemy can cross
+# more than 150px in one hero fire-cooldown cycle, so it could still cross
+# into real melee_range before the hero's next shot. Swept this against 30
+# seeds (150px: 4 hero deaths; 220px: 3) before landing here.
+URGENT_MELEE_GAP = 220.0
 
 @dataclass(frozen=True)
 class HordeSnapshot:
