@@ -488,6 +488,55 @@ class HordeSim:
         self, arrow: ArrowState, prev: tuple[float, float], events: list[Event]
     ) -> bool:
         cur = (arrow.x, arrow.y)
+        if arrow.owner == 0:
+            if self._resolve_against_enemies(arrow, prev, cur, events):
+                return True
+        elif self.hero.alive:
+            for part, hitbox, test in (
+                ("head", head_hitbox(self.hero), segment_hits_circle),
+                ("torso", torso_hitbox(self.hero), segment_hits_rect),
+                ("limb", limb_hitbox(self.hero), segment_hits_rect),
+            ):
+                point = test(prev, cur, hitbox, C.ARROW_COLLIDE_RADIUS)
+                if point is None:
+                    continue
+                damage = damage_for_part(part)
+                self.log.append({
+                    "tick": self.tick, "event": "hero_hit", "arrow_id": arrow.id,
+                    "part": part, "damage": damage, "point": point,
+                })
+                events.append(
+                    ArrowHit(
+                        owner=1, target=0, part=part, damage=damage, x=point[0], y=point[1]
+                    )
+                )
+                self._damage_hero(damage, headshot=(part == "head"), events=events)
+                return True
+
+        if arrow.y >= C.GROUND_Y:
+            events.append(ArrowMiss(owner=arrow.owner, x=arrow.x, y=C.GROUND_Y))
+            self.log.append({
+                "tick": self.tick, "event": "miss", "arrow_id": arrow.id,
+                "reason": "ground", "point": (arrow.x, C.GROUND_Y),
+            })
+            return True
+        m = C.OUT_OF_BOUNDS_MARGIN
+        if arrow.x < -m or arrow.x > C.ARENA_WIDTH + m or arrow.y < -m:
+            events.append(ArrowMiss(owner=arrow.owner, x=arrow.x, y=arrow.y))
+            self.log.append({
+                "tick": self.tick, "event": "miss", "arrow_id": arrow.id,
+                "reason": "out_of_bounds", "point": (arrow.x, arrow.y),
+            })
+            return True
+        return False
+
+    def _resolve_against_enemies(
+        self,
+        arrow: ArrowState,
+        prev: tuple[float, float],
+        cur: tuple[float, float],
+        events: list[Event],
+    ) -> bool:
         for enemy in self.enemies:
             if not enemy.alive:
                 continue
