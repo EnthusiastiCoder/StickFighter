@@ -119,6 +119,7 @@ class HordeSim:
     _archer_queue: int = 0  # count of cloud archers still to spawn
     _next_arrow_id: int = 0
     _next_enemy_id: int = 0
+    _next_archer_id: int = 0
     total_kills: int = 0
     cleared: bool = False
     tick: int = 0
