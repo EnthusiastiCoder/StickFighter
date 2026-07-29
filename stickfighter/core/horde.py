@@ -567,7 +567,7 @@ class HordeSim:
                         "target_id": enemy.enemy_id, "point": point,
                     })
                     return True
-                self._apply_hit(enemy, part, point, events)
+                self._apply_hit_melee(enemy, part, point, events)
                 return True
         if arrow.y >= C.GROUND_Y:
             events.append(ArrowMiss(owner=0, x=arrow.x, y=C.GROUND_Y))
