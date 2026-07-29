@@ -241,8 +241,10 @@ class HordeSim:
             if threat_time is None or t < threat_time:
                 threat_time = t
 
-        if target is None:
-            return
+        if threat_time is not None and self._dodge_timer <= 0.0:
+            self._dodge_dir = self.rng.choice((-1.0, 1.0))
+            self._dodge_timer = 0.35
+        self._dodge_timer = max(0.0, self._dodge_timer - C.DT)
 
         if target.config.has_shield:
             hb = head_hitbox(target)
