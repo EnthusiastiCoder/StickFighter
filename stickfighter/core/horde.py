@@ -405,19 +405,7 @@ class HordeSim:
                 enemy.attack_cooldown -= C.DT
                 if enemy.attack_cooldown <= 0.0:
                     enemy.attack_cooldown = ATTACK_COOLDOWN
-                    self.hero.hp = max(0.0, self.hero.hp - enemy.config.melee_damage)
-                    if self.hero.hp <= 0.0 and self.hero.alive:
-                        self.hero.alive = False
-                        events.append(
-                            Death(
-                                who=0,
-                                killer=-1,
-                                headshot=False,
-                                x=self.hero.x,
-                                y=self.hero.y,
-                                facing=self.hero.facing,
-                            )
-                        )
+                    self._damage_hero(enemy.config.melee_damage, headshot=False, events=events)
 
     def _update_arrows(self, events: list[Event]) -> None:
         surviving: list[ArrowState] = []
