@@ -407,6 +407,73 @@ class HordeSim:
                     enemy.attack_cooldown = ATTACK_COOLDOWN
                     self._damage_hero(enemy.config.melee_damage, headshot=False, events=events)
 
+    def _update_archers(self, events: list[Event]) -> None:
+        for cloud in self.archers:
+            archer = cloud.state
+            if not archer.alive:
+                continue
+            gap = archer.x - self.hero.x
+            standoff_lo, standoff_hi = CLOUD_ARCHER_STANDOFF
+            if gap > standoff_hi:
+                archer.vx = -CLOUD_ARCHER_DRIFT_SPEED
+            elif gap < standoff_lo:
+                archer.vx = CLOUD_ARCHER_DRIFT_SPEED  # hero drifted in close -- back off
+            else:
+                archer.vx = 0.0
+            archer.x += archer.vx * C.DT
+            archer.facing = -1
+
+            cloud.fire_cooldown -= C.DT
+            # don't open fire until on screen -- confirmed by rendering:
+            # firing from spawn (which can be 1000+px beyond the visible
+            # arena) meant the very first shots came from an archer nobody
+            # could see yet, at the outer edge of the bow's actual range.
+            if cloud.fire_cooldown <= 0.0 and archer.x <= C.ARENA_WIDTH:
+                cloud.fire_cooldown = self.rng.uniform(*CLOUD_ARCHER_FIRE_COOLDOWN)
+                self._archer_fire(cloud, events)
+
+    def _archer_fire(self, cloud: CloudArcherState, events: list[Event]) -> None:
+        archer = cloud.state
+        hb = torso_hitbox(self.hero)
+        tx, ty = (hb.left + hb.right) / 2.0, (hb.top + hb.bottom) / 2.0
+        bow_x = archer.x + archer.facing * C.BOW_FORWARD_OFFSET
+        bow_y = archer.top() + C.BOW_HEIGHT_OFFSET
+
+        archer.draw = 0.72  # a notch under full hero-tier power -- slower, dodgeable arcs
+        speed = C.ARROW_SPEED_MIN + archer.draw * (C.ARROW_SPEED_MAX - C.ARROW_SPEED_MIN)
+        dist = math.hypot(tx - bow_x, ty - bow_y)
+        time_of_flight = dist / speed
+        tx += self.hero.vx * time_of_flight
+        dx, dy = tx - bow_x, ty - bow_y
+        angle = solve_launch_angle(dx, dy, speed, C.GRAVITY, prefer_low=True)
+        if angle is None:
+            angle = solve_launch_angle(dx, dy, speed, C.GRAVITY, prefer_low=False)
+        if angle is None:
+            angle = math.atan2(dy, dx)
+        angle += self.rng.gauss(0.0, cloud.aim_noise)
+        archer.aim_angle = angle
+
+        arrow = spawn_arrow(archer, owner=1, arrow_id=self._next_arrow_id)
+        self._next_arrow_id += 1
+        self.arrows.append(arrow)
+        archer.draw = 0.0
+        events.append(ArrowFired(owner=1, x=arrow.x, y=arrow.y, vx=arrow.vx, vy=arrow.vy))
+        self.log.append({
+            "tick": self.tick, "event": "archer_fire", "arrow_id": arrow.id,
+            "archer_id": cloud.archer_id, "hero_x": self.hero.x, "aim_angle": angle,
+        })
+
+    def _damage_hero(self, damage: float, headshot: bool, events: list[Event]) -> None:
+        self.hero.hp = max(0.0, self.hero.hp - damage)
+        if self.hero.hp <= 0.0 and self.hero.alive:
+            self.hero.alive = False
+            events.append(
+                Death(
+                    who=0, killer=-1, headshot=headshot,
+                    x=self.hero.x, y=self.hero.y, facing=self.hero.facing,
+                )
+            )
+
     def _update_arrows(self, events: list[Event]) -> None:
         surviving: list[ArrowState] = []
         for arrow in self.arrows:
