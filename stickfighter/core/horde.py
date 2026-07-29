@@ -57,6 +57,7 @@ MAX_ACTIVE_ARCHERS = 1  # 2 active archers dropped clear rate to 34/40 seeds vs 
 ATTACK_COOLDOWN = 0.6
 ENEMY_MIX = ((SWORDSMAN, 0.5), (SPEARMAN, 0.3), (SHIELDBEARER, 0.2))
 SPAWN_X_JITTER = (20.0, 150.0)
+ARCHER_SPAWN_X_JITTER = (60.0, 220.0)
 # The hero's own fire cadence, decoupled from C.RELOAD_TIME (shared with the
 # real duel game -- changing that would speed up every archer everywhere).
 # At C.RELOAD_TIME (0.45s) the hero clears the "nearest" threat almost as
