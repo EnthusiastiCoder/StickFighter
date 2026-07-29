@@ -124,7 +124,9 @@ class HordeSim:
     cleared: bool = False
     tick: int = 0
     log: list[dict] = field(default_factory=list)
-    _claimed_targets: dict = field(default_factory=dict)  # arrow_id -> enemy_id already en route
+    _claimed_targets: dict = field(default_factory=dict)  # arrow_id -> claimed target key
+    _dodge_dir: float = 0.0
+    _dodge_timer: float = 0.0
 
     def reset(self, seed: int | None = None) -> None:
         self.rng = random.Random(seed)
