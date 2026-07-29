@@ -116,6 +116,7 @@ class HordeSim:
     archers: list[CloudArcherState] = field(default_factory=list)
     arrows: list[ArrowState] = field(default_factory=list)
     _queue: list = field(default_factory=list)
+    _archer_queue: int = 0  # count of cloud archers still to spawn
     _next_arrow_id: int = 0
     _next_enemy_id: int = 0
     total_kills: int = 0
