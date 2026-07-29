@@ -91,6 +91,17 @@ def _draw_weapon(
     _line(surface, scale, theme.INK, hand, tip, 3)
 
 
+CLOUD_PUFF_RADII = (16.0, 13.0, 11.0, 10.0)
+CLOUD_PUFF_OFFSETS = ((-18.0, 2.0), (0.0, -4.0), (18.0, 2.0), (32.0, 8.0))
+
+
+def draw_cloud(surface: pygame.Surface, x: float, y: float, scale: float) -> None:
+    """A few overlapping circles beneath a cloud archer's feet -- enough to
+    read as a cloud at a glance without needing a dedicated sprite."""
+    for (dx, dy), r in zip(CLOUD_PUFF_OFFSETS, CLOUD_PUFF_RADII):
+        _circle(surface, scale, (x + dx, y + dy), r, theme.WHITE)
+
+
 def _draw_shield(
     surface: pygame.Surface,
     enemy: MeleeEnemyState,
