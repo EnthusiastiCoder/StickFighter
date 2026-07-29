@@ -138,6 +138,7 @@ class HordeSim:
         self._archer_queue = ARCHER_TOTAL
         self._next_arrow_id = 0
         self._next_enemy_id = 0
+        self._next_archer_id = 0
         self.total_kills = 0
         self.cleared = False
         self.tick = 0
