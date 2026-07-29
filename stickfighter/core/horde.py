@@ -193,6 +193,7 @@ class HordeSim:
         if self.cleared or not self.hero.alive:
             return events
 
+        self._update_hero_dodge()
         self._act_hero(events)
         self._update_enemies(events)
         self._update_arrows(events)
