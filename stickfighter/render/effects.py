@@ -131,7 +131,10 @@ class EffectsSystem:
     def draw(self, surface: pygame.Surface, scale: float = 1.0) -> None:
         for trail in self._trails.values():
             pts = list(trail)
-            for i in range(0, len(pts), TRAIL_DOT_STRIDE):
+            # start one stride past the arrow's current position (index 0)
+            # -- a dot there just sits on top of the arrowhead itself,
+            # which draw_arrow already draws distinctly.
+            for i in range(TRAIL_DOT_STRIDE, len(pts), TRAIL_DOT_STRIDE):
                 radius = max(1, round(2 * (1.0 - i / max(len(pts), 1)) * scale))
                 pos = (round(pts[i][0] * scale), round(pts[i][1] * scale))
                 pygame.draw.circle(surface, theme.WHITE, pos, radius)
