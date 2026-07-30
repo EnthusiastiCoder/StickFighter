@@ -1,8 +1,15 @@
 """Renders a full HordeSim run to a video file: the hero-vs-melee-waves
 highlight scenario, not a playable mode. Same "cheap sim trains, pretty
-renderer records" split as evaluate.py::record_match, reusing the existing
-EffectsSystem/RagdollManager unchanged since HordeSim emits the same Event
-types core/match.py does.
+renderer records" split as evaluate.py::record_match, reusing
+EffectsSystem unchanged since HordeSim emits the same Event types
+core/match.py does. Deliberately does NOT use RagdollManager -- every
+horde death (melee or cloud archer) disintegrates immediately (per user
+request: "gone in 1 second of their death"), relying on the existing
+hit-particle burst that already fires on the killing blow. An earlier
+version ragdolled cloud archers, which -- falling from real height, over
+RAGDOLL_LIFETIME's 2.5s -- was confirmed (by directly counting ragdoll
+spawns against a filter that was supposed to already exclude melee) to be
+exactly the "fall and disappear a bit later" the user was still seeing.
 """
 
 import argparse
@@ -16,24 +23,12 @@ import imageio
 import pygame
 
 from stickfighter.core import constants as C
-from stickfighter.core.events import Death
-from stickfighter.core.horde import ARCHER_ID_OFFSET, ARCHER_TOTAL, TOTAL_ENEMIES, HordeSim
-from stickfighter.render import effects, ragdoll, theme
+from stickfighter.core.horde import ARCHER_TOTAL, TOTAL_ENEMIES, HordeSim
+from stickfighter.render import effects, theme
 from stickfighter.render.draw import draw_arrow
 from stickfighter.render.horde_draw import draw_cloud, draw_melee_enemy
 
 TOTAL_TARGETS = TOTAL_ENEMIES + ARCHER_TOTAL
-
-
-def _ragdoll_events(events: list) -> list:
-    """Melee enemies disintegrate immediately on death instead of ragdolling
-    (per user request) -- the existing hit-particle burst already fires on
-    the killing blow, so simply not spawning a ragdoll for them is enough;
-    cloud archers keep the ragdoll. Death.who has no entity-kind field and
-    the hero's own Death also uses who=0 (colliding with melee enemy_id 0),
-    so in the rare case the hero dies it gets the same no-ragdoll treatment
-    as a melee enemy -- an accepted edge case, not disambiguated further."""
-    return [e for e in events if not (isinstance(e, Death) and e.who < ARCHER_ID_OFFSET)]
 
 _ARCHER_DRAW = None  # lazy import to avoid a hard pygame dependency at module load for tests
 
@@ -105,7 +100,6 @@ def record(
     sim = HordeSim()
     sim.reset(seed=seed)
     fx = effects.EffectsSystem()
-    ragdolls = ragdoll.RagdollManager()
     elapsed = 0.0
 
     with imageio.get_writer(out_path, fps=fps) as writer:
@@ -115,9 +109,7 @@ def record(
             elapsed += C.DT
             steps += 1
             fx.handle_events(events)
-            ragdolls.handle_events(_ragdoll_events(events))
             fx.update(C.DT, sim.snapshot().arrows)
-            ragdolls.update(C.DT)
 
             snap = sim.snapshot()
             surface.fill(theme.BG)
@@ -130,7 +122,6 @@ def record(
             for arrow in snap.arrows:
                 draw_arrow(surface, arrow, scale=scale)
             fx.draw(surface, scale)
-            ragdolls.draw(surface, scale)
             _draw_kill_counter(surface, snap.total_kills, font, scale)
 
             writer.append_data(pygame.surfarray.array3d(surface).swapaxes(0, 1))
