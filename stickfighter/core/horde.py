@@ -50,10 +50,17 @@ from stickfighter.core.horde_entities import (
 from stickfighter.core.rules import coins_for_part, damage_for_part
 
 HERO_X = 90.0
-TOTAL_ENEMIES = 15
-ARCHER_TOTAL = 4
+# Death.who has no entity-kind field, and melee enemy_id/archer_id are both
+# assigned starting from 0 independently -- offsetting archer ids keeps the
+# two ranges from colliding, so a renderer can tell a melee death from an
+# archer death by checking `who` against this threshold (see
+# game/record_horde.py, which gives melee deaths a fade instead of the
+# shared ragdoll).
+ARCHER_ID_OFFSET = 100_000
+TOTAL_ENEMIES = 9
+ARCHER_TOTAL = 6  # 60:40 melee:archer ratio, per user request
 MAX_ACTIVE = 4
-MAX_ACTIVE_ARCHERS = 1  # 2 active archers dropped clear rate to 34/40 seeds vs 40/40 at 1
+MAX_ACTIVE_ARCHERS = 1  # 2 active: 24/30 seeds cleared; 1 active: 29/30, at the 60:40 ratio
 ATTACK_COOLDOWN = 0.6
 ENEMY_MIX = ((SWORDSMAN, 0.5), (SPEARMAN, 0.3), (SHIELDBEARER, 0.2))
 SPAWN_X_JITTER = (20.0, 150.0)
@@ -138,7 +145,7 @@ class HordeSim:
         self._archer_queue = ARCHER_TOTAL
         self._next_arrow_id = 0
         self._next_enemy_id = 0
-        self._next_archer_id = 0
+        self._next_archer_id = ARCHER_ID_OFFSET
         self.total_kills = 0
         self.cleared = False
         self.tick = 0
