@@ -105,7 +105,7 @@ def _draw_arms(
 
     _line(surface, scale, theme.INK, shoulder, sword_hand, LINE_WIDTH)
     _circle(surface, scale, sword_hand, HAND_RADIUS, theme.INK)
-    _line(surface, scale, theme.INK, sword_hand, tip, 3)
+    _line(surface, scale, theme.SILVER, sword_hand, tip, 3)
 
 
 CLOUD_PUFF_RADII = (16.0, 13.0, 11.0, 10.0)
