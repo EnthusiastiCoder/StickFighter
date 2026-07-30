@@ -65,7 +65,7 @@ class MeleeEnemyState:
 CLOUD_ARCHER_HP = 30.0
 CLOUD_ARCHER_HEIGHT = 165.0  # px above the ground the cloud (and archer) hovers
 CLOUD_ARCHER_STANDOFF = (420.0, 620.0)  # stops drifting once this close to the hero
-CLOUD_ARCHER_DRIFT_SPEED = 150.0
+CLOUD_ARCHER_DRIFT_SPEED = 90.0
 CLOUD_ARCHER_FIRE_COOLDOWN = (1.3, 1.9)  # randomized per shot, not a robotic metronome
 CLOUD_ARCHER_AIM_NOISE = 0.10  # radians, gaussian -- real but beatable accuracy
 
