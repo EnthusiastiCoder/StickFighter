@@ -6,6 +6,7 @@ types core/match.py does.
 """
 
 import argparse
+import dataclasses
 import json
 import os
 
@@ -15,12 +16,24 @@ import imageio
 import pygame
 
 from stickfighter.core import constants as C
-from stickfighter.core.horde import ARCHER_TOTAL, TOTAL_ENEMIES, HordeSim
+from stickfighter.core.events import Death
+from stickfighter.core.horde import ARCHER_ID_OFFSET, ARCHER_TOTAL, TOTAL_ENEMIES, HordeSim
 from stickfighter.render import effects, ragdoll, theme
 from stickfighter.render.draw import draw_arrow
 from stickfighter.render.horde_draw import draw_cloud, draw_melee_enemy
 
 TOTAL_TARGETS = TOTAL_ENEMIES + ARCHER_TOTAL
+
+
+def _ragdoll_events(events: list) -> list:
+    """Melee enemies disintegrate immediately on death instead of ragdolling
+    (per user request) -- the existing hit-particle burst already fires on
+    the killing blow, so simply not spawning a ragdoll for them is enough;
+    cloud archers keep the ragdoll. Death.who has no entity-kind field and
+    the hero's own Death also uses who=0 (colliding with melee enemy_id 0),
+    so in the rare case the hero dies it gets the same no-ragdoll treatment
+    as a melee enemy -- an accepted edge case, not disambiguated further."""
+    return [e for e in events if not (isinstance(e, Death) and e.who < ARCHER_ID_OFFSET)]
 
 _ARCHER_DRAW = None  # lazy import to avoid a hard pygame dependency at module load for tests
 
@@ -56,7 +69,14 @@ def _draw_archer(surface, cloud, elapsed, scale: float) -> None:
 
         _ARCHER_DRAW = draw_archer
     draw_cloud(surface, cloud.state.x, cloud.state.y, scale)
-    _ARCHER_DRAW(surface, cloud.state, elapsed, scale=scale)
+    # draw_archer's shared leg-cycle helper treats any nonzero vx as
+    # walking -- correct for the hero and melee enemies on the ground, but
+    # a cloud archer rides its cloud, it doesn't run in midair. A
+    # render-only copy with vx zeroed keeps the drift itself (state.x
+    # still moves the cloud and the archer together) while giving a still,
+    # standing pose instead of a mid-air running cycle.
+    still_pose = dataclasses.replace(cloud.state, vx=0.0)
+    _ARCHER_DRAW(surface, still_pose, elapsed, scale=scale)
 
 
 def _draw_ground(surface: pygame.Surface, scale: float) -> None:
@@ -95,7 +115,7 @@ def record(
             elapsed += C.DT
             steps += 1
             fx.handle_events(events)
-            ragdolls.handle_events(events)
+            ragdolls.handle_events(_ragdoll_events(events))
             fx.update(C.DT, sim.snapshot().arrows)
             ragdolls.update(C.DT)
 
