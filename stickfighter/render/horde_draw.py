@@ -48,7 +48,7 @@ def draw_melee_enemy(
     speed_frac = min(abs(enemy.vx) / C.CHAR_MOVE_SPEED, 1.0)
     # lean the torso into the run, pivoting from the hip -- peaks at full
     # speed, vanishes when stopped (e.g. mid melee-range attack)
-    lean = -enemy.facing * LEAN_MAX * speed_frac
+    lean = enemy.facing * LEAN_MAX * speed_frac
     head = (enemy.x + lean, top + C.HEAD_CENTER_Y)
     shoulder = (enemy.x + lean * 0.6, top + C.TORSO_TOP_Y + 4.0)
 
