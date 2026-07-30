@@ -133,5 +133,5 @@ def _draw_shield(
     rect.center = (round(cx * scale), round(cy * scale))
     border = max(1, round(3 * scale))
     outline_width = max(1, round(2 * scale))
-    pygame.draw.rect(surface, theme.INK, rect, border_radius=border)
-    pygame.draw.rect(surface, theme.GOLD, rect, width=outline_width, border_radius=border)
+    pygame.draw.rect(surface, theme.WOOD_BROWN, rect, border_radius=border)
+    pygame.draw.rect(surface, theme.INK, rect, width=outline_width, border_radius=border)
