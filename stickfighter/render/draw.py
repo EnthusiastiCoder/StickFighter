@@ -238,12 +238,12 @@ def _draw_nocked_arrow(
     surface, nock: tuple[float, float], forward: tuple[float, float], scale: float
 ) -> None:
     tip = (nock[0] + forward[0] * C.ARROW_LENGTH, nock[1] + forward[1] * C.ARROW_LENGTH)
-    _line(surface, scale, theme.WHITE, nock, tip, 3)
+    _line(surface, scale, theme.SILVER, nock, tip, 3)
     perp = (-forward[1], forward[0])
     back = (tip[0] - forward[0] * ARROWHEAD_LEN, tip[1] - forward[1] * ARROWHEAD_LEN)
     head_a = (back[0] + perp[0] * ARROWHEAD_WIDTH, back[1] + perp[1] * ARROWHEAD_WIDTH)
     head_b = (back[0] - perp[0] * ARROWHEAD_WIDTH, back[1] - perp[1] * ARROWHEAD_WIDTH)
-    _polygon(surface, scale, theme.INK, (tip, head_a, head_b))
+    _polygon(surface, scale, theme.SILVER, (tip, head_a, head_b))
 
 
 def draw_arena(surface: pygame.Surface, arena: Arena, scale: float = 1.0) -> None:
@@ -267,12 +267,12 @@ def draw_arrow(surface: pygame.Surface, arrow: ArrowState, scale: float = 1.0) -
     # the "arrowhead" cover most of the arrow's length instead of a small
     # point at the front, confirmed by rendering a single arrow up close.
     head_base = (arrow.x - dx * ARROWHEAD_LEN, arrow.y - dy * ARROWHEAD_LEN)
-    _line(surface, scale, theme.INK, tail, head_base, 4)
+    _line(surface, scale, theme.SILVER, tail, head_base, 4)
 
     perp = (-dy, dx)
     head_a = (head_base[0] + perp[0] * ARROWHEAD_WIDTH, head_base[1] + perp[1] * ARROWHEAD_WIDTH)
     head_b = (head_base[0] - perp[0] * ARROWHEAD_WIDTH, head_base[1] - perp[1] * ARROWHEAD_WIDTH)
-    _polygon(surface, scale, theme.INK, (tip, head_a, head_b))
+    _polygon(surface, scale, theme.SILVER, (tip, head_a, head_b))
 
     fletch_a = (tail[0] + perp[0] * 5.0, tail[1] + perp[1] * 5.0)
     fletch_b = (tail[0] - perp[0] * 5.0, tail[1] - perp[1] * 5.0)
