@@ -56,7 +56,7 @@ def draw_melee_enemy(
     leg_swing = math.sin(phase) * WALK_SWING * speed_frac if speed_frac > 0.05 else 0.0
 
     _draw_legs(surface, enemy, hip, feet_y, elapsed, scale)
-    _draw_weapon(surface, enemy, shoulder, leg_swing, speed_frac, scale)
+    _draw_arms(surface, enemy, shoulder, leg_swing, speed_frac, scale)
 
     _line(surface, scale, theme.INK, shoulder, hip, LINE_WIDTH)
     _circle(surface, scale, head, HEAD_RADIUS, theme.INK)
@@ -65,7 +65,7 @@ def draw_melee_enemy(
         _draw_shield(surface, enemy, shoulder, hip, scale)
 
 
-def _draw_weapon(
+def _draw_arms(
     surface: pygame.Surface,
     enemy: MeleeEnemyState,
     shoulder: tuple[float, float],
@@ -73,22 +73,39 @@ def _draw_weapon(
     speed_frac: float,
     scale: float,
 ) -> None:
+    """Both arms, swinging opposite each other like a real run -- one hand
+    forward, one back -- with the weapon staying in only the sword hand.
+    Previously only the sword arm was drawn at all, with nothing for the
+    off hand."""
     # opposite the leading leg (leg_swing>0 means the *other* leg leads),
     # and swings noticeably harder than the leg cycle -- per run-cycle
     # reference, arms move higher/faster than legs in a run, not a walk.
     arm_swing = -leg_swing * (ARM_SWING / WALK_SWING) if WALK_SWING else 0.0
     forward_lift = 6.0 + 6.0 * speed_frac
 
-    hand = (
+    sword_hand = (
         shoulder[0] + enemy.facing * forward_lift + arm_swing,
         shoulder[1] + 10.0 - abs(arm_swing) * 0.3,
     )
     length = SPEAR_LENGTH if enemy.config.name == "spearman" else SWORD_LENGTH
-    tip = (hand[0] + enemy.facing * length, hand[1] - 3.0)
+    tip = (sword_hand[0] + enemy.facing * length, sword_hand[1] - 3.0)
 
-    _line(surface, scale, theme.INK, shoulder, hand, LINE_WIDTH)
-    _circle(surface, scale, hand, HAND_RADIUS, theme.INK)
-    _line(surface, scale, theme.INK, hand, tip, 3)
+    # a separate, slightly higher "far shoulder" for the off arm -- with
+    # both arms hung off the exact same point and the same height, the two
+    # overlapped into one indistinct blob whenever their reach coincided
+    # (confirmed by rendering and zooming into a frame where that happened).
+    far_shoulder = (shoulder[0], shoulder[1] - 6.0)
+    off_hand = (
+        far_shoulder[0] + enemy.facing * forward_lift - arm_swing,
+        far_shoulder[1] + 10.0 - abs(arm_swing) * 0.3,
+    )
+
+    _line(surface, scale, theme.INK, far_shoulder, off_hand, LINE_WIDTH)
+    _circle(surface, scale, off_hand, HAND_RADIUS, theme.INK)
+
+    _line(surface, scale, theme.INK, shoulder, sword_hand, LINE_WIDTH)
+    _circle(surface, scale, sword_hand, HAND_RADIUS, theme.INK)
+    _line(surface, scale, theme.INK, sword_hand, tip, 3)
 
 
 CLOUD_PUFF_RADII = (16.0, 13.0, 11.0, 10.0)
