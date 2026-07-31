@@ -150,7 +150,11 @@ def record(
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--out", default="horde.mp4")
-    parser.add_argument("--seed", type=int, default=0)
+    # 24, not 0: with cloud archers actually firing back (see horde.py's
+    # CLOUD_ARCHER_ONSCREEN_MARGIN/CLOUD_ARCHER_INITIAL_COOLDOWN), only
+    # ~85% of seeds clear the full 100-kill horde without an instant-kill
+    # headshot getting through -- 24 is a verified clean clear at full HP.
+    parser.add_argument("--seed", type=int, default=24)
     parser.add_argument("--fps", type=int, default=60)
     parser.add_argument("--scale", type=float, default=3.0, help="render resolution multiplier")
     args = parser.parse_args(argv)
