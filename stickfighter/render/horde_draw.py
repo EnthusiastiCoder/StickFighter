@@ -117,18 +117,13 @@ def _draw_arms(
 
 CLOUD_PUFF_RADII = (24.0, 20.0, 17.0, 15.0)
 CLOUD_PUFF_OFFSETS = ((-27.0, 3.0), (0.0, -6.0), (27.0, 3.0), (48.0, 12.0))
-CLOUD_OUTLINE_WIDTH = 1.5
 
 
 def draw_cloud(surface: pygame.Surface, x: float, y: float, scale: float) -> None:
     """A few overlapping circles beneath a cloud archer's feet -- enough to
-    read as a cloud at a glance without needing a dedicated sprite. Each
-    puff gets a thin ink outline (drawn as a slightly larger circle behind
-    the white fill) instead of a bare white blob, matching the ink-outline
-    look everything else in the game has."""
-    for (dx, dy), r in zip(CLOUD_PUFF_OFFSETS, CLOUD_PUFF_RADII):
-        center = (x + dx, y + dy)
-        _circle(surface, scale, center, r + CLOUD_OUTLINE_WIDTH, theme.INK)
+    read as a cloud at a glance without needing a dedicated sprite. Borderless
+    on purpose (a prior ink-outline pass was removed per user request) --
+    a cloud is soft-edged, unlike every ink-outlined stick figure."""
     for (dx, dy), r in zip(CLOUD_PUFF_OFFSETS, CLOUD_PUFF_RADII):
         _circle(surface, scale, (x + dx, y + dy), r, theme.WHITE)
 
