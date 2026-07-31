@@ -25,8 +25,8 @@ import pygame
 from stickfighter.core import constants as C
 from stickfighter.core.horde import ARCHER_TOTAL, TOTAL_ENEMIES, HordeSim
 from stickfighter.render import effects, theme
-from stickfighter.render.draw import draw_arrow
-from stickfighter.render.horde_draw import draw_cloud, draw_melee_enemy
+from stickfighter.render.draw import VISUAL_HIP_Y, draw_arrow
+from stickfighter.render.horde_draw import draw_cloud, draw_leg_mist, draw_melee_enemy
 
 TOTAL_TARGETS = TOTAL_ENEMIES + ARCHER_TOTAL
 
@@ -72,6 +72,8 @@ def _draw_archer(surface, cloud, elapsed, scale: float) -> None:
     # standing pose instead of a mid-air running cycle.
     still_pose = dataclasses.replace(cloud.state, vx=0.0)
     _ARCHER_DRAW(surface, still_pose, elapsed, scale=scale)
+    hip_y = still_pose.top() + VISUAL_HIP_Y
+    draw_leg_mist(surface, still_pose.x, hip_y, still_pose.y, scale)
 
 
 def _draw_ground(surface: pygame.Surface, scale: float) -> None:

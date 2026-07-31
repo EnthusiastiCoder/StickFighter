@@ -128,6 +128,45 @@ def draw_cloud(surface: pygame.Surface, x: float, y: float, scale: float) -> Non
         _circle(surface, scale, (x + dx, y + dy), r, theme.WHITE)
 
 
+LEG_MIST_WIDTH = 30.0
+LEG_MIST_BLEED = 14.0  # bleeds a bit past the feet into the cloud below
+LEG_MIST_MAX_ALPHA = 235
+_leg_mist_cache: dict[tuple[float, int], pygame.Surface] = {}
+
+
+def _leg_mist_gradient(fade_height: float, scale: float) -> pygame.Surface:
+    """A vertical alpha gradient, transparent at the top and nearly opaque
+    white at the bottom -- cached per (height, scale) since it's the same
+    surface every call at a given render resolution."""
+    key = (fade_height, round(scale * 100))
+    cached = _leg_mist_cache.get(key)
+    if cached is not None:
+        return cached
+    w_px = max(1, round(LEG_MIST_WIDTH * scale))
+    h_px = max(1, round(fade_height * scale))
+    grad = pygame.Surface((w_px, h_px), pygame.SRCALPHA)
+    for row in range(h_px):
+        alpha = round(LEG_MIST_MAX_ALPHA * (row / max(1, h_px - 1)))
+        pygame.draw.line(grad, (*theme.WHITE, alpha), (0, row), (w_px, row))
+    _leg_mist_cache[key] = grad
+    return grad
+
+
+def draw_leg_mist(
+    surface: pygame.Surface, x: float, hip_y: float, feet_y: float, scale: float
+) -> None:
+    """Fades a cloud archer's lower legs into soft white mist instead of
+    ending in a hard silhouette edge, reading as the legs sinking into the
+    cloud they stand on (per user request)."""
+    fade_top = hip_y + (feet_y - hip_y) * 0.45
+    fade_height = feet_y - fade_top + LEG_MIST_BLEED
+    grad = _leg_mist_gradient(fade_height, scale)
+    rect = grad.get_rect()
+    rect.centerx = round(x * scale)
+    rect.top = round(fade_top * scale)
+    surface.blit(grad, rect)
+
+
 def _draw_shield(
     surface: pygame.Surface,
     enemy: MeleeEnemyState,
