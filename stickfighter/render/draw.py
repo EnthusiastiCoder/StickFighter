@@ -98,6 +98,8 @@ STRING_PULL_MAX = 16.0  # kept well under ARROW_LENGTH (34) so a full draw still
 # leaves a visible shaft poking out past the grip toward the target
 ARROWHEAD_LEN = 6.0
 ARROWHEAD_WIDTH = 3.0
+FLETCH_LEN = 6.0  # how far ahead of the tail the fletching vanes start
+FLETCH_SPREAD = 5.0  # how far apart the two vanes end up at the tail
 
 WALK_FREQUENCY = 9.0
 WALK_SWING = 13.0
@@ -274,7 +276,15 @@ def draw_arrow(surface: pygame.Surface, arrow: ArrowState, scale: float = 1.0) -
     head_b = (head_base[0] - perp[0] * ARROWHEAD_WIDTH, head_base[1] - perp[1] * ARROWHEAD_WIDTH)
     _polygon(surface, scale, theme.SILVER, (tip, head_a, head_b))
 
-    fletch_a = (tail[0] + perp[0] * 5.0, tail[1] + perp[1] * 5.0)
-    fletch_b = (tail[0] - perp[0] * 5.0, tail[1] - perp[1] * 5.0)
-    _line(surface, scale, theme.INK, tail, fletch_a, 2)
-    _line(surface, scale, theme.INK, tail, fletch_b, 2)
+    # fletching: two vanes swept back and out from a point *ahead* of the
+    # tail to points level with the tail, a shallow V opening backward --
+    # not a symmetric crossbar centered on the tail. The crossbar read as a
+    # sword's hilt guard once the shaft and head were both silver (same
+    # color, similar width), confirmed directly from a rendered frame: a
+    # silver in-flight arrow looked like a thrown sword, tip and "guard"
+    # both visible, no arrow silhouette at all.
+    fletch_start = (tail[0] + dx * FLETCH_LEN, tail[1] + dy * FLETCH_LEN)
+    fletch_a = (tail[0] + perp[0] * FLETCH_SPREAD, tail[1] + perp[1] * FLETCH_SPREAD)
+    fletch_b = (tail[0] - perp[0] * FLETCH_SPREAD, tail[1] - perp[1] * FLETCH_SPREAD)
+    _line(surface, scale, theme.INK, fletch_start, fletch_a, 2)
+    _line(surface, scale, theme.INK, fletch_start, fletch_b, 2)
