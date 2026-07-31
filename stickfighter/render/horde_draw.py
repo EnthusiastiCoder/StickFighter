@@ -88,7 +88,14 @@ def _draw_arms(
         shoulder[1] + 10.0 - abs(arm_swing) * 0.3,
     )
     length = SPEAR_LENGTH if enemy.config.name == "spearman" else SWORD_LENGTH
-    tip = (sword_hand[0] + enemy.facing * length, sword_hand[1] - 3.0)
+    # the blade continues the shoulder->hand line instead of always pointing
+    # in the facing direction -- previously the tip was hand + facing*length
+    # unconditionally, so the hand swung back and forth but the blade itself
+    # always pointed forward no matter what, never trailing behind the body
+    # on the backswing the way a real swung weapon does.
+    fx, fy = sword_hand[0] - shoulder[0], sword_hand[1] - shoulder[1]
+    arm_len = math.hypot(fx, fy) or 1.0
+    tip = (sword_hand[0] + fx / arm_len * length, sword_hand[1] + fy / arm_len * length)
 
     # a separate, slightly higher "far shoulder" for the off arm -- with
     # both arms hung off the exact same point and the same height, the two
