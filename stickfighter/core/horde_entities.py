@@ -44,7 +44,9 @@ class MeleeEnemyState:
     x: float
     y: float  # feet position, same convention as ArcherState
     vx: float = 0.0
-    facing: int = -1  # enemies walk in from the right, facing left, toward the hero
+    # -1 walks in from the right (facing left); +1 from the left (facing
+    # right) -- fixed at spawn, see horde.py's HordeSim._spawn_up_to_max.
+    facing: int = -1
     hp: float = 0.0
     alive: bool = True
     grounded: bool = True  # ground-only entity; kept so draw._draw_legs can be reused as-is
@@ -63,10 +65,30 @@ class MeleeEnemyState:
 
 
 CLOUD_ARCHER_HP = 30.0
-CLOUD_ARCHER_HEIGHT = 165.0  # px above the ground the cloud (and archer) hovers
-CLOUD_ARCHER_STANDOFF = (420.0, 620.0)  # stops drifting once this close to the hero
+# px above the ground the cloud (and archer) hovers -- randomized per-archer
+# (see horde.py's spawn) so a wave doesn't fly in at one uniform altitude.
+CLOUD_ARCHER_HEIGHT_RANGE = (120.0, 210.0)
+# Stops drifting once this close to the hero. Must keep both bounds small
+# enough that an archer can settle on-screen from *either* side of a
+# center-stage hero (ARENA_WIDTH=960, hero at x=480) -- the old (420, 620)
+# was tuned back when the hero stood near the left edge, where a right-side
+# archer settling 420-620px out was still comfortably on-screen. Centered,
+# the same band let an archer settle as far as hero.x-620 (=-140, off the
+# left edge) or hero.x+620 (=1100, off the right edge) and then just sit
+# there forever -- confirmed directly: a stalled run had an archer frozen at
+# x=-139.9 for 17000+ steps, never close enough to on-screen (x>=0, see
+# horde.py's _update_archers) to fire, and "close enough" to stop drifting.
+CLOUD_ARCHER_STANDOFF = (220.0, 400.0)
 CLOUD_ARCHER_DRIFT_SPEED = 90.0
 CLOUD_ARCHER_FIRE_COOLDOWN = (1.3, 1.9)  # randomized per shot, not a robotic metronome
+# Used only for the very first shot after spawn, not between shots (that's
+# CLOUD_ARCHER_FIRE_COOLDOWN above). At the hero's current fire rate and
+# targeting priority, an archer starting on the full 1.3-1.9s cooldown got
+# sniped before it ever fired a single arrow essentially every time --
+# confirmed directly: 0 archer_fire events across an entire 100-kill run
+# despite 40 archer kills. A near-immediate first shot gives it a real
+# chance to be a threat (and the hero something to dodge) before it dies.
+CLOUD_ARCHER_INITIAL_COOLDOWN = (0.15, 0.4)
 CLOUD_ARCHER_AIM_NOISE = 0.10  # radians, gaussian -- real but beatable accuracy
 
 
