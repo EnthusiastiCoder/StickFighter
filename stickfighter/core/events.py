@@ -30,6 +30,12 @@ class ArrowMiss:
     owner: int
     x: float
     y: float
+    # the arrow's flight angle (radians, atan2(vy, vx)) at the moment it
+    # missed -- lets a ground-stuck decal be drawn at the angle it actually
+    # landed at instead of a fixed flat line. Defaults to 0.0 (flat) for
+    # emit sites that don't bother computing it (out-of-bounds misses,
+    # never rendered as a decal since they're off-screen).
+    angle: float = 0.0
 
 
 @dataclass(frozen=True)

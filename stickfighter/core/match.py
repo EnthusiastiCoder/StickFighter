@@ -6,6 +6,7 @@ physics model, so nothing can diverge between play and training.
 """
 
 import argparse
+import math
 import random
 from dataclasses import dataclass
 
@@ -155,7 +156,8 @@ class MatchSim:
             rect = Rect(platform.x, platform.y, platform.right, platform.y + 6.0)
             point = segment_hits_rect(prev, cur, rect, C.ARROW_COLLIDE_RADIUS)
             if point is not None:
-                events.append(ArrowMiss(owner=arrow.owner, x=point[0], y=point[1]))
+                angle = math.atan2(arrow.vy, arrow.vx)
+                events.append(ArrowMiss(owner=arrow.owner, x=point[0], y=point[1], angle=angle))
                 return True
         if self._out_of_bounds(arrow):
             events.append(ArrowMiss(owner=arrow.owner, x=arrow.x, y=arrow.y))

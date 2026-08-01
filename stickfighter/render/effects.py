@@ -45,6 +45,7 @@ class Particle:
 class StuckArrow:
     x: float
     y: float
+    angle: float = 0.0  # the flight angle it landed at, not always flat
 
 
 _font_cache: dict[int, pygame.font.Font] = {}
@@ -80,7 +81,7 @@ class EffectsSystem:
                 x, y = last_hit_pos
                 self.floaters.append(FloatingText(x, y - 6, f"+{e.amount}", theme.GOLD))
             elif isinstance(e, ArrowMiss):
-                self.stuck.append(StuckArrow(e.x, e.y))
+                self.stuck.append(StuckArrow(e.x, e.y, e.angle))
                 if len(self.stuck) > MAX_STUCK_ARROWS:
                     self.stuck.pop(0)
             elif isinstance(e, Death):
@@ -140,8 +141,13 @@ class EffectsSystem:
                 pygame.draw.circle(surface, theme.WHITE, pos, radius)
 
         for s in self.stuck:
-            a = _pt((s.x - 10, s.y), scale)
-            b = _pt((s.x + 10, s.y), scale)
+            # drawn along the angle it actually landed at (a steep shot
+            # sticks in at a steep angle), not a fixed flat line -- confirmed
+            # by rendering that every stuck arrow looked identically flat
+            # regardless of how it actually came in.
+            dx, dy = math.cos(s.angle), math.sin(s.angle)
+            a = _pt((s.x - dx * 10, s.y - dy * 10), scale)
+            b = _pt((s.x + dx * 10, s.y + dy * 10), scale)
             pygame.draw.line(surface, theme.INK, a, b, max(1, round(3 * scale)))
 
         for p in self.particles:

@@ -744,7 +744,8 @@ class HordeSim:
                 return True
 
         if arrow.y >= C.GROUND_Y:
-            events.append(ArrowMiss(owner=arrow.owner, x=arrow.x, y=C.GROUND_Y))
+            angle = math.atan2(arrow.vy, arrow.vx)
+            events.append(ArrowMiss(owner=arrow.owner, x=arrow.x, y=C.GROUND_Y, angle=angle))
             self.log.append({
                 "tick": self.tick, "event": "miss", "arrow_id": arrow.id,
                 "reason": "ground", "point": (arrow.x, C.GROUND_Y),
