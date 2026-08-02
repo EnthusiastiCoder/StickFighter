@@ -41,28 +41,33 @@ def draw_melee_enemy(
 ) -> None:
     if not enemy.alive:
         return
-    top = enemy.top()
-    hip = (enemy.x, top + VISUAL_HIP_Y)
+    # a purely render-side silhouette scale (1.0 for humans, bigger for a
+    # dragon, smaller for a hound) -- the hitbox stays the standard human
+    # size/position (see EnemyConfig.visual_size), so this only stretches
+    # the *drawing* upward from the real, unscaled feet position.
+    size = enemy.config.visual_size
     feet_y = enemy.y
+    top = feet_y - C.CHAR_HEIGHT * size
+    hip = (enemy.x, top + VISUAL_HIP_Y * size)
 
     speed_frac = min(abs(enemy.vx) / C.CHAR_MOVE_SPEED, 1.0)
     # lean the torso into the run, pivoting from the hip -- peaks at full
     # speed, vanishes when stopped (e.g. mid melee-range attack)
     lean = enemy.facing * LEAN_MAX * speed_frac
-    head = (enemy.x + lean, top + C.HEAD_CENTER_Y)
-    shoulder = (enemy.x + lean * 0.6, top + C.TORSO_TOP_Y + 4.0)
+    head = (enemy.x + lean, top + C.HEAD_CENTER_Y * size)
+    shoulder = (enemy.x + lean * 0.6, top + (C.TORSO_TOP_Y + 4.0) * size)
 
     phase = elapsed * WALK_FREQUENCY
     leg_swing = math.sin(phase) * WALK_SWING * speed_frac if speed_frac > 0.05 else 0.0
 
     _draw_legs(surface, enemy, hip, feet_y, elapsed, scale)
-    _draw_arms(surface, enemy, shoulder, leg_swing, speed_frac, scale)
+    _draw_arms(surface, enemy, shoulder, leg_swing, speed_frac, scale, size)
 
-    _line(surface, scale, theme.INK, shoulder, hip, LINE_WIDTH)
-    _circle(surface, scale, head, HEAD_RADIUS, theme.INK)
+    _line(surface, scale, theme.INK, shoulder, hip, LINE_WIDTH * size)
+    _circle(surface, scale, head, HEAD_RADIUS * size, theme.INK)
 
     if enemy.config.has_shield:
-        _draw_shield(surface, enemy, shoulder, hip, scale)
+        _draw_shield(surface, enemy, shoulder, hip, scale, size)
 
 
 def _draw_arms(
@@ -72,6 +77,7 @@ def _draw_arms(
     leg_swing: float,
     speed_frac: float,
     scale: float,
+    size: float = 1.0,
 ) -> None:
     """Both arms, swinging opposite each other like a real run -- one hand
     forward, one back -- with the weapon staying in only the sword hand.
@@ -81,13 +87,13 @@ def _draw_arms(
     # and swings noticeably harder than the leg cycle -- per run-cycle
     # reference, arms move higher/faster than legs in a run, not a walk.
     arm_swing = -leg_swing * (ARM_SWING / WALK_SWING) if WALK_SWING else 0.0
-    forward_lift = 6.0 + 6.0 * speed_frac
+    forward_lift = (6.0 + 6.0 * speed_frac) * size
 
     sword_hand = (
         shoulder[0] + enemy.facing * forward_lift + arm_swing,
-        shoulder[1] + 10.0 - abs(arm_swing) * 0.3,
+        shoulder[1] + 10.0 * size - abs(arm_swing) * 0.3,
     )
-    length = SPEAR_LENGTH if enemy.config.name == "spearman" else SWORD_LENGTH
+    length = (SPEAR_LENGTH if enemy.config.name == "spearman" else SWORD_LENGTH) * size
     # the blade continues the shoulder->hand line instead of always pointing
     # in the facing direction -- previously the tip was hand + facing*length
     # unconditionally, so the hand swung back and forth but the blade itself
@@ -101,18 +107,18 @@ def _draw_arms(
     # both arms hung off the exact same point and the same height, the two
     # overlapped into one indistinct blob whenever their reach coincided
     # (confirmed by rendering and zooming into a frame where that happened).
-    far_shoulder = (shoulder[0], shoulder[1] - 6.0)
+    far_shoulder = (shoulder[0], shoulder[1] - 6.0 * size)
     off_hand = (
         far_shoulder[0] + enemy.facing * forward_lift - arm_swing,
-        far_shoulder[1] + 10.0 - abs(arm_swing) * 0.3,
+        far_shoulder[1] + 10.0 * size - abs(arm_swing) * 0.3,
     )
 
-    _line(surface, scale, theme.INK, far_shoulder, off_hand, LINE_WIDTH)
-    _circle(surface, scale, off_hand, HAND_RADIUS, theme.INK)
+    _line(surface, scale, theme.INK, far_shoulder, off_hand, LINE_WIDTH * size)
+    _circle(surface, scale, off_hand, HAND_RADIUS * size, theme.INK)
 
-    _line(surface, scale, theme.INK, shoulder, sword_hand, LINE_WIDTH)
-    _circle(surface, scale, sword_hand, HAND_RADIUS, theme.INK)
-    _line(surface, scale, theme.SILVER, sword_hand, tip, 3)
+    _line(surface, scale, theme.INK, shoulder, sword_hand, LINE_WIDTH * size)
+    _circle(surface, scale, sword_hand, HAND_RADIUS * size, theme.INK)
+    _line(surface, scale, theme.SILVER, sword_hand, tip, max(1, round(3 * size)))
 
 
 CLOUD_PUFF_RADII = (24.0, 20.0, 17.0, 15.0)
@@ -173,10 +179,11 @@ def _draw_shield(
     shoulder: tuple[float, float],
     hip: tuple[float, float],
     scale: float,
+    size: float = 1.0,
 ) -> None:
-    cx = enemy.x + enemy.facing * (C.CHAR_HALF_WIDTH + SHIELD_WIDTH / 2.0)
+    cx = enemy.x + enemy.facing * (C.CHAR_HALF_WIDTH + SHIELD_WIDTH * size / 2.0)
     cy = (shoulder[1] + hip[1]) / 2.0
-    w, h = round(SHIELD_WIDTH * scale), round(SHIELD_HEIGHT * scale)
+    w, h = round(SHIELD_WIDTH * size * scale), round(SHIELD_HEIGHT * size * scale)
     rect = pygame.Rect(0, 0, w, h)
     rect.center = (round(cx * scale), round(cy * scale))
     border = max(1, round(3 * scale))
