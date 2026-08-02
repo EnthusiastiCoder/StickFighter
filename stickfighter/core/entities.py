@@ -35,6 +35,10 @@ class ArrowState:
     owner: int
     age: float = 0.0
     alive: bool = True
+    # multiplies damage_for_part's result on hit -- 1.0 for a normal arrow.
+    # Used by horde.py's big arrow (5x), which is otherwise a normal
+    # ArrowState/spawn_arrow/step_arrow all the way through.
+    damage_mult: float = 1.0
 
 
 @dataclass(frozen=True)
