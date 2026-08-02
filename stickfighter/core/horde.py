@@ -109,8 +109,10 @@ CLOUD_ARCHER_ONSCREEN_MARGIN = 60.0
 # faster... fire rate") after measuring that stretching the fight to 100
 # kills at the original cadence made every seed eventually die to compounded
 # bad luck (0/200+ cleared; see DODGE_SPEED and TURN_DURATION below, tuned
-# together for the same reason).
-HERO_FIRE_COOLDOWN = 0.3
+# together for the same reason). Eased back up from an initial 0.3s per
+# follow-up feedback ("firing speed is a bit too fast") -- 0.35 still clears
+# a real majority of seeds (12/20 measured), just not as many as 0.3 (17/20).
+HERO_FIRE_COOLDOWN = 0.35
 # A brief snap-turn when the hero's next shot is on the opposite side from
 # its current facing -- per user request, enemies now approach from both
 # sides, so the hero can't always be facing the right way. A real
@@ -457,7 +459,16 @@ class HordeSim:
                 return
 
         candidates = self._pick_targets()
-        self.hero.draw = 1.0 if candidates else 0.0
+        # nock -> draw -> release, not an instant snap to full draw: the
+        # string visibly pulls back over the reload cooldown, reaching full
+        # draw right as the hero becomes ready to fire again. Previously
+        # hero.draw jumped straight to 1.0 the instant a target existed and
+        # back to 0.0 the instant it fired, so the render (which does
+        # interpolate string pull off hero.draw, see draw.py's STRING_PULL_*)
+        # never actually showed a draw happening -- confirmed by user
+        # feedback that the animation skipped straight from empty to fired.
+        draw_progress = 1.0 - self.hero.reload_timer / HERO_FIRE_COOLDOWN
+        self.hero.draw = max(0.0, min(1.0, draw_progress)) if candidates else 0.0
 
         if not candidates:
             return
