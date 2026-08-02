@@ -44,6 +44,8 @@ from stickfighter.core.horde_entities import (
     CLOUD_ARCHER_HP,
     CLOUD_ARCHER_INITIAL_COOLDOWN,
     CLOUD_ARCHER_STANDOFF,
+    DRAGON,
+    HOUND,
     SHIELDBEARER,
     SPEARMAN,
     SPEED_VARIANCE,
@@ -61,8 +63,15 @@ HERO_X = C.ARENA_WIDTH / 2.0  # hero stands center-stage, horde closes from both
 # game/record_horde.py, which gives melee deaths a fade instead of the
 # shared ragdoll).
 ARCHER_ID_OFFSET = 100_000
-TOTAL_ENEMIES = 60
+TOTAL_ENEMIES = 60  # human melee (swordsman/spearman/shieldbearer) only
 ARCHER_TOTAL = 40  # 60:40 melee:archer ratio, per user request (100 kills total)
+# Dragons and hounds are on top of the original 100-kill total, per user
+# request. Counts kept modest since a dragon (4x human hp) or hound (2x) is
+# genuinely tankier -- too many would drag pacing out disproportionately
+# to how much they add visually.
+HOUND_TOTAL = 10
+DRAGON_TOTAL = 5
+TOTAL_MELEE = TOTAL_ENEMIES + HOUND_TOTAL + DRAGON_TOTAL
 MAX_ACTIVE = 4
 MAX_ACTIVE_ARCHERS = 1  # 2 active: 24/30 seeds cleared; 1 active: 29/30, at the 60:40 ratio
 ATTACK_COOLDOWN = 0.6
@@ -134,6 +143,16 @@ TURN_DURATION = 0.1
 # mid-flight): 20/20 seeds cleared with 100% on-screen kills at this value,
 # versus the previous out-of-bounds-based window's real numbers.
 HERO_ENGAGE_INSET = 40.0
+
+# The hero's big arrow: fires at most once every BIG_ARROW_COOLDOWN seconds,
+# dealing BIG_ARROW_DAMAGE_MULT x normal damage, per user request. It
+# replaces a normal shot on the cycle it's used (not an extra shot), and per
+# user feedback ("used carefully, only when needed") the hero only spends it
+# on a target tough enough that a normal hit wouldn't finish it off (see
+# _act_hero) -- a human or cloud archer already dies to one normal torso hit
+# (30 hp < DAMAGE_TORSO), so this naturally reserves it for hound/dragon.
+BIG_ARROW_COOLDOWN = 3.0
+BIG_ARROW_DAMAGE_MULT = 5.0
 
 # Hero dodge: the hero used to be fully stationary (HERO_X fixed forever),
 # which only worked because nothing could ever hit it from range. Cloud
@@ -211,6 +230,7 @@ class HordeSim:
     _dodge_timer: float = 0.0
     _turn_timer: float = 0.0
     _turning_to: int = 0
+    _big_arrow_timer: float = 0.0  # ready to use as soon as it's needed
 
     def reset(self, seed: int | None = None) -> None:
         self.rng = random.Random(seed)
@@ -221,13 +241,18 @@ class HordeSim:
         # spawn_side -1 means "spawns off the right edge, facing left, closing
         # in toward negative x" and +1 the mirror image -- an even split,
         # shuffled so the two sides interleave rather than draining one side
-        # first (see _spawn_up_to_max).
-        self._queue = list(
-            zip(
-                (_weighted_choice(self.rng, ENEMY_MIX) for _ in range(TOTAL_ENEMIES)),
-                _even_sides(self.rng, TOTAL_ENEMIES),
-            )
+        # first (see _spawn_up_to_max). Dragons and hounds are shuffled in
+        # among the humans (not a separate "second wave" after them) so
+        # they're a random escalation throughout the fight, not a pacing
+        # cliff at the end.
+        configs = (
+            [_weighted_choice(self.rng, ENEMY_MIX) for _ in range(TOTAL_ENEMIES)]
+            + [HOUND] * HOUND_TOTAL
+            + [DRAGON] * DRAGON_TOTAL
         )
+        queue = list(zip(configs, _even_sides(self.rng, len(configs))))
+        self.rng.shuffle(queue)
+        self._queue = queue
         self._archer_sides = _even_sides(self.rng, ARCHER_TOTAL)
         self._next_arrow_id = 0
         self._next_enemy_id = 0
@@ -241,6 +266,7 @@ class HordeSim:
         self._dodge_timer = 0.0
         self._turn_timer = 0.0
         self._turning_to = 0
+        self._big_arrow_timer = 0.0
         self._spawn_up_to_max()
 
     def _spawn_up_to_max(self) -> None:
@@ -312,7 +338,7 @@ class HordeSim:
         self._update_arrows(events)
         self._spawn_up_to_max()
 
-        total_target = TOTAL_ENEMIES + ARCHER_TOTAL
+        total_target = TOTAL_MELEE + ARCHER_TOTAL
         if (
             self.total_kills >= total_target
             and not self._queue
@@ -458,6 +484,7 @@ class HordeSim:
 
     def _act_hero(self, events: list[Event]) -> None:
         self.hero.reload_timer = max(0.0, self.hero.reload_timer - C.DT)
+        self._big_arrow_timer = max(0.0, self._big_arrow_timer - C.DT)
 
         if self._turn_timer > 0.0:
             # committed to a pivot -- see the "needs a turn" branches below.
@@ -581,9 +608,11 @@ class HordeSim:
                     HERO_ENGAGE_INSET <= tx_led <= C.ARENA_WIDTH - HERO_ENGAGE_INSET
                 ):
                     continue
+                target_hp = target.state.hp if kind == "archer" else target.hp
                 chosen = {
                     "kind": kind, "target": target, "key": target_key, "angle": angle,
                     "type": target_type, "x": target_x, "vx": target_vx, "led_x": tx_led,
+                    "hp": target_hp,
                 }
                 break
 
@@ -613,6 +642,19 @@ class HordeSim:
         if ready:
             arrow = spawn_arrow(self.hero, owner=0, arrow_id=self._next_arrow_id)
             self._next_arrow_id += 1
+            # the big arrow replaces this shot rather than firing alongside
+            # it, and only when the target actually needs it: a human or
+            # cloud archer already dies to one normal torso hit (30 hp <
+            # DAMAGE_TORSO), so spending the once-every-3s big arrow on one
+            # would be wasted -- it's reserved for a target tough enough
+            # (hound/dragon) that a normal hit wouldn't finish off, per user
+            # feedback ("used carefully, only when needed").
+            use_big_arrow = (
+                self._big_arrow_timer <= 0.0 and chosen["hp"] > C.DAMAGE_TORSO
+            )
+            if use_big_arrow:
+                arrow.damage_mult = BIG_ARROW_DAMAGE_MULT
+                self._big_arrow_timer = BIG_ARROW_COOLDOWN
             self.arrows.append(arrow)
             self._claimed_targets[arrow.id] = chosen["key"]
             self.hero.reload_timer = HERO_FIRE_COOLDOWN
@@ -623,6 +665,7 @@ class HordeSim:
                 "target_kind": chosen["kind"], "target_type": chosen["type"],
                 "target_x": chosen["x"], "target_vx": chosen["vx"],
                 "predicted_target_x": chosen["led_x"], "aim_angle": chosen["angle"],
+                "big_arrow": use_big_arrow,
             })
 
     def _update_enemies(self, events: list[Event]) -> None:
@@ -821,7 +864,7 @@ class HordeSim:
                         "target_id": enemy.enemy_id, "point": point,
                     })
                     return True
-                self._apply_hit_melee(enemy, part, point, events)
+                self._apply_hit_melee(enemy, part, point, events, arrow)
                 return True
 
         for cloud in self.archers:
@@ -835,14 +878,19 @@ class HordeSim:
                 point = test(prev, cur, hitbox, C.ARROW_COLLIDE_RADIUS)
                 if point is None:
                     continue
-                self._apply_hit_archer(cloud, part, point, events)
+                self._apply_hit_archer(cloud, part, point, events, arrow)
                 return True
         return False
 
     def _apply_hit_melee(
-        self, enemy: MeleeEnemyState, part: str, point: tuple[float, float], events: list[Event]
+        self,
+        enemy: MeleeEnemyState,
+        part: str,
+        point: tuple[float, float],
+        events: list[Event],
+        arrow: ArrowState,
     ) -> None:
-        damage = damage_for_part(part)
+        damage = damage_for_part(part) * arrow.damage_mult
         enemy.hp = max(0.0, enemy.hp - damage)
         events.append(
             ArrowHit(
@@ -870,10 +918,15 @@ class HordeSim:
             )
 
     def _apply_hit_archer(
-        self, cloud: CloudArcherState, part: str, point: tuple[float, float], events: list[Event]
+        self,
+        cloud: CloudArcherState,
+        part: str,
+        point: tuple[float, float],
+        events: list[Event],
+        arrow: ArrowState,
     ) -> None:
         archer = cloud.state
-        damage = damage_for_part(part)
+        damage = damage_for_part(part) * arrow.damage_mult
         archer.hp = max(0.0, archer.hp - damage)
         events.append(
             ArrowHit(
