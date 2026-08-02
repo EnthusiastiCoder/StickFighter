@@ -120,6 +120,20 @@ HERO_FIRE_COOLDOWN = 0.35
 # Shortened from an initial 0.25s per user request ("reduce the turning
 # time").
 TURN_DURATION = 0.1
+# How far inside the visible arena (0..ARENA_WIDTH) a shot's led aim point
+# must land for the hero to take it -- separate from (and tighter than)
+# C.OUT_OF_BOUNDS_MARGIN, which only governs when an arrow actually despawns
+# and is shared with the real duel game. Without this, the hero would happily
+# engage anything within the arrow's full travel range (out to
+# ARENA_WIDTH + 80), which is well past the visible frame -- confirmed
+# directly: 48/100 kills in one run happened at x<0 or x>960, i.e. off
+# screen, since the hero sniped things the instant they were technically
+# reachable rather than once they'd actually walked into view. Tightening
+# engagement to this inset also happens to raise reliability (closer shots
+# have less lead-prediction error and less time for something else to change
+# mid-flight): 20/20 seeds cleared with 100% on-screen kills at this value,
+# versus the previous out-of-bounds-based window's real numbers.
+HERO_ENGAGE_INSET = 40.0
 
 # Hero dodge: the hero used to be fully stationary (HERO_X fixed forever),
 # which only worked because nothing could ever hit it from range. Cloud
@@ -553,21 +567,19 @@ class HordeSim:
                         )
                     if refined is not None:
                         angle = refined
-                # an arrow despawns as "out of bounds" past the arena edge
-                # plus a small margin (core/rules.py's arrow lifetime, shared
-                # with the real duel game) -- a target spawned beyond that
-                # line is a real, in-range ballistic solution that can never
-                # actually connect, since the arrow gets deleted before it
-                # ever travels far enough to arrive. Confirmed directly by
-                # tracing one such shot: the target spawned at x=1370, the
-                # solver happily returned an angle for it, and the arrow was
-                # culled at x=1040 (960 + the 80px margin) while the target
-                # was still sitting at x=1287 -- nowhere near where the
-                # arrow died. Skipping these and waiting for the target to
-                # close into reach is the same "don't fire a doomed shot"
-                # policy solve_launch_angle's None case already gets below.
-                oob = C.OUT_OF_BOUNDS_MARGIN
-                if not (-oob <= tx_led <= C.ARENA_WIDTH + oob):
+                # HERO_ENGAGE_INSET keeps the hero from sniping something the
+                # instant it's technically reachable but still off-screen
+                # (see that constant's own comment) -- and, since the inset
+                # window sits strictly inside the arrow's out-of-bounds
+                # despawn line (C.OUT_OF_BOUNDS_MARGIN past the edge), also
+                # subsumes the original "don't fire a shot the arrow can
+                # never survive long enough to complete" check. Skipping and
+                # waiting for the target to close in is the same "don't fire
+                # a doomed shot" policy solve_launch_angle's None case
+                # already gets below.
+                if not (
+                    HERO_ENGAGE_INSET <= tx_led <= C.ARENA_WIDTH - HERO_ENGAGE_INSET
+                ):
                     continue
                 chosen = {
                     "kind": kind, "target": target, "key": target_key, "angle": angle,

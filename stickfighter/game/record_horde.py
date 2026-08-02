@@ -150,11 +150,12 @@ def record(
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--out", default="horde.mp4")
-    # 2, not 0: with cloud archers actually firing back (see horde.py's
-    # CLOUD_ARCHER_ONSCREEN_MARGIN/CLOUD_ARCHER_INITIAL_COOLDOWN), only
-    # ~60% of seeds clear the full 100-kill horde without an instant-kill
-    # headshot getting through -- 2 is a verified clean clear (84 hp).
-    parser.add_argument("--seed", type=int, default=2)
+    # 63, not 0: with cloud archers actually firing back and HERO_ENGAGE_INSET
+    # forcing the hero to wait for targets to actually walk into frame (see
+    # horde.py), only ~46% of seeds clear the full 100-kill horde without an
+    # instant-kill headshot getting through -- 63 is a verified clean clear
+    # (68 hp) with every kill on screen.
+    parser.add_argument("--seed", type=int, default=63)
     parser.add_argument("--fps", type=int, default=60)
     parser.add_argument("--scale", type=float, default=3.0, help="render resolution multiplier")
     args = parser.parse_args(argv)

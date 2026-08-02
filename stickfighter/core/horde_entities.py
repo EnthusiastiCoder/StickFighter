@@ -80,7 +80,13 @@ CLOUD_ARCHER_HEIGHT_RANGE = (120.0, 210.0)
 # horde.py's _update_archers) to fire, and "close enough" to stop drifting.
 CLOUD_ARCHER_STANDOFF = (220.0, 400.0)
 CLOUD_ARCHER_DRIFT_SPEED = 90.0
-CLOUD_ARCHER_FIRE_COOLDOWN = (1.3, 1.9)  # randomized per shot, not a robotic metronome
+# Randomized per shot, not a robotic metronome. Slowed from (1.3, 1.9) after
+# tightening HERO_ENGAGE_INSET (horde.py) made the hero wait longer to
+# engage each archer -- more cooldown cycles pass before it dies, so more
+# total shots (and headshot rolls) land per archer. A slower cadence
+# partially offsets that: 11/20 seeds cleared at (1.8, 2.4) vs 9/20 at the
+# original range, measured at the same engage inset.
+CLOUD_ARCHER_FIRE_COOLDOWN = (1.8, 2.4)
 # Used only for the very first shot after spawn, not between shots (that's
 # CLOUD_ARCHER_FIRE_COOLDOWN above). At the hero's current fire rate and
 # targeting priority, an archer starting on the full 1.3-1.9s cooldown got

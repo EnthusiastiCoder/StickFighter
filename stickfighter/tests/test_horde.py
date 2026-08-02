@@ -1,5 +1,6 @@
 from stickfighter.core import constants as C
 from stickfighter.core.entities import ArrowState
+from stickfighter.core.events import Death
 from stickfighter.core.horde import ARCHER_TOTAL, DODGE_RANGE, HERO_X, TOTAL_ENEMIES, HordeSim
 
 TOTAL_TARGETS = TOTAL_ENEMIES + ARCHER_TOTAL
@@ -21,7 +22,7 @@ def test_hero_clears_the_full_horde_without_dying():
     # range -- see that test for the aggregate reliability bound across many
     # seeds. Matches game/record_horde.py's default --seed.
     sim = HordeSim()
-    steps = _run_to_completion(sim, seed=2)
+    steps = _run_to_completion(sim, seed=63)
     assert sim.cleared, f"did not clear within {steps} steps"
     assert sim.hero.alive
     assert sim.total_kills == TOTAL_TARGETS
@@ -31,18 +32,17 @@ def test_hero_survives_the_horde_at_the_default_pacing():
     # deliberately NOT zero-damage: enemies are meant to close real distance
     # and occasionally land a hit (per user feedback -- a hero that snipes
     # everything from 300-500px away "can't even reach close enough" to be
-    # dramatic). This is also a real, measured 60% floor (12/20), not the
+    # dramatic). This is also a real, measured 55% floor (11/20), not the
     # 90% one this test asserted before cloud archers were fixed to actually
-    # fire back and hit -- two bugs stacked here: an initial cooldown as
-    # long as the hero's whole time-to-kill left every archer harmless
-    # (0 archer_fire events across a full run), and once that was fixed, an
-    # on-screen firing margin wider than the arrow's own out-of-bounds
-    # despawn line meant every shot that *did* fire died on its own spawning
-    # tick before ever traveling anywhere. With archers actually shooting
-    # and landing hits, an instant-kill headshot (unchanged game rule,
-    # shared with the real duel game) getting through the dodge at least
-    # once across a ~40-archer fight is common enough that 12/20 is the real
-    # number at the current (eased back down per feedback) fire rate -- see
+    # fire back and hit, and not the 60% one from right after that fix --
+    # HERO_ENGAGE_INSET (horde.py) then forced the hero to wait for targets
+    # to actually be on screen before engaging (per user feedback: "a lot of
+    # kills are offscreen"), which means each archer lives through more of
+    # its own fire cooldown before dying, i.e. more total shots and more
+    # chances for an instant-kill headshot (unchanged game rule, shared with
+    # the real duel game) to get through the dodge. Slowing
+    # CLOUD_ARCHER_FIRE_COOLDOWN partially offset this (9/20 -> 11/20 at the
+    # same engage inset) but didn't fully recover the pre-inset rate -- see
     # game/record_horde.py for the specific known-good seed used for the
     # actual rendered video.
     cleared = 0
@@ -55,7 +55,7 @@ def test_hero_survives_the_horde_at_the_default_pacing():
         if sim.cleared:
             cleared += 1
             assert sim.hero.hp > 0.0
-    assert cleared / n >= 0.5, f"only {cleared}/{n} seeds cleared"
+    assert cleared / n >= 0.4, f"only {cleared}/{n} seeds cleared"
 
 
 def test_determinism_same_seed_same_outcome():
@@ -114,11 +114,30 @@ def test_hero_does_not_waste_shots_on_out_of_range_or_claimed_targets():
     assert len(fires) <= TOTAL_TARGETS + 8
 
 
+def test_hero_only_kills_targets_that_are_on_screen():
+    # per user feedback: "a lot of kills are offscreen, enemies don't even
+    # appear in frame before they get killed" -- the hero used to engage
+    # anything within the arrow's full out-of-bounds travel range (out to
+    # ARENA_WIDTH + 80), well past the visible 0..ARENA_WIDTH frame.
+    # HERO_ENGAGE_INSET (horde.py) tightens that to a window inset from both
+    # edges, confirmed directly to put every kill on screen across 20 seeds.
+    sim = HordeSim()
+    sim.reset(seed=63)
+    kill_positions = []
+    steps = 0
+    while not sim.cleared and sim.hero.alive and steps < 20_000:
+        events = sim.step()
+        steps += 1
+        kill_positions.extend(e.x for e in events if isinstance(e, Death) and e.killer == 0)
+    assert kill_positions, "no kills recorded -- test seed/setup is wrong"
+    assert all(0.0 <= x <= C.ARENA_WIDTH for x in kill_positions)
+
+
 def test_cloud_archers_spawn_and_can_be_killed():
-    # seed=2, not 0 -- see test_hero_survives_the_horde_at_the_default_pacing,
+    # seed=63, not 0 -- see test_hero_survives_the_horde_at_the_default_pacing,
     # seed=0 is one of the seeds that doesn't clear now that archers fire back.
     sim = HordeSim()
-    sim.reset(seed=2)
+    sim.reset(seed=63)
     while not sim.cleared and sim.hero.alive:
         sim.step()
 
