@@ -23,12 +23,12 @@ import imageio
 import pygame
 
 from stickfighter.core import constants as C
-from stickfighter.core.horde import ARCHER_TOTAL, TOTAL_ENEMIES, HordeSim
+from stickfighter.core.horde import ARCHER_TOTAL, TOTAL_MELEE, HordeSim
 from stickfighter.render import effects, theme
 from stickfighter.render.draw import VISUAL_HIP_Y, draw_arrow
 from stickfighter.render.horde_draw import draw_cloud, draw_leg_mist, draw_melee_enemy
 
-TOTAL_TARGETS = TOTAL_ENEMIES + ARCHER_TOTAL
+TOTAL_TARGETS = TOTAL_MELEE + ARCHER_TOTAL
 
 _ARCHER_DRAW = None  # lazy import to avoid a hard pygame dependency at module load for tests
 
@@ -150,12 +150,12 @@ def record(
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--out", default="horde.mp4")
-    # 63, not 0: with cloud archers actually firing back and HERO_ENGAGE_INSET
-    # forcing the hero to wait for targets to actually walk into frame (see
-    # horde.py), only ~46% of seeds clear the full 100-kill horde without an
-    # instant-kill headshot getting through -- 63 is a verified clean clear
-    # (68 hp) with every kill on screen.
-    parser.add_argument("--seed", type=int, default=63)
+    # 32, not 0: adding hounds/dragons on top of the 100-kill horde (per user
+    # request) makes this a much harder fight -- only ~15% of seeds clear
+    # now (down from ~55% before them) since each one soaks up several
+    # normal hits before dying. 32 is a verified clean clear (84 hp) with
+    # every kill on screen.
+    parser.add_argument("--seed", type=int, default=32)
     parser.add_argument("--fps", type=int, default=60)
     parser.add_argument("--scale", type=float, default=3.0, help="render resolution multiplier")
     args = parser.parse_args(argv)
