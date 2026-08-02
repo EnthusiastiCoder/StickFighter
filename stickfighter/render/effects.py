@@ -1,10 +1,9 @@
-"""Frame-to-frame visual effects: arrow trails, floating hit text, screen
-shake, blood particles, and stuck-arrow decals. All state here is render-only
-and is driven entirely by the Event list MatchSim.step() returns."""
+"""Frame-to-frame visual effects: floating hit text, screen shake, blood
+particles, and stuck-arrow decals. All state here is render-only and is
+driven entirely by the Event list MatchSim.step() returns."""
 
 import math
 import random
-from collections import deque
 from dataclasses import dataclass
 
 import pygame
@@ -13,10 +12,8 @@ from stickfighter.core import constants as C
 from stickfighter.core.entities import ArrowState
 from stickfighter.core.events import ArrowHit, ArrowMiss, CoinEarned, Death, Event
 from stickfighter.render import theme
-from stickfighter.render.draw import _pt
+from stickfighter.render.draw import _pt, draw_stuck_arrow
 
-TRAIL_LENGTH = 14
-TRAIL_DOT_STRIDE = 2
 MAX_STUCK_ARROWS = 40
 
 
@@ -60,7 +57,6 @@ def _get_font(size: int) -> pygame.font.Font:
 class EffectsSystem:
     def __init__(self, gore_enabled: bool = True) -> None:
         self.gore_enabled = gore_enabled
-        self._trails: dict[int, deque[tuple[float, float]]] = {}
         self.floaters: list[FloatingText] = []
         self.particles: list[Particle] = []
         self.stuck: list[StuckArrow] = []
@@ -100,13 +96,6 @@ class EffectsSystem:
         self.shake_time = max(self.shake_time, duration)
 
     def update(self, dt: float, arrows: tuple[ArrowState, ...]) -> None:
-        live_ids = {a.id for a in arrows}
-        for a in arrows:
-            trail = self._trails.setdefault(a.id, deque(maxlen=TRAIL_LENGTH))
-            trail.appendleft((a.x, a.y))
-        for stale_id in [i for i in self._trails if i not in live_ids]:
-            del self._trails[stale_id]
-
         for p in self.particles:
             p.vy += C.GRAVITY * 0.5 * dt
             p.x += p.vx * dt
@@ -130,25 +119,13 @@ class EffectsSystem:
         return (self._rng.randint(-int(m), int(m)), self._rng.randint(-int(m), int(m)))
 
     def draw(self, surface: pygame.Surface, scale: float = 1.0) -> None:
-        for trail in self._trails.values():
-            pts = list(trail)
-            # start one stride past the arrow's current position (index 0)
-            # -- a dot there just sits on top of the arrowhead itself,
-            # which draw_arrow already draws distinctly.
-            for i in range(TRAIL_DOT_STRIDE, len(pts), TRAIL_DOT_STRIDE):
-                radius = max(1, round(2 * (1.0 - i / max(len(pts), 1)) * scale))
-                pos = (round(pts[i][0] * scale), round(pts[i][1] * scale))
-                pygame.draw.circle(surface, theme.WHITE, pos, radius)
-
         for s in self.stuck:
-            # drawn along the angle it actually landed at (a steep shot
-            # sticks in at a steep angle), not a fixed flat line -- confirmed
-            # by rendering that every stuck arrow looked identically flat
-            # regardless of how it actually came in.
-            dx, dy = math.cos(s.angle), math.sin(s.angle)
-            a = _pt((s.x - dx * 10, s.y - dy * 10), scale)
-            b = _pt((s.x + dx * 10, s.y + dy * 10), scale)
-            pygame.draw.line(surface, theme.INK, a, b, max(1, round(3 * scale)))
+            # the same silver-shaft/black-head/black-fletching shape as an
+            # in-flight arrow (draw_stuck_arrow shares draw_arrow's geometry
+            # helper), oriented along the angle it actually landed at -- not
+            # a plain flat black line, which didn't match the real arrow's
+            # coloring and had no fletching at all, both per user feedback.
+            draw_stuck_arrow(surface, s.x, s.y, s.angle, scale)
 
         for p in self.particles:
             radius = max(1, round(3 * (1.0 - p.age / p.lifetime) * scale))

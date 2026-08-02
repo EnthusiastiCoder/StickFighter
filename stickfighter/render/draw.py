@@ -245,7 +245,7 @@ def _draw_nocked_arrow(
     back = (tip[0] - forward[0] * ARROWHEAD_LEN, tip[1] - forward[1] * ARROWHEAD_LEN)
     head_a = (back[0] + perp[0] * ARROWHEAD_WIDTH, back[1] + perp[1] * ARROWHEAD_WIDTH)
     head_b = (back[0] - perp[0] * ARROWHEAD_WIDTH, back[1] - perp[1] * ARROWHEAD_WIDTH)
-    _polygon(surface, scale, theme.SILVER, (tip, head_a, head_b))
+    _polygon(surface, scale, theme.INK, (tip, head_a, head_b))
 
 
 def draw_arena(surface: pygame.Surface, arena: Arena, scale: float = 1.0) -> None:
@@ -259,23 +259,25 @@ def draw_arena(surface: pygame.Surface, arena: Arena, scale: float = 1.0) -> Non
         pygame.draw.rect(surface, theme.INK, rect)
 
 
-def draw_arrow(surface: pygame.Surface, arrow: ArrowState, scale: float = 1.0) -> None:
-    speed = math.hypot(arrow.vx, arrow.vy) or 1.0
-    dx, dy = arrow.vx / speed, arrow.vy / speed
-    tip = (arrow.x, arrow.y)
-    tail = (arrow.x - dx * C.ARROW_LENGTH, arrow.y - dy * C.ARROW_LENGTH)
+def _arrow_shape(tip: tuple[float, float], dx: float, dy: float, length: float):
+    """Shared geometry for both the in-flight arrow and the ground-stuck
+    decal, so they always match visually: same silver shaft / black head /
+    black fletching, just at different lengths. Returns
+    (fletch_start, head_base, head_a, head_b, fletch_a, fletch_b)."""
+    tail = (tip[0] - dx * length, tip[1] - dy * length)
     # where the shaft ends and the arrowhead begins: ARROWHEAD_LEN back from
     # the tip, not from the tail -- using the wrong end here previously made
     # the "arrowhead" cover most of the arrow's length instead of a small
     # point at the front, confirmed by rendering a single arrow up close.
-    head_base = (arrow.x - dx * ARROWHEAD_LEN, arrow.y - dy * ARROWHEAD_LEN)
-    _line(surface, scale, theme.SILVER, tail, head_base, 4)
-
+    head_base = (tip[0] - dx * ARROWHEAD_LEN, tip[1] - dy * ARROWHEAD_LEN)
+    # the shaft only spans from the fletching join to the head -- not all
+    # the way back to `tail` -- so nothing pokes out past the fletching's
+    # vertex. Drawing it back to `tail` left a bare silver "rod" hanging off
+    # the back of the fletching, confirmed by rendering.
+    fletch_start = (tail[0] + dx * FLETCH_LEN, tail[1] + dy * FLETCH_LEN)
     perp = (-dy, dx)
     head_a = (head_base[0] + perp[0] * ARROWHEAD_WIDTH, head_base[1] + perp[1] * ARROWHEAD_WIDTH)
     head_b = (head_base[0] - perp[0] * ARROWHEAD_WIDTH, head_base[1] - perp[1] * ARROWHEAD_WIDTH)
-    _polygon(surface, scale, theme.SILVER, (tip, head_a, head_b))
-
     # fletching: two vanes swept back and out from a point *ahead* of the
     # tail to points level with the tail, a shallow V opening backward --
     # not a symmetric crossbar centered on the tail. The crossbar read as a
@@ -283,8 +285,41 @@ def draw_arrow(surface: pygame.Surface, arrow: ArrowState, scale: float = 1.0) -
     # color, similar width), confirmed directly from a rendered frame: a
     # silver in-flight arrow looked like a thrown sword, tip and "guard"
     # both visible, no arrow silhouette at all.
-    fletch_start = (tail[0] + dx * FLETCH_LEN, tail[1] + dy * FLETCH_LEN)
     fletch_a = (tail[0] + perp[0] * FLETCH_SPREAD, tail[1] + perp[1] * FLETCH_SPREAD)
     fletch_b = (tail[0] - perp[0] * FLETCH_SPREAD, tail[1] - perp[1] * FLETCH_SPREAD)
+    return fletch_start, head_base, head_a, head_b, fletch_a, fletch_b
+
+
+def draw_arrow(surface: pygame.Surface, arrow: ArrowState, scale: float = 1.0) -> None:
+    speed = math.hypot(arrow.vx, arrow.vy) or 1.0
+    dx, dy = arrow.vx / speed, arrow.vy / speed
+    tip = (arrow.x, arrow.y)
+    fletch_start, head_base, head_a, head_b, fletch_a, fletch_b = _arrow_shape(
+        tip, dx, dy, C.ARROW_LENGTH
+    )
+    _line(surface, scale, theme.SILVER, fletch_start, head_base, 4)
+    _polygon(surface, scale, theme.INK, (tip, head_a, head_b))
+    _line(surface, scale, theme.INK, fletch_start, fletch_a, 2)
+    _line(surface, scale, theme.INK, fletch_start, fletch_b, 2)
+
+
+# Shorter than a real in-flight arrow (C.ARROW_LENGTH) -- a stuck decal drawn
+# at full length buried half of itself past the impact point, looking like
+# it pierced deep into the ground, confirmed by rendering. The tip sits
+# exactly at the impact point with everything else trailing backward, so
+# nothing is drawn on the far side of it at all.
+STUCK_ARROW_LEN = 20.0
+
+
+def draw_stuck_arrow(
+    surface: pygame.Surface, x: float, y: float, angle: float, scale: float = 1.0
+) -> None:
+    dx, dy = math.cos(angle), math.sin(angle)
+    tip = (x, y)
+    fletch_start, head_base, head_a, head_b, fletch_a, fletch_b = _arrow_shape(
+        tip, dx, dy, STUCK_ARROW_LEN
+    )
+    _line(surface, scale, theme.SILVER, fletch_start, head_base, 3)
+    _polygon(surface, scale, theme.INK, (tip, head_a, head_b))
     _line(surface, scale, theme.INK, fletch_start, fletch_a, 2)
     _line(surface, scale, theme.INK, fletch_start, fletch_b, 2)
