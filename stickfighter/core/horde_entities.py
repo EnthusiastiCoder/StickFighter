@@ -22,6 +22,11 @@ class EnemyConfig:
     melee_range: float  # px from the hero at which it stops and attacks
     melee_damage: float
     has_shield: bool  # blocks torso/limb hits; a headshot still kills
+    # Render-only silhouette scale (see horde_draw.py's draw_melee_enemy) --
+    # deliberately does NOT touch the hitbox, which stays the standard human
+    # size/position for every type. A bigger/smaller *look* was the explicit
+    # ask ("scaled human silhouette"), not bigger/smaller hittable area.
+    visual_size: float = 1.0
 
 
 SWORDSMAN = EnemyConfig(
@@ -32,6 +37,18 @@ SPEARMAN = EnemyConfig(
 )
 SHIELDBEARER = EnemyConfig(
     name="shieldbearer", hp=30.0, speed=195.0, melee_range=45.0, melee_damage=45.0, has_shield=True
+)
+# HP is per user request (4x/2x a human's 30). Speed/range/damage weren't
+# specified, so these lean into an archetype: a hound is a fast, weaker
+# skirmisher (quicker than any human, hits for less); a dragon is a slow,
+# hard-hitting bruiser (slower than any human, longer reach, hits hardest).
+HOUND = EnemyConfig(
+    name="hound", hp=60.0, speed=380.0, melee_range=40.0, melee_damage=20.0,
+    has_shield=False, visual_size=0.75,
+)
+DRAGON = EnemyConfig(
+    name="dragon", hp=120.0, speed=140.0, melee_range=70.0, melee_damage=50.0,
+    has_shield=False, visual_size=1.6,
 )
 
 SPEED_VARIANCE = (0.8, 1.25)  # per-instance multiplier so a wave doesn't move in lockstep
