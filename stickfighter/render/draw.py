@@ -314,12 +314,15 @@ STUCK_ARROW_LEN = 20.0
 def draw_stuck_arrow(
     surface: pygame.Surface, x: float, y: float, angle: float, scale: float = 1.0
 ) -> None:
+    # no arrowhead -- per user request, it "looks better" without one on the
+    # ground decal (the fletching/"arrowback" stays). The shaft runs all the
+    # way to the tip point instead of stopping short at head_base, since
+    # there's no separate head shape to hand off to anymore.
     dx, dy = math.cos(angle), math.sin(angle)
     tip = (x, y)
-    fletch_start, head_base, head_a, head_b, fletch_a, fletch_b = _arrow_shape(
+    fletch_start, _head_base, _head_a, _head_b, fletch_a, fletch_b = _arrow_shape(
         tip, dx, dy, STUCK_ARROW_LEN
     )
-    _line(surface, scale, theme.SILVER, fletch_start, head_base, 3)
-    _polygon(surface, scale, theme.INK, (tip, head_a, head_b))
+    _line(surface, scale, theme.SILVER, fletch_start, tip, 3)
     _line(surface, scale, theme.INK, fletch_start, fletch_a, 2)
     _line(surface, scale, theme.INK, fletch_start, fletch_b, 2)
