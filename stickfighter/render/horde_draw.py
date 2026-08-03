@@ -26,6 +26,7 @@ from stickfighter.render.draw import (
     _draw_legs,
     _leg_points,
     _line,
+    _polygon,
 )
 
 SWORD_LENGTH = 18.0
