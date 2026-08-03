@@ -24,6 +24,7 @@ from stickfighter.render.draw import (
     WALK_SWING,
     _circle,
     _draw_legs,
+    _leg_points,
     _line,
 )
 
