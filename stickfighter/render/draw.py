@@ -206,7 +206,7 @@ def draw_archer(
     else:
         _draw_bow_and_arms(surface, archer, shoulder, scale)
 
-    _line(surface, scale, theme.INK, shoulder, hip, LINE_WIDTH)
+    _capsule(surface, scale, theme.INK, shoulder, hip, TORSO_R_TOP, TORSO_R_BOTTOM)
     _circle(surface, scale, head, HEAD_RADIUS, theme.INK)
 
 
