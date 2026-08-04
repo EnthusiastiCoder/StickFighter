@@ -54,9 +54,12 @@ from stickfighter.core.horde_entities import (
     DRAGON_INITIAL_COOLDOWN,
     DRAGON_STANDOFF,
     HOUND,
+    OGRE,
     SHIELDBEARER,
+    SKELETON,
     SPEARMAN,
     SPEED_VARIANCE,
+    SPIDER,
     SWORDSMAN,
     CloudArcherState,
     MeleeEnemyState,
@@ -81,7 +84,17 @@ ARCHER_TOTAL = 40  # 60:40 melee:archer ratio, per user request (100 kills total
 # to the aerial pool (with ARCHER_TOTAL) rather than TOTAL_MELEE.
 HOUND_TOTAL = 10
 DRAGON_TOTAL = 5
-TOTAL_MELEE = TOTAL_ENEMIES + HOUND_TOTAL
+# Two more roster additions, per user request ("add as many [mobs] as
+# possible"). Skeleton leans into "cheap swarm filler" (weaker than any
+# human tier, more numerous); ogre leans into "rare heavy brute" (a ground
+# tank between the hound and the dragon in HP), mirroring the hound/dragon
+# split -- more of the weak thing, fewer of the strong thing.
+SKELETON_TOTAL = 15
+OGRE_TOTAL = 5
+# Spider leans into "fast filler" like the skeleton (dies to one torso hit,
+# swarms in numbers), just with a different silhouette/read.
+SPIDER_TOTAL = 15
+TOTAL_MELEE = TOTAL_ENEMIES + HOUND_TOTAL + SKELETON_TOTAL + OGRE_TOTAL + SPIDER_TOTAL
 TOTAL_AERIAL = ARCHER_TOTAL + DRAGON_TOTAL
 MAX_ACTIVE = 4
 MAX_ACTIVE_ARCHERS = 1  # 2 active: 24/30 seeds cleared; 1 active: 29/30, at the 60:40 ratio
@@ -256,6 +269,9 @@ class HordeSim:
         configs = (
             [_weighted_choice(self.rng, ENEMY_MIX) for _ in range(TOTAL_ENEMIES)]
             + [HOUND] * HOUND_TOTAL
+            + [SKELETON] * SKELETON_TOTAL
+            + [OGRE] * OGRE_TOTAL
+            + [SPIDER] * SPIDER_TOTAL
         )
         queue = list(zip(configs, _even_sides(self.rng, len(configs))))
         self.rng.shuffle(queue)
