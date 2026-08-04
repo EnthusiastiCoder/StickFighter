@@ -8,9 +8,9 @@ pure, deterministic, headless module with no rendering dependency, so it doubles
 `gymnasium`-compatible training environment: the same code that runs the playable game
 also runs thousands of self-play matches per second to train a PPO agent.
 
-![Horde highlight: the hero archer holds off melee waves and cloud archers](docs/media/horde_demo.gif)
+[![Horde highlight: the hero archer holds off melee waves and cloud archers](https://res.cloudinary.com/daiaed4e5/image/upload/v1794666884/portfolio/stickfighter/horde_demo.gif)](https://res.cloudinary.com/daiaed4e5/video/upload/v1794666895/portfolio/stickfighter/horde_demo.mp4)
 
-_An 8-second excerpt of the horde highlight scenario (rendered with `record_horde`)._
+_An 8-second excerpt of the horde highlight scenario (rendered with `record_horde`). Click it for the [full 74-second video (MP4)](https://res.cloudinary.com/daiaed4e5/video/upload/v1794666895/portfolio/stickfighter/horde_demo.mp4)._
 
 ## Project layout
 
