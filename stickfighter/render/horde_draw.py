@@ -87,6 +87,101 @@ def _draw_human(
         _draw_shield(surface, enemy, shoulder, hip, scale, size)
 
 
+HOUND_BODY_LEN = 30.0
+HOUND_STANCE_HEIGHT = 16.0  # ground clearance -- how tall the wolf stands
+
+
+def _draw_hound(
+    surface: pygame.Surface, enemy: MeleeEnemyState, elapsed: float, scale: float = 1.0
+) -> None:
+    """A low, horizontal quadruped -- per user request ("hounds are like
+    wolves"), not a scaled-down human. Reuses draw.py's 2-segment leg shape
+    (_leg_points, the same one a human's single hip uses) for all four legs,
+    with the front and back pairs swinging in opposite phase for a trot."""
+    size = enemy.config.visual_size
+    feet_y = enemy.y
+    body_y = feet_y - HOUND_STANCE_HEIGHT * size
+    half_len = HOUND_BODY_LEN * 0.5 * size
+    front = (enemy.x + enemy.facing * half_len, body_y)
+    back = (enemy.x - enemy.facing * half_len, body_y)
+
+    speed_frac = min(abs(enemy.vx) / C.CHAR_MOVE_SPEED, 1.0)
+    phase = elapsed * WALK_FREQUENCY
+    swing = math.sin(phase) * WALK_SWING * size * speed_frac if speed_frac > 0.05 else 0.0
+
+    for hip, s in ((front, swing), (back, -swing)):
+        for x_offset, bend in ((s, s * 0.4), (-s, -s * 0.4)):
+            _, knee, foot = _leg_points(hip, feet_y, x_offset, bend)
+            _line(surface, scale, theme.INK, hip, knee, LINE_WIDTH * size)
+            _line(surface, scale, theme.INK, knee, foot, LINE_WIDTH * size)
+
+    _line(surface, scale, theme.INK, back, front, LINE_WIDTH * size)
+
+    head_radius = HEAD_RADIUS * 0.45 * size
+    head = (front[0] + enemy.facing * 7.0 * size, body_y - 3.0 * size)
+    # offset from the head's own edge, not its center, so the snout/ears
+    # actually poke out past the head circle instead of mostly hiding
+    # inside it -- confirmed by rendering, they were barely visible before.
+    snout = (head[0] + enemy.facing * (head_radius + 7.0 * size), head[1] + 1.5 * size)
+    ear_a = (head[0] - enemy.facing * 1.5 * size, head[1] - head_radius - 5.0 * size)
+    ear_b = (head[0] + enemy.facing * 3.5 * size, head[1] - head_radius - 5.0 * size)
+    tail = (back[0] - enemy.facing * 11.0 * size, body_y - 7.0 * size)
+
+    _circle(surface, scale, head, head_radius, theme.INK)
+    _line(surface, scale, theme.INK, head, snout, LINE_WIDTH * size)
+    _line(surface, scale, theme.INK, head, ear_a, LINE_WIDTH * size)
+    _line(surface, scale, theme.INK, head, ear_b, LINE_WIDTH * size)
+    _line(surface, scale, theme.INK, back, tail, LINE_WIDTH * size)
+
+
+DRAGON_NECK_LEN = 16.0
+DRAGON_WING_SPAN = 20.0
+
+
+def _draw_dragon(
+    surface: pygame.Surface, enemy: MeleeEnemyState, elapsed: float, scale: float = 1.0
+) -> None:
+    """A bigger, winged silhouette -- per user request ("dragons you already
+    know"), not a scaled-up human. Still stands and walks on the same
+    2-legged rig as a human (bipedal), just with a longer neck/snout,
+    swept-back wings, and a dragging tail instead of arms and a weapon."""
+    size = enemy.config.visual_size
+    feet_y = enemy.y
+    top = feet_y - C.CHAR_HEIGHT * size
+    hip = (enemy.x, top + VISUAL_HIP_Y * size)
+
+    speed_frac = min(abs(enemy.vx) / C.CHAR_MOVE_SPEED, 1.0)
+    lean = enemy.facing * LEAN_MAX * speed_frac
+    shoulder = (enemy.x + lean * 0.6, top + (C.TORSO_TOP_Y + 4.0) * size)
+
+    _draw_legs(surface, enemy, hip, feet_y, elapsed, scale)
+    _line(surface, scale, theme.INK, shoulder, hip, LINE_WIDTH * size)
+
+    neck_tip = (
+        shoulder[0] + enemy.facing * DRAGON_NECK_LEN * size,
+        shoulder[1] - DRAGON_NECK_LEN * 0.5 * size,
+    )
+    snout = (neck_tip[0] + enemy.facing * 9.0 * size, neck_tip[1] + 2.0 * size)
+    _line(surface, scale, theme.INK, shoulder, neck_tip, LINE_WIDTH * size)
+    _circle(surface, scale, neck_tip, HEAD_RADIUS * 0.7 * size, theme.INK)
+    _line(surface, scale, theme.INK, neck_tip, snout, LINE_WIDTH * size)
+
+    wing_root = (shoulder[0], shoulder[1] - 3.0 * size)
+    wing_tip = (
+        wing_root[0] - enemy.facing * DRAGON_WING_SPAN * size,
+        wing_root[1] - DRAGON_WING_SPAN * 0.8 * size,
+    )
+    wing_back = (wing_root[0] - enemy.facing * 4.0 * size, wing_root[1] + 4.0 * size)
+    _polygon(surface, scale, theme.INK, (wing_root, wing_tip, wing_back))
+
+    # dips down toward the ground then curls up slightly at the tip, so it
+    # reads as a tail trailing behind rather than a mid-air arm gesture.
+    tail_mid = (hip[0] - enemy.facing * 16.0 * size, feet_y - 4.0 * size)
+    tail_tip = (hip[0] - enemy.facing * 30.0 * size, feet_y - 12.0 * size)
+    _line(surface, scale, theme.INK, hip, tail_mid, LINE_WIDTH * size)
+    _line(surface, scale, theme.INK, tail_mid, tail_tip, LINE_WIDTH * size)
+
+
 def _draw_arms(
     surface: pygame.Surface,
     enemy: MeleeEnemyState,
