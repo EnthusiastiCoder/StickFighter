@@ -74,6 +74,31 @@ def _polygon(surface, scale: float, color, points) -> None:
 def _circle(surface, scale: float, center, radius: float, color) -> None:
     draw_aa_circle(surface, _pt(center, scale), radius * scale, color)
 
+
+def _capsule(surface, scale: float, color, p0, p1, r0: float, r1: float) -> None:
+    """A solid tapered limb segment -- the core primitive for the game's
+    silhouette rig. Every bone (torso, upper-arm, thigh, shin, ...) is drawn
+    as one of these instead of a thin line: a trapezoid body plus a round
+    cap at each end, so two segments sharing a joint (e.g. thigh meeting
+    shin at the knee) blend into one continuous rounded joint instead of a
+    hard mitred corner. r0/r1 let a segment taper (e.g. wider at the hip
+    than the knee), matching how a real limb narrows toward its extremity."""
+    dx, dy = p1[0] - p0[0], p1[1] - p0[1]
+    length = math.hypot(dx, dy)
+    if length < 1e-6:
+        _circle(surface, scale, p0, max(r0, r1), color)
+        return
+    nx, ny = dx / length, dy / length
+    perp = (-ny, nx)
+    a = (p0[0] + perp[0] * r0, p0[1] + perp[1] * r0)
+    b = (p1[0] + perp[0] * r1, p1[1] + perp[1] * r1)
+    c = (p1[0] - perp[0] * r1, p1[1] - perp[1] * r1)
+    d = (p0[0] - perp[0] * r0, p0[1] - perp[1] * r0)
+    _polygon(surface, scale, color, (a, b, c, d))
+    _circle(surface, scale, p0, r0, color)
+    _circle(surface, scale, p1, r1, color)
+
+
 PLATFORM_THICKNESS = 14.0
 
 LINE_WIDTH = 5
