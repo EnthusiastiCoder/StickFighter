@@ -403,6 +403,6 @@ def draw_stuck_arrow(
     fletch_start, _head_base, _head_a, _head_b, fletch_a, fletch_b = _arrow_shape(
         tip, dx, dy, STUCK_ARROW_LEN
     )
-    _line(surface, scale, theme.SILVER, fletch_start, tip, 3)
+    _line(surface, scale, theme.SILVER, fletch_start, tip, 2)
     _line(surface, scale, theme.INK, fletch_start, fletch_a, 2)
     _line(surface, scale, theme.INK, fletch_start, fletch_b, 2)
