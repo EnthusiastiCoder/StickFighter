@@ -272,9 +272,14 @@ def _draw_legs(
             _leg_points(hip, feet_y, x_offset=6.0, bend=2.0),
             _leg_points(hip, feet_y, x_offset=-6.0, bend=-2.0),
         )
-    for a, b, c in legs:
-        _line(surface, scale, theme.INK, a, b, LINE_WIDTH)
-        _line(surface, scale, theme.INK, b, c, LINE_WIDTH)
+    # size scales limb *thickness* here -- the hip/feet_y passed in by the
+    # caller already account for leg *length* (see horde_draw.py's
+    # _draw_human), so without this an oversized enemy (e.g. the ogre) grew
+    # taller legs that stayed the same thin width, reading as spindly
+    # rather than bulky.
+    for hip_pt, knee, foot in legs:
+        _capsule(surface, scale, theme.INK, hip_pt, knee, THIGH_R_HIP * size, THIGH_R_KNEE * size)
+        _capsule(surface, scale, theme.INK, knee, foot, SHIN_R_KNEE * size, SHIN_R_FOOT * size)
 
 
 def _draw_bow_and_arms(
