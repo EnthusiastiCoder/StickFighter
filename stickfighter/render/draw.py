@@ -309,8 +309,8 @@ def _draw_bow_and_arms(
     _thick_curve(surface, scale, theme.INK, _quad_bezier(tip_a, control, tip_b), BOW_LIMB_WIDTH)
     _line(surface, scale, theme.INK, tip_a, nock, STRING_WIDTH)
     _line(surface, scale, theme.INK, tip_b, nock, STRING_WIDTH)
-    _line(surface, scale, theme.INK, shoulder, (bow_x, bow_y), LINE_WIDTH)
-    _line(surface, scale, theme.INK, shoulder, nock, LINE_WIDTH)
+    _capsule(surface, scale, theme.INK, shoulder, (bow_x, bow_y), ARM_R_SHOULDER, ARM_R_HAND)
+    _capsule(surface, scale, theme.INK, shoulder, nock, ARM_R_SHOULDER, ARM_R_HAND)
 
     if draw >= C.MIN_DRAW:
         _draw_nocked_arrow(surface, nock, forward, scale)
