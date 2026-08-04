@@ -104,6 +104,21 @@ PLATFORM_THICKNESS = 14.0
 LINE_WIDTH = 5
 HEAD_RADIUS = C.HEAD_RADIUS + 1
 
+# Solid-limb radii for the silhouette rig (draw_archer, and reused by
+# horde_draw.py's human enemies) -- replaces the old thin LINE_WIDTH stroke
+# with a tapered filled capsule per bone, per user request ("our signature
+# style is actually silhouettes", not stick figures). Every joint-angle
+# computation elsewhere (run cycle, bow draw, sway) is untouched -- only how
+# each bone is *drawn* changed, from a stroke to a filled shape.
+TORSO_R_TOP = 7.5
+TORSO_R_BOTTOM = 5.5
+ARM_R_SHOULDER = 5.0
+ARM_R_HAND = 3.0
+THIGH_R_HIP = 5.5
+THIGH_R_KNEE = 4.5
+SHIN_R_KNEE = 4.5
+SHIN_R_FOOT = 3.0
+
 # Render-only leg proportion: the real torso/limb split (C.TORSO_BOTTOM_Y)
 # is also the torso/limb *hitbox* boundary used by the actual duel game's
 # collision code, so it can't be moved just to make legs look longer.
