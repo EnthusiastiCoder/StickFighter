@@ -210,6 +210,34 @@ def draw_archer(
     _circle(surface, scale, head, HEAD_RADIUS, theme.INK)
 
 
+CAPE_LENGTH = 34.0
+CAPE_SWAY = 10.0
+CAPE_FREQUENCY = WALK_FREQUENCY * 0.55  # slower than the leg cycle -- cloth
+# lagging behind the body's motion reads as heavier/more valiant than
+# something flapping in lockstep with the footsteps.
+
+
+def _draw_cape(
+    surface, archer: ArcherState, shoulder: tuple[float, float], elapsed: float, scale: float
+) -> None:
+    """The hero only, per user request ("make the hero as valiant as
+    possible") -- a flowing cape trailing behind the direction of travel,
+    swaying opposite the run cycle so it lags the body like real cloth
+    instead of snapping rigidly with each stride."""
+    speed_frac = min(abs(archer.vx) / C.CHAR_MOVE_SPEED, 1.0) if archer.grounded else 0.5
+    sway = math.sin(elapsed * CAPE_FREQUENCY) * CAPE_SWAY * (0.4 + 0.6 * speed_frac)
+    back = -archer.facing
+    collar_a = (shoulder[0] + back * 2.0, shoulder[1] - 5.0)
+    collar_b = (shoulder[0] + back * 3.0, shoulder[1] + 6.0)
+    mid = (shoulder[0] + back * CAPE_LENGTH * 0.55 + sway * 0.5, shoulder[1] + CAPE_LENGTH * 0.35)
+    tip_a = (shoulder[0] + back * CAPE_LENGTH + sway, shoulder[1] + CAPE_LENGTH * 0.55)
+    tip_b = (
+        shoulder[0] + back * CAPE_LENGTH * 0.75 + sway * 0.8,
+        shoulder[1] + CAPE_LENGTH * 0.85,
+    )
+    _polygon(surface, scale, theme.INK, (collar_a, mid, tip_a, tip_b, collar_b))
+
+
 def _draw_victory_pose(
     surface, archer: ArcherState, shoulder: tuple[float, float], scale: float
 ) -> None:
