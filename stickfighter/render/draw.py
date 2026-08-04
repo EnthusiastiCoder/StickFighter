@@ -251,7 +251,8 @@ def _draw_victory_pose(
 
 
 def _draw_legs(
-    surface, archer: ArcherState, hip, feet_y: float, elapsed: float, scale: float
+    surface, archer: ArcherState, hip, feet_y: float, elapsed: float, scale: float,
+    size: float = 1.0,
 ) -> None:
     speed_frac = min(abs(archer.vx) / C.CHAR_MOVE_SPEED, 1.0)
     if not archer.grounded:
