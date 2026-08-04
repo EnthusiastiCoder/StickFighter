@@ -48,6 +48,38 @@ HOUND = EnemyConfig(
     name="hound", hp=60.0, speed=380.0, melee_range=40.0, melee_damage=20.0,
     has_shield=False, visual_size=1.2,
 )
+# New roster additions per user request ("add as many as possible"). Both
+# reuse the human capsule rig (see horde_draw.py's _draw_human) with a
+# proportion/weapon tweak rather than a fresh traced silhouette -- a
+# skeleton and an ogre are still human-shaped, so a new rig would just
+# duplicate the existing one.
+#
+# Skeleton: a cheap, disposable filler -- weaker and faster than any human
+# tier, meant to die in one hit and swarm in numbers rather than pose a real
+# individual threat.
+SKELETON = EnemyConfig(
+    name="skeleton", hp=18.0, speed=350.0, melee_range=45.0, melee_damage=15.0,
+    has_shield=False, visual_size=0.95,
+)
+# Ogre: a slow, heavy-hitting brute -- a ground tank above the hound,
+# leaning into "big and slow" the same way the hound leans into "fast and
+# weak". HP sits between the hound (60) and the dragon (120).
+OGRE = EnemyConfig(
+    name="ogre", hp=100.0, speed=150.0, melee_range=70.0, melee_damage=50.0,
+    has_shield=False, visual_size=1.6,
+)
+# Giant spider: a fast, fragile ground crawler -- even quicker than the
+# hound, dies to one torso hit like any human tier. Uses a traced-bitmap
+# silhouette (see horde_draw.py's _draw_spider), not a vector outline like
+# the wolf/dragon -- the source reference is a detailed multi-color
+# illustration (137 sub-paths), not a simple flat silhouette, so it was
+# thresholded from a render instead of point-sampled from the SVG path
+# data. visual_size is 1.0 here since the base silhouette height constant
+# (SPIDER_BASE_HEIGHT) is already calibrated for this config directly.
+SPIDER = EnemyConfig(
+    name="spider", hp=25.0, speed=420.0, melee_range=40.0, melee_damage=18.0,
+    has_shield=False, visual_size=1.0,
+)
 
 SPEED_VARIANCE = (0.8, 1.25)  # per-instance multiplier so a wave doesn't move in lockstep
 
