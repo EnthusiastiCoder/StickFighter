@@ -5,12 +5,14 @@ from stickfighter.core.horde import (
     ARCHER_TOTAL,
     BIG_ARROW_COOLDOWN,
     DODGE_RANGE,
+    DRAGON_TOTAL,
     HERO_X,
+    TOTAL_AERIAL,
     TOTAL_MELEE,
     HordeSim,
 )
 
-TOTAL_TARGETS = TOTAL_MELEE + ARCHER_TOTAL
+TOTAL_TARGETS = TOTAL_MELEE + TOTAL_AERIAL
 
 
 def _run_to_completion(sim: HordeSim, seed: int, max_steps: int = 20_000) -> int:
@@ -29,7 +31,7 @@ def test_hero_clears_the_full_horde_without_dying():
     # range -- see that test for the aggregate reliability bound across many
     # seeds. Matches game/record_horde.py's default --seed.
     sim = HordeSim()
-    steps = _run_to_completion(sim, seed=32)
+    steps = _run_to_completion(sim, seed=54)
     assert sim.cleared, f"did not clear within {steps} steps"
     assert sim.hero.alive
     assert sim.total_kills == TOTAL_TARGETS
@@ -39,18 +41,20 @@ def test_hero_survives_the_horde_at_the_default_pacing():
     # deliberately NOT zero-damage: enemies are meant to close real distance
     # and occasionally land a hit (per user feedback -- a hero that snipes
     # everything from 300-500px away "can't even reach close enough" to be
-    # dramatic). This is also a real, measured 15% floor (3/20), way down
-    # from 55% right before this -- adding hounds (2x human hp) and dragons
-    # (4x) on top of the existing 100-kill horde (per user request) makes
-    # this a genuinely much harder fight: each one takes several normal hits
-    # (or the once-every-3s big arrow, used only when the target needs it --
-    # see BIG_ARROW_COOLDOWN in horde.py) to kill, so it's exposed to melee
-    # damage and archer fire for much longer than any human ever was. This
-    # is the real number for a real difficulty increase, not a bug -- see
-    # game/record_horde.py for the specific known-good seed used for the
-    # actual rendered video.
+    # dramatic). Reliability has fallen a lot across this session's
+    # escalating difficulty requests (90% -> ... -> ~15% once dragons/hounds
+    # were added, ~4% once dragons became aerial breath-attackers), and
+    # making archers/dragons fire immediately on spawn instead of waiting to
+    # be on screen (per user request, "makes it fun") lands at a real,
+    # measured ~7% (7/100 seeds). n=100 here (not 20) specifically so this
+    # test can observe a clear at all without being flaky -- several
+    # measured clears land past seed 20 even now, so a smaller sample risks
+    # seeing zero despite clearing being real and repeatable. This is
+    # checking for "still possible to clear," not measuring the exact rate
+    # -- see game/record_horde.py for the specific known-good seed used for
+    # the actual rendered video.
     cleared = 0
-    n = 20
+    n = 100
     for seed in range(n):
         sim = HordeSim()
         sim.reset(seed=seed)
@@ -59,7 +63,7 @@ def test_hero_survives_the_horde_at_the_default_pacing():
         if sim.cleared:
             cleared += 1
             assert sim.hero.hp > 0.0
-    assert cleared / n >= 0.1, f"only {cleared}/{n} seeds cleared"
+    assert cleared / n >= 0.02, f"only {cleared}/{n} seeds cleared"
 
 
 def test_determinism_same_seed_same_outcome():
@@ -125,7 +129,7 @@ def test_big_arrow_only_used_on_tough_targets():
     # (already dead to one normal torso hit) and never fires faster than its
     # own cooldown allows.
     sim = HordeSim()
-    sim.reset(seed=32)
+    sim.reset(seed=54)
     while not sim.cleared and sim.hero.alive:
         sim.step()
     fires = [e for e in sim.log if e["event"] == "fire"]
@@ -144,7 +148,7 @@ def test_hero_only_kills_targets_that_are_on_screen():
     # HERO_ENGAGE_INSET (horde.py) tightens that to a window inset from both
     # edges, confirmed directly to put every kill on screen across 20 seeds.
     sim = HordeSim()
-    sim.reset(seed=32)
+    sim.reset(seed=54)
     kill_positions = []
     steps = 0
     while not sim.cleared and sim.hero.alive and steps < 20_000:
@@ -156,18 +160,20 @@ def test_hero_only_kills_targets_that_are_on_screen():
 
 
 def test_cloud_archers_spawn_and_can_be_killed():
-    # seed=32, not 0 -- see test_hero_survives_the_horde_at_the_default_pacing,
+    # seed=54, not 0 -- see test_hero_survives_the_horde_at_the_default_pacing,
     # seed=0 is one of the seeds that doesn't clear now that archers fire back.
+    # "archer_hit" covers both cloud archers and dragons (both are
+    # CloudArcherState, see horde_entities.py) -- ARCHER_TOTAL + DRAGON_TOTAL.
     sim = HordeSim()
-    sim.reset(seed=32)
+    sim.reset(seed=54)
     while not sim.cleared and sim.hero.alive:
         sim.step()
 
     archer_kills = [
         e for e in sim.log if e["event"] == "archer_hit" and e.get("killed")
     ]
-    assert len(archer_kills) == ARCHER_TOTAL
-    assert sim.total_kills == TOTAL_MELEE + ARCHER_TOTAL
+    assert len(archer_kills) == ARCHER_TOTAL + DRAGON_TOTAL
+    assert sim.total_kills == TOTAL_MELEE + TOTAL_AERIAL
 
 
 def test_hero_dodges_an_incoming_arrow_on_a_collision_course():
