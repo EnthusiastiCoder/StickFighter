@@ -18,6 +18,3 @@ save.json
 *.gif
 frame*.png
 *_log.jsonl
-
-# README media (the only GIFs that are committed)
-!docs/media/*.gif
