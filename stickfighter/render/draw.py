@@ -195,6 +195,11 @@ def draw_archer(
     hip = (archer.x, top + VISUAL_HIP_Y)
     feet_y = archer.y
 
+    # the cape is drawn first, so its silhouette sits behind the torso/legs
+    # instead of overlapping on top of them.
+    if hero:
+        _draw_cape(surface, archer, shoulder, elapsed, scale)
+
     _draw_legs(surface, archer, hip, feet_y, elapsed, scale)
     if victory:
         _draw_victory_pose(surface, archer, shoulder, scale)
