@@ -43,13 +43,13 @@ def draw_melee_enemy(
 ) -> None:
     if not enemy.alive:
         return
-    # per user request, hound and dragon get their own distinct silhouettes
-    # (a wolf and a dragon) rather than a scaled-up/down human -- the
-    # in-between step this replaced.
+    # per user request, hound gets its own distinct silhouette (a wolf)
+    # rather than a scaled-down human -- the in-between step this replaced.
+    # Dragons used to also land here (scaled-up human, then their own
+    # ground-walking silhouette) but are now aerial -- see draw_dragon
+    # below, called from the same place cloud archers are (record_horde.py).
     if enemy.config.name == "hound":
         _draw_hound(surface, enemy, elapsed, scale)
-    elif enemy.config.name == "dragon":
-        _draw_dragon(surface, enemy, elapsed, scale)
     else:
         _draw_human(surface, enemy, elapsed, scale)
 
@@ -136,50 +136,65 @@ def _draw_hound(
 
 DRAGON_NECK_LEN = 16.0
 DRAGON_WING_SPAN = 20.0
+DRAGON_VISUAL_SIZE = 1.6
 
 
-def _draw_dragon(
-    surface: pygame.Surface, enemy: MeleeEnemyState, elapsed: float, scale: float = 1.0
+def draw_dragon(
+    surface: pygame.Surface,
+    x: float,
+    y: float,
+    facing: int,
+    elapsed: float,
+    scale: float = 1.0,
 ) -> None:
-    """A bigger, winged silhouette -- per user request ("dragons you already
-    know"), not a scaled-up human. Still stands and walks on the same
-    2-legged rig as a human (bipedal), just with a longer neck/snout,
-    swept-back wings, and a dragging tail instead of arms and a weapon."""
-    size = enemy.config.visual_size
-    feet_y = enemy.y
-    top = feet_y - C.CHAR_HEIGHT * size
-    hip = (enemy.x, top + VISUAL_HIP_Y * size)
+    """An airborne, winged silhouette -- per user request ("dragons should
+    be aerial mobs... fly"), not a ground-walker. Uses the same top/hip
+    vertical convention a ground MeleeEnemyState would (top = y -
+    CHAR_HEIGHT*size), so the silhouette lines up with the standard
+    head/torso/limb hitboxes a dragon's wrapped ArcherState still gets (see
+    CloudArcherState in horde_entities.py) -- just with tucked, dangling
+    legs and flapping wings instead of a ground-contact gait.
 
-    speed_frac = min(abs(enemy.vx) / C.CHAR_MOVE_SPEED, 1.0)
-    lean = enemy.facing * LEAN_MAX * speed_frac
-    shoulder = (enemy.x + lean * 0.6, top + (C.TORSO_TOP_Y + 4.0) * size)
+    Called from game/record_horde.py alongside cloud archers (not from
+    draw_melee_enemy) since a dragon is a CloudArcherState now, not a
+    MeleeEnemyState."""
+    size = DRAGON_VISUAL_SIZE
+    top = y - C.CHAR_HEIGHT * size
+    hip = (x, top + VISUAL_HIP_Y * size)
+    shoulder = (x, top + (C.TORSO_TOP_Y + 4.0) * size)
 
-    _draw_legs(surface, enemy, hip, feet_y, elapsed, scale)
     _line(surface, scale, theme.INK, shoulder, hip, LINE_WIDTH * size)
 
     neck_tip = (
-        shoulder[0] + enemy.facing * DRAGON_NECK_LEN * size,
+        shoulder[0] + facing * DRAGON_NECK_LEN * size,
         shoulder[1] - DRAGON_NECK_LEN * 0.5 * size,
     )
-    snout = (neck_tip[0] + enemy.facing * 9.0 * size, neck_tip[1] + 2.0 * size)
+    snout = (neck_tip[0] + facing * 9.0 * size, neck_tip[1] + 2.0 * size)
     _line(surface, scale, theme.INK, shoulder, neck_tip, LINE_WIDTH * size)
     _circle(surface, scale, neck_tip, HEAD_RADIUS * 0.7 * size, theme.INK)
     _line(surface, scale, theme.INK, neck_tip, snout, LINE_WIDTH * size)
 
+    # wings flap continuously (not tied to ground speed -- there's no
+    # "grounded" concept for a flier) for a hovering, airborne read.
+    flap = math.sin(elapsed * WALK_FREQUENCY) * 10.0 * size
     wing_root = (shoulder[0], shoulder[1] - 3.0 * size)
     wing_tip = (
-        wing_root[0] - enemy.facing * DRAGON_WING_SPAN * size,
-        wing_root[1] - DRAGON_WING_SPAN * 0.8 * size,
+        wing_root[0] - facing * DRAGON_WING_SPAN * size,
+        wing_root[1] - DRAGON_WING_SPAN * 0.8 * size - flap,
     )
-    wing_back = (wing_root[0] - enemy.facing * 4.0 * size, wing_root[1] + 4.0 * size)
+    wing_back = (wing_root[0] - facing * 4.0 * size, wing_root[1] + 4.0 * size)
     _polygon(surface, scale, theme.INK, (wing_root, wing_tip, wing_back))
 
-    # dips down toward the ground then curls up slightly at the tip, so it
-    # reads as a tail trailing behind rather than a mid-air arm gesture.
-    tail_mid = (hip[0] - enemy.facing * 16.0 * size, feet_y - 4.0 * size)
-    tail_tip = (hip[0] - enemy.facing * 30.0 * size, feet_y - 12.0 * size)
+    tail_mid = (hip[0] - facing * 16.0 * size, hip[1] + 8.0 * size)
+    tail_tip = (hip[0] - facing * 30.0 * size, hip[1] + 2.0 * size)
     _line(surface, scale, theme.INK, hip, tail_mid, LINE_WIDTH * size)
     _line(surface, scale, theme.INK, tail_mid, tail_tip, LINE_WIDTH * size)
+
+    # legs tucked up beneath the body, dangling -- not planted on ground.
+    leg_a = (hip[0] + facing * 3.0 * size, hip[1] + 12.0 * size)
+    leg_b = (hip[0] - facing * 2.0 * size, hip[1] + 16.0 * size)
+    _line(surface, scale, theme.INK, hip, leg_a, LINE_WIDTH * size * 0.7)
+    _line(surface, scale, theme.INK, hip, leg_b, LINE_WIDTH * size * 0.7)
 
 
 def _draw_arms(
