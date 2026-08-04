@@ -377,7 +377,7 @@ def draw_arrow(surface: pygame.Surface, arrow: ArrowState, scale: float = 1.0) -
     fletch_start, head_base, head_a, head_b, fletch_a, fletch_b = _arrow_shape(
         tip, dx, dy, C.ARROW_LENGTH
     )
-    _line(surface, scale, theme.SILVER, fletch_start, head_base, 4)
+    _line(surface, scale, theme.SILVER, fletch_start, head_base, 2)
     _polygon(surface, scale, theme.INK, (tip, head_a, head_b))
     _line(surface, scale, theme.INK, fletch_start, fletch_a, 2)
     _line(surface, scale, theme.INK, fletch_start, fletch_b, 2)
