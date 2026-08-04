@@ -43,10 +43,25 @@ def draw_melee_enemy(
 ) -> None:
     if not enemy.alive:
         return
-    # a purely render-side silhouette scale (1.0 for humans, bigger for a
-    # dragon, smaller for a hound) -- the hitbox stays the standard human
-    # size/position (see EnemyConfig.visual_size), so this only stretches
-    # the *drawing* upward from the real, unscaled feet position.
+    # per user request, hound and dragon get their own distinct silhouettes
+    # (a wolf and a dragon) rather than a scaled-up/down human -- the
+    # in-between step this replaced.
+    if enemy.config.name == "hound":
+        _draw_hound(surface, enemy, elapsed, scale)
+    elif enemy.config.name == "dragon":
+        _draw_dragon(surface, enemy, elapsed, scale)
+    else:
+        _draw_human(surface, enemy, elapsed, scale)
+
+
+def _draw_human(
+    surface: pygame.Surface, enemy: MeleeEnemyState, elapsed: float, scale: float = 1.0
+) -> None:
+    # a purely render-side silhouette scale -- the hitbox stays the standard
+    # human size/position (see EnemyConfig.visual_size), so this only
+    # stretches the *drawing* upward from the real, unscaled feet position.
+    # Only swordsman/spearman/shieldbearer reach this now; hound and dragon
+    # (formerly also scaled through here) get their own shapes instead.
     size = enemy.config.visual_size
     feet_y = enemy.y
     top = feet_y - C.CHAR_HEIGHT * size
