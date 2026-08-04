@@ -179,6 +179,7 @@ def draw_archer(
     elapsed: float,
     victory: bool = False,
     scale: float = 1.0,
+    hero: bool = False,
 ) -> None:
     if not archer.alive:
         return
