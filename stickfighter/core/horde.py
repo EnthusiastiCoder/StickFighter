@@ -38,13 +38,21 @@ from stickfighter.core.entities import (
 )
 from stickfighter.core.events import ArrowFired, ArrowHit, ArrowMiss, CoinEarned, Death, Event
 from stickfighter.core.horde_entities import (
+    CLOUD_ARCHER_AIM_NOISE,
     CLOUD_ARCHER_DRIFT_SPEED,
     CLOUD_ARCHER_FIRE_COOLDOWN,
     CLOUD_ARCHER_HEIGHT_RANGE,
     CLOUD_ARCHER_HP,
     CLOUD_ARCHER_INITIAL_COOLDOWN,
     CLOUD_ARCHER_STANDOFF,
-    DRAGON,
+    DRAGON_AIM_NOISE,
+    DRAGON_BREATH_DAMAGE_MULT,
+    DRAGON_DRIFT_SPEED,
+    DRAGON_FIRE_COOLDOWN,
+    DRAGON_HEIGHT_RANGE,
+    DRAGON_HP,
+    DRAGON_INITIAL_COOLDOWN,
+    DRAGON_STANDOFF,
     HOUND,
     SHIELDBEARER,
     SPEARMAN,
@@ -65,13 +73,16 @@ HERO_X = C.ARENA_WIDTH / 2.0  # hero stands center-stage, horde closes from both
 ARCHER_ID_OFFSET = 100_000
 TOTAL_ENEMIES = 60  # human melee (swordsman/spearman/shieldbearer) only
 ARCHER_TOTAL = 40  # 60:40 melee:archer ratio, per user request (100 kills total)
-# Dragons and hounds are on top of the original 100-kill total, per user
+# Hounds and dragons are on top of the original 100-kill total, per user
 # request. Counts kept modest since a dragon (4x human hp) or hound (2x) is
 # genuinely tankier -- too many would drag pacing out disproportionately
-# to how much they add visually.
+# to how much they add visually. Dragons are aerial (see CloudArcherState's
+# kind field in horde_entities.py), not ground melee, so DRAGON_TOTAL adds
+# to the aerial pool (with ARCHER_TOTAL) rather than TOTAL_MELEE.
 HOUND_TOTAL = 10
 DRAGON_TOTAL = 5
-TOTAL_MELEE = TOTAL_ENEMIES + HOUND_TOTAL + DRAGON_TOTAL
+TOTAL_MELEE = TOTAL_ENEMIES + HOUND_TOTAL
+TOTAL_AERIAL = ARCHER_TOTAL + DRAGON_TOTAL
 MAX_ACTIVE = 4
 MAX_ACTIVE_ARCHERS = 1  # 2 active: 24/30 seeds cleared; 1 active: 29/30, at the 60:40 ratio
 ATTACK_COOLDOWN = 0.6
@@ -87,25 +98,18 @@ ENEMY_MIX = ((SWORDSMAN, 0.5), (SPEARMAN, 0.3), (SHIELDBEARER, 0.2))
 # not a pacing/difficulty change.
 _HERO_SHIFT = HERO_X - 90.0
 SPAWN_X_JITTER = (20.0 + _HERO_SHIFT, 150.0 + _HERO_SHIFT)
-# NOT shifted by _HERO_SHIFT like the melee range above: an archer's key
-# timing constraint is travel distance to *on-screen* (0..ARENA_WIDTH, an
-# absolute frame, not hero-relative -- see _update_archers' on_screen gate,
-# which archers must cross before ever firing), not travel distance to the
-# hero. Shifting this too once made archers spawn far enough out (up to
-# ~1570px from center) that the hero -- which has no on-screen restriction
-# on what it can snipe -- reliably killed every single one while still
-# off-screen and still on cooldown from its own first shot: confirmed
-# directly, 0 archer_fire events in an entire 100-kill run despite 40
-# archer kills.
-ARCHER_SPAWN_X_JITTER = (60.0, 220.0)
-# See the on_screen gate in _update_archers. Must stay under
-# C.OUT_OF_BOUNDS_MARGIN (80px) -- firing from further out than that spawns
-# an arrow that's already past the arrow-despawn line at the moment it's
-# created, killing it on the very same tick it's fired. Confirmed directly:
-# an archer at x=-142.6 fired an arrow that resolved as an immediate
-# "out_of_bounds" miss on the same tick, with the arrow never appearing in
-# even a single rendered frame.
-CLOUD_ARCHER_ONSCREEN_MARGIN = 60.0
+# NOT shifted by _HERO_SHIFT like the melee range above, and deliberately
+# kept well under C.OUT_OF_BOUNDS_MARGIN (80px): an archer or dragon now
+# tries to fire the instant it spawns (per user request, "makes it fun"),
+# and a shot fired from further out than the arrow's own despawn line would
+# be born already past it, dying on the very same tick without ever
+# traveling anywhere -- confirmed directly earlier (an archer at x=-142.6
+# did exactly this). Also NOT shifted for the same reason as before: an
+# archer's spawn distance is inherently about the absolute arena frame (and
+# now the arrow-survivability line), not hero-relative -- shifting it by
+# _HERO_SHIFT once pushed spawns out to ~1570px from center, which combined
+# with no fire gate at all would mean every single shot dies unborn.
+ARCHER_SPAWN_X_JITTER = (20.0, 70.0)
 # The hero's own fire cadence, decoupled from C.RELOAD_TIME (shared with the
 # real duel game -- changing that would speed up every archer everywhere).
 # At C.RELOAD_TIME (0.45s) the hero clears the "nearest" threat almost as
@@ -126,9 +130,13 @@ HERO_FIRE_COOLDOWN = 0.35
 # its current facing -- per user request, enemies now approach from both
 # sides, so the hero can't always be facing the right way. A real
 # vulnerability window (no firing while turning), not just cosmetic.
-# Shortened from an initial 0.25s per user request ("reduce the turning
-# time").
-TURN_DURATION = 0.1
+# Was shortened to 0.1s per an earlier request to reduce turning time, but
+# that read as an instant snap rather than a visible pivot (per follow-up
+# feedback: "side flipping is too fast") -- 0.1s is only 6 frames at 60fps.
+# Eased back up to the original 0.25s (15 frames), which is clearly visible
+# without being a bigger reliability hit than 0.1s at the current mob set
+# (both land around 3/20 seeds; the two are within noise of each other).
+TURN_DURATION = 0.25
 # How far inside the visible arena (0..ARENA_WIDTH) a shot's led aim point
 # must land for the hero to take it -- separate from (and tighter than)
 # C.OUT_OF_BOUNDS_MARGIN, which only governs when an arrow actually despawns
@@ -241,19 +249,25 @@ class HordeSim:
         # spawn_side -1 means "spawns off the right edge, facing left, closing
         # in toward negative x" and +1 the mirror image -- an even split,
         # shuffled so the two sides interleave rather than draining one side
-        # first (see _spawn_up_to_max). Dragons and hounds are shuffled in
-        # among the humans (not a separate "second wave" after them) so
-        # they're a random escalation throughout the fight, not a pacing
-        # cliff at the end.
+        # first (see _spawn_up_to_max). Hounds are shuffled in among the
+        # humans (not a separate "second wave" after them) so they're a
+        # random escalation throughout the fight, not a pacing cliff at the
+        # end.
         configs = (
             [_weighted_choice(self.rng, ENEMY_MIX) for _ in range(TOTAL_ENEMIES)]
             + [HOUND] * HOUND_TOTAL
-            + [DRAGON] * DRAGON_TOTAL
         )
         queue = list(zip(configs, _even_sides(self.rng, len(configs))))
         self.rng.shuffle(queue)
         self._queue = queue
-        self._archer_sides = _even_sides(self.rng, ARCHER_TOTAL)
+        # dragons are aerial (see CloudArcherState.kind), sharing the same
+        # spawn/side queue as cloud archers rather than the ground queue
+        # above -- interleaved the same way, for the same reason.
+        aerial = [("cloud_archer", s) for s in _even_sides(self.rng, ARCHER_TOTAL)] + [
+            ("dragon", s) for s in _even_sides(self.rng, DRAGON_TOTAL)
+        ]
+        self.rng.shuffle(aerial)
+        self._archer_sides = aerial
         self._next_arrow_id = 0
         self._next_enemy_id = 0
         self._next_archer_id = ARCHER_ID_OFFSET
@@ -294,25 +308,32 @@ class HordeSim:
 
         active_archers = sum(1 for a in self.archers if a.state.alive)
         while active_archers < MAX_ACTIVE_ARCHERS and self._archer_sides:
-            side = self._archer_sides.pop(0)
+            kind, side = self._archer_sides.pop(0)
+            is_dragon = kind == "dragon"
             x = (
                 C.ARENA_WIDTH + self.rng.uniform(*ARCHER_SPAWN_X_JITTER)
                 if side < 0
                 else -self.rng.uniform(*ARCHER_SPAWN_X_JITTER)
             )
-            height = self.rng.uniform(*CLOUD_ARCHER_HEIGHT_RANGE)
+            height_range = DRAGON_HEIGHT_RANGE if is_dragon else CLOUD_ARCHER_HEIGHT_RANGE
+            height = self.rng.uniform(*height_range)
             state = ArcherState(
                 x=x,
                 y=C.GROUND_Y - height,
                 facing=side,
                 grounded=True,  # airborne legs read as "falling"; hovering is its own pose
-                hp=CLOUD_ARCHER_HP,
+                hp=DRAGON_HP if is_dragon else CLOUD_ARCHER_HP,
+            )
+            initial_cooldown = (
+                DRAGON_INITIAL_COOLDOWN if is_dragon else CLOUD_ARCHER_INITIAL_COOLDOWN
             )
             self.archers.append(
                 CloudArcherState(
                     archer_id=self._next_archer_id,
                     state=state,
-                    fire_cooldown=self.rng.uniform(*CLOUD_ARCHER_INITIAL_COOLDOWN),
+                    fire_cooldown=self.rng.uniform(*initial_cooldown),
+                    aim_noise=DRAGON_AIM_NOISE if is_dragon else CLOUD_ARCHER_AIM_NOISE,
+                    kind=kind,
                 )
             )
             self._next_archer_id += 1
@@ -338,7 +359,7 @@ class HordeSim:
         self._update_arrows(events)
         self._spawn_up_to_max()
 
-        total_target = TOTAL_MELEE + ARCHER_TOTAL
+        total_target = TOTAL_MELEE + TOTAL_AERIAL
         if (
             self.total_kills >= total_target
             and not self._queue
@@ -473,7 +494,7 @@ class HordeSim:
         if kind == "archer":
             hb = torso_hitbox(target.state)
             tx, ty = (hb.left + hb.right) / 2.0, (hb.top + hb.bottom) / 2.0
-            return tx, ty, target.state.vx, "cloud_archer"
+            return tx, ty, target.state.vx, target.kind
         if target.config.has_shield:
             hb = head_hitbox(target)
             tx, ty = hb.cx, hb.cy
@@ -692,40 +713,36 @@ class HordeSim:
             archer = cloud.state
             if not archer.alive:
                 continue
+            is_dragon = cloud.kind == "dragon"
             gap = abs(archer.x - self.hero.x)
-            standoff_lo, standoff_hi = CLOUD_ARCHER_STANDOFF
+            standoff_lo, standoff_hi = DRAGON_STANDOFF if is_dragon else CLOUD_ARCHER_STANDOFF
+            drift_speed = DRAGON_DRIFT_SPEED if is_dragon else CLOUD_ARCHER_DRIFT_SPEED
             # archer.facing is fixed at spawn (see _spawn_up_to_max) to point
             # toward the hero's side, so facing*DRIFT closes the gap and
             # -facing*DRIFT opens it, regardless of which side this archer
             # spawned on.
             if gap > standoff_hi:
-                archer.vx = archer.facing * CLOUD_ARCHER_DRIFT_SPEED
+                archer.vx = archer.facing * drift_speed
             elif gap < standoff_lo:
-                archer.vx = -archer.facing * CLOUD_ARCHER_DRIFT_SPEED  # too close -- back off
+                archer.vx = -archer.facing * drift_speed  # too close -- back off
             else:
                 archer.vx = 0.0
             archer.x += archer.vx * C.DT
 
             cloud.fire_cooldown -= C.DT
-            # don't open fire until nearly on screen -- confirmed by
-            # rendering: firing from spawn (which used to be 1000+px beyond
-            # the visible arena) meant the very first shots came from an
-            # archer nobody could see yet, at the outer edge of the bow's
-            # actual range. A small margin beyond the strict edge (rather
-            # than requiring x in [0, ARENA_WIDTH] exactly) is still visibly
-            # close -- the fired arrow itself is what the viewer tracks, and
-            # it's onscreen within a fraction of a second -- and matters now
-            # that ARCHER_SPAWN_X_JITTER is much smaller than the old
-            # far-off-screen spawns: without slack here, the hero (with no
-            # such restriction on what it can snipe) reliably killed every
-            # archer while still just off-screen and on cooldown from its
-            # first shot, confirmed directly (0 archer_fire events across an
-            # entire run despite 40 archer kills).
-            on_screen = -CLOUD_ARCHER_ONSCREEN_MARGIN <= archer.x <= (
-                C.ARENA_WIDTH + CLOUD_ARCHER_ONSCREEN_MARGIN
-            )
-            if cloud.fire_cooldown <= 0.0 and on_screen:
-                cloud.fire_cooldown = self.rng.uniform(*CLOUD_ARCHER_FIRE_COOLDOWN)
+            # No on-screen gate anymore -- per user request, an archer or
+            # dragon should try to fire the instant it spawns ("makes it
+            # fun"), not wait until it's walked into view. An earlier
+            # version required this (see git history) because spawns used
+            # to be 1000+px beyond the visible arena, so a shot fired that
+            # early could never even reach the screen -- that's no longer
+            # true now that ARCHER_SPAWN_X_JITTER keeps spawns within a few
+            # hundred px of the edge, well inside an arrow's actual travel
+            # range, so the shot (if not the archer itself) is visible
+            # within a fraction of a second regardless.
+            if cloud.fire_cooldown <= 0.0:
+                cooldown_range = DRAGON_FIRE_COOLDOWN if is_dragon else CLOUD_ARCHER_FIRE_COOLDOWN
+                cloud.fire_cooldown = self.rng.uniform(*cooldown_range)
                 self._archer_fire(cloud, events)
 
     def _archer_fire(self, cloud: CloudArcherState, events: list[Event]) -> None:
@@ -751,12 +768,18 @@ class HordeSim:
 
         arrow = spawn_arrow(archer, owner=1, arrow_id=self._next_arrow_id)
         self._next_arrow_id += 1
+        if cloud.kind == "dragon":
+            # the breath attack -- otherwise a completely normal projectile
+            # (spawn/flight/collision), same reuse of ArrowState.damage_mult
+            # as the hero's own big arrow.
+            arrow.damage_mult = DRAGON_BREATH_DAMAGE_MULT
         self.arrows.append(arrow)
         archer.draw = 0.0
         events.append(ArrowFired(owner=1, x=arrow.x, y=arrow.y, vx=arrow.vx, vy=arrow.vy))
         self.log.append({
             "tick": self.tick, "event": "archer_fire", "arrow_id": arrow.id,
             "archer_id": cloud.archer_id, "hero_x": self.hero.x, "aim_angle": angle,
+            "kind": cloud.kind,
         })
 
     def _damage_hero(self, damage: float, headshot: bool, events: list[Event]) -> None:
@@ -796,7 +819,7 @@ class HordeSim:
                 point = test(prev, cur, hitbox, C.ARROW_COLLIDE_RADIUS)
                 if point is None:
                     continue
-                damage = damage_for_part(part)
+                damage = damage_for_part(part) * arrow.damage_mult
                 self.log.append({
                     "tick": self.tick, "event": "hero_hit", "arrow_id": arrow.id,
                     "part": part, "damage": damage, "point": point,
