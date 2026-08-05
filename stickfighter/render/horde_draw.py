@@ -18,6 +18,8 @@ from stickfighter.core import constants as C
 from stickfighter.core.horde_entities import MeleeEnemyState
 from stickfighter.render import theme
 from stickfighter.render.draw import (
+    ARM_R_HAND,
+    ARM_R_SHOULDER,
     HEAD_RADIUS,
     LINE_WIDTH,
     VISUAL_HIP_Y,
