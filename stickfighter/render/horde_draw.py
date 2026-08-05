@@ -10,6 +10,7 @@ of travel, scaling with effort, while the head stays aligned with the spine.
 """
 
 import math
+import os
 
 import pygame
 
