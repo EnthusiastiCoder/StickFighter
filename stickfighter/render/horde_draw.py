@@ -88,6 +88,9 @@ def _draw_human(
     _capsule(surface, scale, theme.INK, shoulder, hip, TORSO_R_TOP * size, TORSO_R_BOTTOM * size)
     _circle(surface, scale, head, HEAD_RADIUS * size, theme.INK)
 
+    if enemy.config.name == "skeleton":
+        _draw_ribs(surface, shoulder, hip, size, scale)
+
     if enemy.config.has_shield:
         _draw_shield(surface, enemy, shoulder, hip, scale, size)
 
