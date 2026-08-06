@@ -85,7 +85,7 @@ def _draw_human(
     _draw_legs(surface, enemy, hip, feet_y, elapsed, scale, size)
     _draw_arms(surface, enemy, shoulder, leg_swing, speed_frac, scale, size)
 
-    _line(surface, scale, theme.INK, shoulder, hip, LINE_WIDTH * size)
+    _capsule(surface, scale, theme.INK, shoulder, hip, TORSO_R_TOP * size, TORSO_R_BOTTOM * size)
     _circle(surface, scale, head, HEAD_RADIUS * size, theme.INK)
 
     if enemy.config.has_shield:
