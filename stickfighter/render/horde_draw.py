@@ -53,6 +53,8 @@ def draw_melee_enemy(
     # below, called from the same place cloud archers are (record_horde.py).
     if enemy.config.name == "hound":
         _draw_hound(surface, enemy, elapsed, scale)
+    elif enemy.config.name == "spider":
+        _draw_spider(surface, enemy, elapsed, scale)
     else:
         _draw_human(surface, enemy, elapsed, scale)
 
