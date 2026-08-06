@@ -95,8 +95,21 @@ def _draw_human(
         _draw_shield(surface, enemy, shoulder, hip, scale, size)
 
 
-HOUND_BODY_LEN = 30.0
-HOUND_STANCE_HEIGHT = 16.0  # ground clearance -- how tall the wolf stands
+def _draw_ribs(surface, shoulder, hip, size: float, scale: float) -> None:
+    """A couple of background-colored notches cut across the torso --
+    per user request ("add as many [mobs] as possible"), the skeleton needed
+    a shape cue beyond just "thinner human" to actually read as bony rather
+    than as a slim swordsman. Cut short enough (60% of the torso's own
+    half-width at that point) that they never breach the silhouette edge."""
+    dx, dy = hip[0] - shoulder[0], hip[1] - shoulder[1]
+    length = math.hypot(dx, dy) or 1.0
+    perp = (-dy / length, dx / length)
+    for t in (0.35, 0.65):
+        point = (shoulder[0] + dx * t, shoulder[1] + dy * t)
+        radius = (TORSO_R_TOP + (TORSO_R_BOTTOM - TORSO_R_TOP) * t) * size * 0.6
+        a = (point[0] + perp[0] * radius, point[1] + perp[1] * radius)
+        b = (point[0] - perp[0] * radius, point[1] - perp[1] * radius)
+        _line(surface, scale, theme.BG, a, b, 1.5 * size)
 
 
 def _draw_hound(
