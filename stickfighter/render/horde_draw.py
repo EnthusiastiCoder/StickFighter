@@ -39,7 +39,6 @@ SHIELD_WIDTH = 10.0
 SHIELD_HEIGHT = 34.0
 ARM_SWING = WALK_SWING * 1.3  # runs swing arms higher/faster than a walk
 LEAN_MAX = 9.0  # forward torso lean at full speed, pivoting from the hip
-HAND_RADIUS = 2.5
 
 
 def draw_melee_enemy(
