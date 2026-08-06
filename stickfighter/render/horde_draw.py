@@ -29,7 +29,6 @@ from stickfighter.render.draw import (
     _capsule,
     _circle,
     _draw_legs,
-    _leg_points,
     _line,
     _polygon,
 )
