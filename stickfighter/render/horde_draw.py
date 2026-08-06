@@ -82,7 +82,7 @@ def _draw_human(
     phase = elapsed * WALK_FREQUENCY
     leg_swing = math.sin(phase) * WALK_SWING * speed_frac if speed_frac > 0.05 else 0.0
 
-    _draw_legs(surface, enemy, hip, feet_y, elapsed, scale)
+    _draw_legs(surface, enemy, hip, feet_y, elapsed, scale, size)
     _draw_arms(surface, enemy, shoulder, leg_swing, speed_frac, scale, size)
 
     _line(surface, scale, theme.INK, shoulder, hip, LINE_WIDTH * size)
