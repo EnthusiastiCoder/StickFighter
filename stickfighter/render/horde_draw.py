@@ -26,6 +26,7 @@ from stickfighter.render.draw import (
     VISUAL_HIP_Y,
     WALK_FREQUENCY,
     WALK_SWING,
+    _capsule,
     _circle,
     _draw_legs,
     _leg_points,
