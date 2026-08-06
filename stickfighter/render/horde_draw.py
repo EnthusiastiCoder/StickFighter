@@ -34,6 +34,7 @@ from stickfighter.render.draw import (
 
 SWORD_LENGTH = 18.0
 SPEAR_LENGTH = 34.0
+CLUB_LENGTH = 22.0
 SHIELD_WIDTH = 10.0
 SHIELD_HEIGHT = 34.0
 ARM_SWING = WALK_SWING * 1.3  # runs swing arms higher/faster than a walk
