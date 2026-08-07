@@ -112,19 +112,21 @@ def _draw_ribs(surface, shoulder, hip, size: float, scale: float) -> None:
         _line(surface, scale, theme.BG, a, b, 1.5 * size)
 
 
-def _draw_hound(
-    surface: pygame.Surface, enemy: MeleeEnemyState, elapsed: float, scale: float = 1.0
-) -> None:
-    """A low, horizontal quadruped -- per user request ("hounds are like
-    wolves"), not a scaled-down human. Reuses draw.py's 2-segment leg shape
-    (_leg_points, the same one a human's single hip uses) for all four legs,
-    with the front and back pairs swinging in opposite phase for a trot."""
-    size = enemy.config.visual_size
-    feet_y = enemy.y
-    body_y = feet_y - HOUND_STANCE_HEIGHT * size
-    half_len = HOUND_BODY_LEN * 0.5 * size
-    front = (enemy.x + enemy.facing * half_len, body_y)
-    back = (enemy.x - enemy.facing * half_len, body_y)
+# Real animated 3D models -- a wolf with a baked walk cycle (CC0, Quaternius
+# via poly.pizza) and a dragon with a baked flying/flap cycle ("Dragon Flying
+# Cycle" by RedCoreTimber, CC-BY 4.0, via Sketchfab -- credit required; an
+# earlier poly.pizza Quaternius "Dragon" was swapped out after both manual
+# inspection and the UI Critique MCP agreed its silhouette reads as a winged
+# horse/Pegasus, not a dragon). Each was played in a real glTF viewer and
+# captured frame-by-frame from a fixed orthographic side camera, then
+# thresholded on alpha to a silhouette per frame -- see research/ for
+# provenance. Replaces an earlier attempt that cut a single static traced
+# silhouette into rotating pieces (a real shape, but hand-rotated by formula,
+# not an actual animated pose) after that still read as "one image being
+# moved around" per user feedback ("I told you to use models, both 2D and 3D
+# work"). Every frame in each sequence is a genuine rendered pose from the
+# source animation, not a guess.
+_ASSETS_DIR = os.path.join(os.path.dirname(__file__), "assets")
 
     speed_frac = min(abs(enemy.vx) / C.CHAR_MOVE_SPEED, 1.0)
     phase = elapsed * WALK_FREQUENCY
