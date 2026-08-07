@@ -129,11 +129,10 @@ def _draw_ribs(surface, shoulder, hip, size: float, scale: float) -> None:
 _ASSETS_DIR = os.path.join(os.path.dirname(__file__), "assets")
 
 
-    for hip, s in ((front, swing), (back, -swing)):
-        for x_offset, bend in ((s, s * 0.4), (-s, -s * 0.4)):
-            _, knee, foot = _leg_points(hip, feet_y, x_offset, bend)
-            _line(surface, scale, theme.INK, hip, knee, LINE_WIDTH * size)
-            _line(surface, scale, theme.INK, knee, foot, LINE_WIDTH * size)
+class _FrameSequence:
+    """A fixed set of pre-rendered silhouette frames sampled from one
+    animation clip, cached per (frame, pixel size, mirror) so repeated
+    draws at the same on-screen size are free after the first."""
 
     _line(surface, scale, theme.INK, back, front, LINE_WIDTH * size)
 
