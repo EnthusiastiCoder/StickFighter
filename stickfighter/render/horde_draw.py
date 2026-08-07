@@ -128,9 +128,6 @@ def _draw_ribs(surface, shoulder, hip, size: float, scale: float) -> None:
 # source animation, not a guess.
 _ASSETS_DIR = os.path.join(os.path.dirname(__file__), "assets")
 
-    speed_frac = min(abs(enemy.vx) / C.CHAR_MOVE_SPEED, 1.0)
-    phase = elapsed * WALK_FREQUENCY
-    swing = math.sin(phase) * WALK_SWING * size * speed_frac if speed_frac > 0.05 else 0.0
 
     for hip, s in ((front, swing), (back, -swing)):
         for x_offset, bend in ((s, s * 0.4), (-s, -s * 0.4)):
