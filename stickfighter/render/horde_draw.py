@@ -134,7 +134,14 @@ class _FrameSequence:
     animation clip, cached per (frame, pixel size, mirror) so repeated
     draws at the same on-screen size are free after the first."""
 
-    _line(surface, scale, theme.INK, back, front, LINE_WIDTH * size)
+    def __init__(self, folder: str, frame_count: int, cycle_seconds: float):
+        self.paths = [
+            os.path.join(_ASSETS_DIR, folder, f"frame_{i}.png") for i in range(frame_count)
+        ]
+        self.cycle_seconds = cycle_seconds
+        w, h = pygame.image.load(self.paths[0]).get_size()
+        self.aspect = w / h
+        self._cache: dict[tuple[int, int, int, bool], pygame.Surface] = {}
 
     head_radius = HEAD_RADIUS * 0.45 * size
     head = (front[0] + enemy.facing * 7.0 * size, body_y - 3.0 * size)
