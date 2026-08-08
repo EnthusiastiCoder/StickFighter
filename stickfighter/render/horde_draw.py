@@ -218,10 +218,16 @@ def draw_dragon(
     Called from game/record_horde.py alongside cloud archers (not from
     draw_melee_enemy) since a dragon is a CloudArcherState now, not a
     MeleeEnemyState."""
-    size = DRAGON_VISUAL_SIZE
-    top = y - C.CHAR_HEIGHT * size
-    hip = (x, top + VISUAL_HIP_Y * size)
-    shoulder = (x, top + (C.TORSO_TOP_Y + 4.0) * size)
+    h = DRAGON_TARGET_HEIGHT
+    w = h * DRAGON_FLY.aspect
+    frame_idx = DRAGON_FLY.frame_index(elapsed)
+    w_px, h_px = round(w * scale), round(h * scale)
+    # same reason as the wolf above -- the captured frames face left
+    # un-mirrored, so mirroring belongs on facing>=0, not facing<0.
+    sprite = DRAGON_FLY.sprite(frame_idx, w_px, h_px, mirror=facing >= 0)
+    rect = sprite.get_rect()
+    rect.center = (round(x * scale), round(y * scale))
+    surface.blit(sprite, rect)
 
     _line(surface, scale, theme.INK, shoulder, hip, LINE_WIDTH * size)
 
