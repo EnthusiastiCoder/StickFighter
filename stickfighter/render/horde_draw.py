@@ -242,16 +242,6 @@ _SPIDER_ASPECT = 993.0 / 415.0  # source pixel width / height
 SPIDER_BASE_HEIGHT = 55.0
 _spider_sprite_cache: dict[tuple[int, int, bool], pygame.Surface] = {}
 
-    # wings flap continuously (not tied to ground speed -- there's no
-    # "grounded" concept for a flier) for a hovering, airborne read.
-    flap = math.sin(elapsed * WALK_FREQUENCY) * 10.0 * size
-    wing_root = (shoulder[0], shoulder[1] - 3.0 * size)
-    wing_tip = (
-        wing_root[0] - facing * DRAGON_WING_SPAN * size,
-        wing_root[1] - DRAGON_WING_SPAN * 0.8 * size - flap,
-    )
-    wing_back = (wing_root[0] - facing * 4.0 * size, wing_root[1] + 4.0 * size)
-    _polygon(surface, scale, theme.INK, (wing_root, wing_tip, wing_back))
 
     tail_mid = (hip[0] - facing * 16.0 * size, hip[1] + 8.0 * size)
     tail_tip = (hip[0] - facing * 30.0 * size, hip[1] + 2.0 * size)
