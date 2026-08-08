@@ -170,6 +170,10 @@ class _FrameSequence:
 WOLF_WALK = _FrameSequence("wolf_walk", 8, cycle_seconds=1.0417)
 DRAGON_FLY = _FrameSequence("dragon_fly", 8, cycle_seconds=2.5)
 
+WOLF_BASE_HEIGHT = 95.0 / 1.2
+# "Much larger" per user feedback on the first (traced-outline) draft -- a
+# boss-tier flier should dominate the frame, not just read as a bigger bird.
+DRAGON_TARGET_HEIGHT = 210.0
 
 def draw_dragon(
     surface: pygame.Surface,
