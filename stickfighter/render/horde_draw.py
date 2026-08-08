@@ -208,13 +208,12 @@ def draw_dragon(
     elapsed: float,
     scale: float = 1.0,
 ) -> None:
-    """An airborne, winged silhouette -- per user request ("dragons should
-    be aerial mobs... fly"), not a ground-walker. Uses the same top/hip
-    vertical convention a ground MeleeEnemyState would (top = y -
-    CHAR_HEIGHT*size), so the silhouette lines up with the standard
-    head/torso/limb hitboxes a dragon's wrapped ArcherState still gets (see
-    CloudArcherState in horde_entities.py) -- just with tucked, dangling
-    legs and flapping wings instead of a ground-contact gait.
+    """An airborne dragon, flying -- captured frame-by-frame from an actual
+    rigged 3D model's own flying/flap-cycle animation (see DRAGON_FLY), not
+    drawn or rotated by formula. `y` is the CloudArcherState's own vertical
+    center (there's no ground contact to anchor to), so each frame is
+    centered there rather than anchored by its lowest point the way a
+    ground creature would be.
 
     Called from game/record_horde.py alongside cloud archers (not from
     draw_melee_enemy) since a dragon is a CloudArcherState now, not a
