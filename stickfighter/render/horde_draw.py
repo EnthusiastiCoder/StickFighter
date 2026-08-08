@@ -230,14 +230,17 @@ def draw_dragon(
     surface.blit(sprite, rect)
 
 
-    neck_tip = (
-        shoulder[0] + facing * DRAGON_NECK_LEN * size,
-        shoulder[1] - DRAGON_NECK_LEN * 0.5 * size,
-    )
-    snout = (neck_tip[0] + facing * 9.0 * size, neck_tip[1] + 2.0 * size)
-    _line(surface, scale, theme.INK, shoulder, neck_tip, LINE_WIDTH * size)
-    _circle(surface, scale, neck_tip, HEAD_RADIUS * 0.7 * size, theme.INK)
-    _line(surface, scale, theme.INK, neck_tip, snout, LINE_WIDTH * size)
+# Single-pose traced-bitmap silhouette (not an animated 3D-model capture
+# like the wolf/dragon above) -- the source reference is a detailed
+# multi-color illustration, not a flat silhouette, so it was thresholded
+# from a render (any non-near-white pixel -> opaque ink) instead of
+# point-sampled from SVG path data or captured from a rig. Source image
+# faces +x (right), matching every other asset's convention, and is
+# pre-flipped for that at save time.
+_SPIDER_ASSET_PATH = os.path.join(os.path.dirname(__file__), "assets", "spider_silhouette.png")
+_SPIDER_ASPECT = 993.0 / 415.0  # source pixel width / height
+SPIDER_BASE_HEIGHT = 55.0
+_spider_sprite_cache: dict[tuple[int, int, bool], pygame.Surface] = {}
 
     # wings flap continuously (not tied to ground speed -- there's no
     # "grounded" concept for a flier) for a hovering, airborne read.
