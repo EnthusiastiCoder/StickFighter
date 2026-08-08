@@ -229,7 +229,6 @@ def draw_dragon(
     rect.center = (round(x * scale), round(y * scale))
     surface.blit(sprite, rect)
 
-    _line(surface, scale, theme.INK, shoulder, hip, LINE_WIDTH * size)
 
     neck_tip = (
         shoulder[0] + facing * DRAGON_NECK_LEN * size,
