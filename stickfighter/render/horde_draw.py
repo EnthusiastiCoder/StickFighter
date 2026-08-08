@@ -143,15 +143,9 @@ class _FrameSequence:
         self.aspect = w / h
         self._cache: dict[tuple[int, int, int, bool], pygame.Surface] = {}
 
-    head_radius = HEAD_RADIUS * 0.45 * size
-    head = (front[0] + enemy.facing * 7.0 * size, body_y - 3.0 * size)
-    # offset from the head's own edge, not its center, so the snout/ears
-    # actually poke out past the head circle instead of mostly hiding
-    # inside it -- confirmed by rendering, they were barely visible before.
-    snout = (head[0] + enemy.facing * (head_radius + 7.0 * size), head[1] + 1.5 * size)
-    ear_a = (head[0] - enemy.facing * 1.5 * size, head[1] - head_radius - 5.0 * size)
-    ear_b = (head[0] + enemy.facing * 3.5 * size, head[1] - head_radius - 5.0 * size)
-    tail = (back[0] - enemy.facing * 11.0 * size, body_y - 7.0 * size)
+    def frame_index(self, elapsed: float) -> int:
+        frac = (elapsed % self.cycle_seconds) / self.cycle_seconds
+        return int(frac * len(self.paths)) % len(self.paths)
 
     _circle(surface, scale, head, head_radius, theme.INK)
     _line(surface, scale, theme.INK, head, snout, LINE_WIDTH * size)
