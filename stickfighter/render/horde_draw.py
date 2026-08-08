@@ -175,6 +175,31 @@ WOLF_BASE_HEIGHT = 95.0 / 1.2
 # boss-tier flier should dominate the frame, not just read as a bigger bird.
 DRAGON_TARGET_HEIGHT = 210.0
 
+
+def _draw_hound(
+    surface: pygame.Surface, enemy: MeleeEnemyState, elapsed: float, scale: float = 1.0
+) -> None:
+    """A real wolf, walking -- captured frame-by-frame from an actual
+    rigged 3D model's own walk-cycle animation (see WOLF_WALK), not drawn
+    or rotated by formula."""
+    size = enemy.config.visual_size
+    h = WOLF_BASE_HEIGHT * size
+    w = h * WOLF_WALK.aspect
+    speed_frac = min(abs(enemy.vx) / C.CHAR_MOVE_SPEED, 1.0)
+    frame_idx = WOLF_WALK.frame_index(elapsed) if speed_frac > 0.05 else 0
+    w_px, h_px = round(w * scale), round(h * scale)
+    # the captured frames face left (head on the left) un-mirrored -- unlike
+    # the spider's bitmap (pre-flipped to face right at save time), this one
+    # was never re-checked against that convention before wiring in the
+    # same "mirror when facing<0" rule, which is backwards for this asset
+    # and shipped a wolf walking backwards (per user report).
+    sprite = WOLF_WALK.sprite(frame_idx, w_px, h_px, mirror=enemy.facing >= 0)
+    rect = sprite.get_rect()
+    rect.centerx = round(enemy.x * scale)
+    rect.bottom = round(enemy.y * scale)
+    surface.blit(sprite, rect)
+
+
 def draw_dragon(
     surface: pygame.Surface,
     x: float,
