@@ -164,9 +164,11 @@ class _FrameSequence:
         return scaled
 
 
-DRAGON_NECK_LEN = 16.0
-DRAGON_WING_SPAN = 20.0
-DRAGON_VISUAL_SIZE = 1.6
+# cycle_seconds matches each source clip's own real duration (Quaternius'
+# "Walk" clip; the Sketchfab dragon's "Take 001" clip), so the 8 captured
+# frames play back at the same cadence the animation was actually authored at.
+WOLF_WALK = _FrameSequence("wolf_walk", 8, cycle_seconds=1.0417)
+DRAGON_FLY = _FrameSequence("dragon_fly", 8, cycle_seconds=2.5)
 
 
 def draw_dragon(
