@@ -147,11 +147,21 @@ class _FrameSequence:
         frac = (elapsed % self.cycle_seconds) / self.cycle_seconds
         return int(frac * len(self.paths)) % len(self.paths)
 
-    _circle(surface, scale, head, head_radius, theme.INK)
-    _line(surface, scale, theme.INK, head, snout, LINE_WIDTH * size)
-    _line(surface, scale, theme.INK, head, ear_a, LINE_WIDTH * size)
-    _line(surface, scale, theme.INK, head, ear_b, LINE_WIDTH * size)
-    _line(surface, scale, theme.INK, back, tail, LINE_WIDTH * size)
+    def sprite(self, frame_idx: int, w_px: int, h_px: int, mirror: bool) -> pygame.Surface:
+        key = (frame_idx, w_px, h_px, mirror)
+        cached = self._cache.get(key)
+        if cached is not None:
+            return cached
+        # not .convert_alpha() -- that needs an active display surface,
+        # which this headless render pipeline (record_horde.py draws
+        # straight onto a plain pygame.Surface, no window) never creates. A
+        # PNG with its own alpha channel already loads with per-pixel alpha.
+        base = pygame.image.load(self.paths[frame_idx])
+        scaled = pygame.transform.smoothscale(base, (max(1, w_px), max(1, h_px)))
+        if mirror:
+            scaled = pygame.transform.flip(scaled, True, False)
+        self._cache[key] = scaled
+        return scaled
 
 
 DRAGON_NECK_LEN = 16.0
