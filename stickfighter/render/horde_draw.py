@@ -259,11 +259,6 @@ def _spider_sprite(w_px: int, h_px: int, mirror: bool) -> pygame.Surface:
     _spider_sprite_cache[key] = scaled
     return scaled
 
-    # legs tucked up beneath the body, dangling -- not planted on ground.
-    leg_a = (hip[0] + facing * 3.0 * size, hip[1] + 12.0 * size)
-    leg_b = (hip[0] - facing * 2.0 * size, hip[1] + 16.0 * size)
-    _line(surface, scale, theme.INK, hip, leg_a, LINE_WIDTH * size * 0.7)
-    _line(surface, scale, theme.INK, hip, leg_b, LINE_WIDTH * size * 0.7)
 
 
 def _draw_arms(
