@@ -260,6 +260,25 @@ def _spider_sprite(w_px: int, h_px: int, mirror: bool) -> pygame.Surface:
     return scaled
 
 
+def _draw_spider(
+    surface: pygame.Surface, enemy: MeleeEnemyState, elapsed: float, scale: float = 1.0
+) -> None:
+    """A giant spider, per user request ("add as many [mobs] as
+    possible") -- fast, low-profile, and fragile (one torso hit kills it
+    like any human tier), a ground-crawling contrast to the hound's bulk."""
+    size = enemy.config.visual_size
+    h = SPIDER_BASE_HEIGHT * size
+    w = h * _SPIDER_ASPECT
+    speed_frac = min(abs(enemy.vx) / C.CHAR_MOVE_SPEED, 1.0)
+    # a quick low skitter, faster than the wolf's trot -- reads as
+    # scuttling rather than the wolf's steady bob.
+    bob = math.sin(elapsed * WALK_FREQUENCY * 1.6) * 1.2 * size * speed_frac
+    w_px, h_px = round(w * scale), round(h * scale)
+    sprite = _spider_sprite(w_px, h_px, mirror=enemy.facing < 0)
+    rect = sprite.get_rect()
+    rect.centerx = round(enemy.x * scale)
+    rect.bottom = round((enemy.y + bob) * scale)
+    surface.blit(sprite, rect)
 
 def _draw_arms(
     surface: pygame.Surface,
