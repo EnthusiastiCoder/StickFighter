@@ -304,7 +304,12 @@ def _draw_arms(
         shoulder[0] + enemy.facing * forward_lift + arm_swing,
         shoulder[1] + 10.0 * size - abs(arm_swing) * 0.3,
     )
-    length = (SPEAR_LENGTH if enemy.config.name == "spearman" else SWORD_LENGTH) * size
+    if enemy.config.name == "spearman":
+        length = SPEAR_LENGTH * size
+    elif enemy.config.name == "ogre":
+        length = CLUB_LENGTH * size
+    else:
+        length = SWORD_LENGTH * size
     # the blade continues the shoulder->hand line instead of always pointing
     # in the facing direction -- previously the tip was hand + facing*length
     # unconditionally, so the hand swung back and forth but the blade itself
