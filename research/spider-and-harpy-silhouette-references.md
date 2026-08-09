@@ -6,3 +6,5 @@ silhouettes (mustard-yellow background style), following the same method
 used for the wolf and dragon this session (freesvg.org / publicdomainvectors.org /
 Wikimedia Commons, fetched with a browser User-Agent, verified visually before
 handoff).
+
+## 1. Giant Spider
