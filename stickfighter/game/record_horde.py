@@ -39,7 +39,7 @@ def _draw_hero(surface, hero, elapsed, scale: float, victory: bool = False) -> N
         from stickfighter.render.draw import draw_archer
 
         _ARCHER_DRAW = draw_archer
-    _ARCHER_DRAW(surface, hero, elapsed, victory=victory, scale=scale)
+    _ARCHER_DRAW(surface, hero, elapsed, victory=victory, scale=scale, hero=True)
 
 
 def _write_log(out_path: str, log: list[dict]) -> str:
@@ -156,12 +156,12 @@ def record(
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--out", default="horde.mp4")
-    # 54, not 0: adding hounds/dragons on top of the 100-kill horde, making
-    # dragons aerial breath-attackers, and having archers/dragons fire the
-    # instant they spawn (all per user request) makes this a much harder
-    # fight -- only ~7% of seeds clear now. 54 is a verified clean clear
-    # (68 hp) with every kill on screen.
-    parser.add_argument("--seed", type=int, default=54)
+    # 612, not 357: adding the giant spider (15) on top of the skeleton/ogre
+    # tiers -- per user request, "add as many [mobs] as possible" -- makes
+    # this a 150-kill fight, down to ~1.1% of seeds clearing (9/800 swept).
+    # 612 is a verified clean clear (84 hp) with every kill on screen and
+    # the big arrow only ever spent on hound/dragon/ogre.
+    parser.add_argument("--seed", type=int, default=612)
     parser.add_argument("--fps", type=int, default=60)
     parser.add_argument("--scale", type=float, default=3.0, help="render resolution multiplier")
     args = parser.parse_args(argv)
