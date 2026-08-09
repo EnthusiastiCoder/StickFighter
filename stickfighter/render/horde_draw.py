@@ -329,12 +329,16 @@ def _draw_arms(
         far_shoulder[1] + 10.0 * size - abs(arm_swing) * 0.3,
     )
 
-    _line(surface, scale, theme.INK, far_shoulder, off_hand, LINE_WIDTH * size)
-    _circle(surface, scale, off_hand, HAND_RADIUS * size, theme.INK)
-
-    _line(surface, scale, theme.INK, shoulder, sword_hand, LINE_WIDTH * size)
-    _circle(surface, scale, sword_hand, HAND_RADIUS * size, theme.INK)
-    _line(surface, scale, theme.SILVER, sword_hand, tip, max(1, round(3 * size)))
+    arm_r0, arm_r1 = ARM_R_SHOULDER * size, ARM_R_HAND * size
+    _capsule(surface, scale, theme.INK, far_shoulder, off_hand, arm_r0, arm_r1)
+    _capsule(surface, scale, theme.INK, shoulder, sword_hand, arm_r0, arm_r1)
+    if enemy.config.name == "ogre":
+        # a heavy wooden club, not a slim blade -- reuses the shield's brown
+        # so the ogre's one weapon accent reads as "blunt and heavy" rather
+        # than "sharp", matching a brute archetype.
+        _capsule(surface, scale, theme.WOOD_BROWN, sword_hand, tip, 5.0 * size, 3.5 * size)
+    else:
+        _line(surface, scale, theme.SILVER, sword_hand, tip, max(1, round(3 * size)))
 
 
 CLOUD_PUFF_RADII = (24.0, 20.0, 17.0, 15.0)
