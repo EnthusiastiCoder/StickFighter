@@ -243,10 +243,21 @@ SPIDER_BASE_HEIGHT = 55.0
 _spider_sprite_cache: dict[tuple[int, int, bool], pygame.Surface] = {}
 
 
-    tail_mid = (hip[0] - facing * 16.0 * size, hip[1] + 8.0 * size)
-    tail_tip = (hip[0] - facing * 30.0 * size, hip[1] + 2.0 * size)
-    _line(surface, scale, theme.INK, hip, tail_mid, LINE_WIDTH * size)
-    _line(surface, scale, theme.INK, tail_mid, tail_tip, LINE_WIDTH * size)
+def _spider_sprite(w_px: int, h_px: int, mirror: bool) -> pygame.Surface:
+    key = (w_px, h_px, mirror)
+    cached = _spider_sprite_cache.get(key)
+    if cached is not None:
+        return cached
+    # not .convert_alpha() -- that needs an active display surface, which
+    # this headless render pipeline (record_horde.py draws straight onto a
+    # plain pygame.Surface, no window) never creates. A PNG with its own
+    # alpha channel already loads with per-pixel alpha either way.
+    base = pygame.image.load(_SPIDER_ASSET_PATH)
+    scaled = pygame.transform.smoothscale(base, (max(1, w_px), max(1, h_px)))
+    if mirror:
+        scaled = pygame.transform.flip(scaled, True, False)
+    _spider_sprite_cache[key] = scaled
+    return scaled
 
     # legs tucked up beneath the body, dangling -- not planted on ground.
     leg_a = (hip[0] + facing * 3.0 * size, hip[1] + 12.0 * size)
