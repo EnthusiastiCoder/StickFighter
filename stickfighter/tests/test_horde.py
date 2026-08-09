@@ -31,7 +31,7 @@ def test_hero_clears_the_full_horde_without_dying():
     # range -- see that test for the aggregate reliability bound across many
     # seeds. Matches game/record_horde.py's default --seed.
     sim = HordeSim()
-    steps = _run_to_completion(sim, seed=54)
+    steps = _run_to_completion(sim, seed=612)
     assert sim.cleared, f"did not clear within {steps} steps"
     assert sim.hero.alive
     assert sim.total_kills == TOTAL_TARGETS
@@ -42,19 +42,20 @@ def test_hero_survives_the_horde_at_the_default_pacing():
     # and occasionally land a hit (per user feedback -- a hero that snipes
     # everything from 300-500px away "can't even reach close enough" to be
     # dramatic). Reliability has fallen a lot across this session's
-    # escalating difficulty requests (90% -> ... -> ~15% once dragons/hounds
-    # were added, ~4% once dragons became aerial breath-attackers), and
-    # making archers/dragons fire immediately on spawn instead of waiting to
-    # be on screen (per user request, "makes it fun") lands at a real,
-    # measured ~7% (7/100 seeds). n=100 here (not 20) specifically so this
-    # test can observe a clear at all without being flaky -- several
-    # measured clears land past seed 20 even now, so a smaller sample risks
-    # seeing zero despite clearing being real and repeatable. This is
-    # checking for "still possible to clear," not measuring the exact rate
-    # -- see game/record_horde.py for the specific known-good seed used for
-    # the actual rendered video.
+    # escalating difficulty/roster requests (90% -> ... -> ~1.6% once the
+    # skeleton/ogre tiers were added), and adding the giant spider (15) on
+    # top of that -- per user request, "add as many [mobs] as possible" --
+    # lands at a real, measured ~1.1% (9/800 seeds, seed range 0-799).
+    # n=800 here (not 100) specifically so this test can observe a clear at
+    # all without being flaky -- at this rate a small sample isn't reliably
+    # enough to contain one. This is fully deterministic (the same seed
+    # always gives the same outcome), so this isn't actually statistical
+    # noise the test needs to guard against -- it's checking for "still
+    # possible to clear," not measuring the exact rate -- see
+    # game/record_horde.py for the specific known-good seed used for the
+    # actual rendered video.
     cleared = 0
-    n = 100
+    n = 800
     for seed in range(n):
         sim = HordeSim()
         sim.reset(seed=seed)
@@ -63,7 +64,7 @@ def test_hero_survives_the_horde_at_the_default_pacing():
         if sim.cleared:
             cleared += 1
             assert sim.hero.hp > 0.0
-    assert cleared / n >= 0.02, f"only {cleared}/{n} seeds cleared"
+    assert cleared / n >= 0.01, f"only {cleared}/{n} seeds cleared"
 
 
 def test_determinism_same_seed_same_outcome():
@@ -129,13 +130,13 @@ def test_big_arrow_only_used_on_tough_targets():
     # (already dead to one normal torso hit) and never fires faster than its
     # own cooldown allows.
     sim = HordeSim()
-    sim.reset(seed=54)
+    sim.reset(seed=612)
     while not sim.cleared and sim.hero.alive:
         sim.step()
     fires = [e for e in sim.log if e["event"] == "fire"]
     big_fires = [e for e in fires if e.get("big_arrow")]
     assert big_fires, "big arrow never fired -- test seed/setup is wrong"
-    assert all(e["target_type"] in ("hound", "dragon") for e in big_fires)
+    assert all(e["target_type"] in ("hound", "dragon", "ogre") for e in big_fires)
     for a, b in zip(big_fires, big_fires[1:]):
         assert (b["tick"] - a["tick"]) * C.DT >= BIG_ARROW_COOLDOWN - 1e-6
 
@@ -148,7 +149,7 @@ def test_hero_only_kills_targets_that_are_on_screen():
     # HERO_ENGAGE_INSET (horde.py) tightens that to a window inset from both
     # edges, confirmed directly to put every kill on screen across 20 seeds.
     sim = HordeSim()
-    sim.reset(seed=54)
+    sim.reset(seed=612)
     kill_positions = []
     steps = 0
     while not sim.cleared and sim.hero.alive and steps < 20_000:
@@ -160,12 +161,12 @@ def test_hero_only_kills_targets_that_are_on_screen():
 
 
 def test_cloud_archers_spawn_and_can_be_killed():
-    # seed=54, not 0 -- see test_hero_survives_the_horde_at_the_default_pacing,
+    # seed=612, not 0 -- see test_hero_survives_the_horde_at_the_default_pacing,
     # seed=0 is one of the seeds that doesn't clear now that archers fire back.
     # "archer_hit" covers both cloud archers and dragons (both are
     # CloudArcherState, see horde_entities.py) -- ARCHER_TOTAL + DRAGON_TOTAL.
     sim = HordeSim()
-    sim.reset(seed=54)
+    sim.reset(seed=612)
     while not sim.cleared and sim.hero.alive:
         sim.step()
 
