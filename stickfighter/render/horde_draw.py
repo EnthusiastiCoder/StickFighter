@@ -280,6 +280,7 @@ def _draw_spider(
     rect.bottom = round((enemy.y + bob) * scale)
     surface.blit(sprite, rect)
 
+
 def _draw_arms(
     surface: pygame.Surface,
     enemy: MeleeEnemyState,
