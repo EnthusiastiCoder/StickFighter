@@ -8,3 +8,10 @@ asked explicitly for real 2D or 3D **models**, not hand-computed motion.
 This note documents the models actually used to fix that.
 
 ## Source
+
+**Poly Pizza** (https://poly.pizza), not Sketchfab — Sketchfab requires a
+logged-in account to download even CC0 models (confirmed by hitting its
+login wall), and a plain automated browser session gets blocked by Google's
+sign-in security check (`navigator.webdriver === true`) regardless of which
+real browser/profile is behind it. Poly Pizza's models are downloadable
+without any login.
