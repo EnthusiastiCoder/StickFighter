@@ -85,3 +85,5 @@ again for another creature:
   individual masks' bounding boxes (not each frame's own bbox), so every
   frame shares identical pixel dimensions and the character doesn't appear
   to jump between frames from inconsistent cropping.
+
+## Result
