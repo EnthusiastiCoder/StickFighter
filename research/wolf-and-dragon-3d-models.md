@@ -112,3 +112,15 @@ each new asset's own default facing directly (render both `facing` values,
 look) — never assume it matches a previous asset's convention.
 
 ## The original "Dragon" (Quaternius, VBvzjFIYws) reads as a Pegasus, not a dragon
+
+After the facing fix, a user request to "eyeball frames" and run them
+through the **UI Critique MCP** (`mcp__ui-critique__critique_ui`, custom
+game-art-focused prompt — the tool's built-in prompt is for web UI/UX and
+doesn't apply) turned up a real content problem, independently confirmed by
+both direct inspection and Gemini: the Quaternius "Dragon" model's silhouette
+reads as a **winged horse/Pegasus**, not a dragon. The head is unmistakably
+equine (blunt muzzle, ear-like nubs instead of horns), the neck/torso/tail
+are horse-shaped, and a hind leg reads as hoofed — only the bat wings are
+draconic, and that one feature doesn't override the rest. This wasn't a
+rendering bug; the pose, transparency, and (post-fix) facing were all
+correct. The *source model* itself just doesn't read as a dragon.
