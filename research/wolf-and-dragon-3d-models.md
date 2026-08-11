@@ -41,3 +41,5 @@ plain, unprotected static asset:
    GLB via a normal `curl` (the server doesn't appear to actually apply
    brotli content-encoding on this path — `file` identifies the downloaded
    bytes directly as "glTF binary model, version 2").
+
+## Rendering real animated frames to silhouettes
