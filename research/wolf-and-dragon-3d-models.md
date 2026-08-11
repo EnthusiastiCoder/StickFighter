@@ -127,3 +127,20 @@ correct. The *source model* itself just doesn't read as a dragon.
 
 Two other Quaternius poly.pizza candidates were tried and rejected before
 finding a replacement:
+
+- **`na3ee1`'s "Dragon Rigged"** (poly.pizza, CC-BY 3.0) — visually excellent
+  (unambiguous reptilian dragon: snout, horns, membrane wings, clawed feet,
+  long tail) but ships with a skeleton and **zero baked animation clips**
+  (`gltf.animations` is empty). Hand-authoring bone rotations for it would
+  violate the standing rule from earlier in this doc ("only actually-authored
+  animation... reads as real" — the user's objection was to *computed*
+  motion, and posing a rig by hand is still computed motion, just on real
+  bones instead of flat shapes). Not used.
+- **Quaternius's animated "Dragon"** (poly.pizza, `3rUm1cN3yp`, CC0) — has
+  real baked `Fast_Flying`/`Flying_Idle` clips, but it's a round, chibi
+  "bat-blob" design (part of the "Ultimate Monsters" pack), and — checked by
+  rendering it from several camera axes, including a 3/4 angle — its wings
+  are rigged to spread laterally (perpendicular to its own forward axis)
+  rather than swept back along it, so almost none of the wingspan projects
+  into a pure side-view silhouette; it's dominated by the head from every
+  angle tried. Not used.
