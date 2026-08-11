@@ -144,3 +144,5 @@ finding a replacement:
   rather than swept back along it, so almost none of the wingspan projects
   into a pure side-view silhouette; it's dominated by the head from every
   angle tried. Not used.
+
+## Switching to Sketchfab for the dragon replacement
