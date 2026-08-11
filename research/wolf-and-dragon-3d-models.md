@@ -27,3 +27,9 @@ without any login.
   `Dragon_Flying` duration: 1.6667s.
 
 ## Getting the actual GLB without the UI
+
+Poly Pizza's own "Download" button goes through a Cloudflare Turnstile
+challenge that blocks a CDP-driven click even on a real, non-automated-
+flagged browser profile. Skip the UI entirely: the model page's own 3D
+viewer already fetches the raw model to display it, and that request is a
+plain, unprotected static asset:
