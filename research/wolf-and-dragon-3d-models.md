@@ -96,3 +96,5 @@ or interpolated fake). Wired into `stickfighter/render/horde_draw.py`'s
 `_draw_hound`/`draw_dragon` via a small `_FrameSequence` helper that picks
 a frame by `(elapsed % cycle_seconds) / cycle_seconds`, matching each
 source clip's own real duration.
+
+## Facing bug (both wolf and the original dragon)
