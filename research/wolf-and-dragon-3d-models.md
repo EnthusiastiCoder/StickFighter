@@ -98,3 +98,15 @@ a frame by `(elapsed % cycle_seconds) / cycle_seconds`, matching each
 source clip's own real duration.
 
 ## Facing bug (both wolf and the original dragon)
+
+Both `_draw_hound` and `draw_dragon` were wired with `mirror = facing < 0`,
+copied from the spider's convention without re-checking it against these
+new assets. The spider's bitmap was deliberately pre-flipped at save time to
+face right unmirrored, so that rule was correct *for the spider* — but the
+wolf/dragon captures above came out of the Three.js camera facing **left**
+unmirrored (confirmed by re-viewing `wolf_walk_silh_0.png` and
+`dragon_fly_silh_0.png` directly: head/snout on the left edge in both). That
+made the mirror exactly backwards, and shipped a wolf and dragon that walked
+backwards. Fixed by flipping both to `mirror = facing >= 0`. Lesson: check
+each new asset's own default facing directly (render both `facing` values,
+look) — never assume it matches a previous asset's convention.
