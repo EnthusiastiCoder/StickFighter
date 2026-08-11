@@ -62,3 +62,25 @@ being fully symmetric, is very easy to trace/mirror/scale like the dragon.
   outline good for tracing). Pose is more "standing/rising with wings spread"
   than a banked mid-air side view, but the full wing spread reads clearly as
   an aerial creature and mirrors/scales the same way the dragon did.
+
+### Backup candidates
+- https://commons.wikimedia.org/wiki/File:Harpy.PNG
+  (direct: https://upload.wikimedia.org/wikipedia/commons/5/56/Harpy.PNG) —
+  same heraldic motif, by John Vinycomb, 1906, PD-old-70, Public Domain Mark
+  1.0. Smaller/rougher than the SVG version above and functionally
+  redundant with it (this SVG is a cleaner vector redraw of essentially the
+  same classic pose).
+- https://openclipart.org/detail/310907/gargoyle-by-ladyofhats
+  (download: https://openclipart.org/download/310907, PNG preview:
+  https://openclipart.org/image/2000px/310907) — OpenClipart, 100% public
+  domain. A crouching/perched bat-winged humanoid gargoyle on architecture,
+  clawed feet, horns — genuinely creepy and a true bat-wing (not bird-wing)
+  humanoid, but the pose is perched/crouching rather than flying, and the
+  illustration includes architectural background clutter (ledge, wall
+  moulding) that would need cropping out.
+- https://commons.wikimedia.org/wiki/File:A_Harpy._-_Engravings_on_Wood.jpg
+  (direct: https://upload.wikimedia.org/wikipedia/commons/3/3c/A_Harpy._-_Engravings_on_Wood.jpg) —
+  PD-old-70, 1882 woodcut, genuinely a side view harpy in flight — but it's a
+  robed/clothed figure (drapery, not exposed monster form), only one wing is
+  visible (side-on relief carving), and the frame also contains an unrelated
+  second bearded figure that would need cropping out. Weakest of the three.
