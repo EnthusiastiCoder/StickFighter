@@ -43,3 +43,9 @@ plain, unprotected static asset:
    bytes directly as "glTF binary model, version 2").
 
 ## Rendering real animated frames to silhouettes
+
+Built a tiny local Three.js viewer (`three@0.160.0` module build +
+`GLTFLoader`, loaded via an import map so the bare `"three"` specifier
+resolves) served over a local `python -m http.server` (GLTFLoader's
+`fetch()` can't read `file://` URLs). Key gotchas, in case this is done
+again for another creature:
