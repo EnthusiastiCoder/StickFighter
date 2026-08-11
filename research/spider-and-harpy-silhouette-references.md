@@ -41,3 +41,5 @@ handoff).
   embedded Adobe Stock ad thumbnails (not their own CC0 art) and returned a
   403 to a plain WebFetch; not worth pursuing further given the freesvg.org
   options already found.
+
+## 2. Harpy / Bat-winged humanoid
