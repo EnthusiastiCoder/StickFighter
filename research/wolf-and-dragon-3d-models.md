@@ -110,3 +110,5 @@ made the mirror exactly backwards, and shipped a wolf and dragon that walked
 backwards. Fixed by flipping both to `mirror = facing >= 0`. Lesson: check
 each new asset's own default facing directly (render both `facing` values,
 look) — never assume it matches a previous asset's convention.
+
+## The original "Dragon" (Quaternius, VBvzjFIYws) reads as a Pegasus, not a dragon
