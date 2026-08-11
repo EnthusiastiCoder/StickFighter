@@ -49,3 +49,16 @@ scarce; the classic public-domain motif is the **heraldic harpy** — a woman-
 headed bird-of-prey shown front-on with both wings fully spread ("wings
 displayed") and taloned legs. That reads clearly as an aerial monster and,
 being fully symmetric, is very easy to trace/mirror/scale like the dragon.
+
+### Top pick
+- **Source page:** https://commons.wikimedia.org/wiki/File:Coa_Illustration_Elements_Harpy_Rising_Wings_Displayed.svg
+- **Direct SVG:** https://upload.wikimedia.org/wikipedia/commons/0/03/Coa_Illustration_Elements_Harpy_Rising_Wings_Displayed.svg
+- **License:** Public Domain (Public Domain Mark 1.0; US public domain as
+  published before 1931 — classic heraldic clip-art style)
+- **Pose/readability:** Both wings fully spread symmetrically ("wings
+  displayed, rising"), nude female torso/head with flowing hair, clawed bird
+  legs/talons clearly visible at the bottom. Vector SVG line art (not a flat
+  silhouette — has internal feather/hair line detail — but a clean, closed
+  outline good for tracing). Pose is more "standing/rising with wings spread"
+  than a banked mid-air side view, but the full wing spread reads clearly as
+  an aerial creature and mirrors/scales the same way the dragon did.
