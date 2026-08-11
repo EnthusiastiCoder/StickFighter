@@ -87,3 +87,12 @@ again for another creature:
   to jump between frames from inconsistent cropping.
 
 ## Result
+
+`stickfighter/render/assets/wolf_walk/frame_{0..7}.png` and
+`.../dragon_fly/frame_{0..7}.png` — 8-frame silhouette sequences, each a
+real captured pose from the source animation (confirmed by inspecting
+frames 0 vs 2 vs 4: distinctly different leg/wing positions, not a repeated
+or interpolated fake). Wired into `stickfighter/render/horde_draw.py`'s
+`_draw_hound`/`draw_dragon` via a small `_FrameSequence` helper that picks
+a frame by `(elapsed % cycle_seconds) / cycle_seconds`, matching each
+source clip's own real duration.
