@@ -146,3 +146,11 @@ finding a replacement:
   angle tried. Not used.
 
 ## Switching to Sketchfab for the dragon replacement
+
+Poly Pizza and Quaternius didn't have a model that was both clearly a
+scary dragon *and* shipped with baked flight animation. Sketchfab does
+(`https://sketchfab.com/3d-models/dragon-flying-cycle-ae0831702eac462a9969ff4f8bd57710`,
+"Dragon Flying Cycle" by RedCoreTimber, CC-BY 4.0 — **credit RedCoreTimber**
+per the license — used in a real shipped Steam game per its own reviews),
+but Sketchfab requires a logged-in account to download anything, confirmed
+again this round.
