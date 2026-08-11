@@ -124,3 +124,6 @@ are horse-shaped, and a hind leg reads as hoofed — only the bat wings are
 draconic, and that one feature doesn't override the rest. This wasn't a
 rendering bug; the pose, transparency, and (post-fix) facing were all
 correct. The *source model* itself just doesn't read as a dragon.
+
+Two other Quaternius poly.pizza candidates were tried and rejected before
+finding a replacement:
