@@ -84,3 +84,12 @@ being fully symmetric, is very easy to trace/mirror/scale like the dragon.
   robed/clothed figure (drapery, not exposed monster form), only one wing is
   visible (side-on relief carving), and the frame also contains an unrelated
   second bearded figure that would need cropping out. Weakest of the three.
+
+### Explicitly rejected
+- Pixabay "Fantasy Harpy Silhouette" (https://pixabay.com/vectors/fantasy-harpy-silhouette-4126939/) —
+  good side-view flying silhouette with wings spread, but Pixabay's own
+  license is the "Pixabay Content License," not CC0/public domain (has
+  no-attribution-required but not no-strings-attached terms) — excluded per
+  the "no strings attached" requirement.
+- Gargoyle "Lyon Pittoresque" (openclipart 223490) — real architectural
+  gargoyle spout, quadruped dragon/dog-like, not humanoid, not flying.
