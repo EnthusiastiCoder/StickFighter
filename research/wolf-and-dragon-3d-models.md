@@ -25,3 +25,5 @@ without any login.
   Animations (all prefixed `DragonArmature|`): `Dragon_Attack`,
   `Dragon_Attack2`, `Dragon_Death`, `Dragon_Flying`, `Dragon_Hit`.
   `Dragon_Flying` duration: 1.6667s.
+
+## Getting the actual GLB without the UI
