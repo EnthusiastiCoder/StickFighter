@@ -33,3 +33,11 @@ challenge that blocks a CDP-driven click even on a real, non-automated-
 flagged browser profile. Skip the UI entirely: the model page's own 3D
 viewer already fetches the raw model to display it, and that request is a
 plain, unprotected static asset:
+
+1. Open the model page (`https://poly.pizza/m/<id>`) in the browser.
+2. `list_network_requests` (resourceTypes: `["fetch","xhr","other"]`) — look
+   for a `GET https://static.poly.pizza/<uuid>.glb.br` request. That URL has
+   no auth/challenge; despite the `.br` suffix it downloads as a plain valid
+   GLB via a normal `curl` (the server doesn't appear to actually apply
+   brotli content-encoding on this path — `file` identifies the downloaded
+   bytes directly as "glTF binary model, version 2").
