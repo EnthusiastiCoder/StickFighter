@@ -23,3 +23,21 @@ handoff).
   not a flat silhouette, but the outline is simple and well-suited to tracing
   into solid black. Best match for "side view, legs distinct, reads
   creepy/threatening" of everything found.
+
+### Backup candidates
+- https://freesvg.org/silhouette-of-a-spider (download 188048, direct image
+  https://freesvg.org/img/1589971621spider-stencil-silhouette-freesvg.org.png) —
+  already a solid black stencil-style silhouette with segmented/jointed legs
+  and visible eyes/fangs — good creepy read, but it's a front-facing view, not
+  side/3-4.
+- https://freesvg.org/spider-silhouette (download 66523, direct image
+  https://freesvg.org/img/Spider-Silhouette.png) — already solid black, very
+  clean and symmetric, all 8 legs clearly separated — but it's a top-down view,
+  not side/3-4.
+- Rejected: https://freesvg.org/cartoon-spider-silhouette ("Little Miss Muffet
+  Spider") — top-down, cartoonish googly eyes, reads cute rather than
+  threatening.
+- publicdomainvectors.org's spider silhouette listing page is dominated by
+  embedded Adobe Stock ad thumbnails (not their own CC0 art) and returned a
+  403 to a plain WebFetch; not worth pursuing further given the freesvg.org
+  options already found.
