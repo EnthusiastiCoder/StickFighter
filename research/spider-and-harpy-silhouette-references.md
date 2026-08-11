@@ -43,3 +43,9 @@ handoff).
   options already found.
 
 ## 2. Harpy / Bat-winged humanoid
+
+True side-view "flying through the air" public-domain art of this subject is
+scarce; the classic public-domain motif is the **heraldic harpy** — a woman-
+headed bird-of-prey shown front-on with both wings fully spread ("wings
+displayed") and taloned legs. That reads clearly as an aerial monster and,
+being fully symmetric, is very easy to trace/mirror/scale like the dragon.
