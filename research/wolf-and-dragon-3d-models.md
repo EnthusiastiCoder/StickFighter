@@ -15,3 +15,13 @@ login wall), and a plain automated browser session gets blocked by Google's
 sign-in security check (`navigator.webdriver === true`) regardless of which
 real browser/profile is behind it. Poly Pizza's models are downloadable
 without any login.
+
+- **Wolf**: https://poly.pizza/m/P1gU3Qkr9r — Quaternius, **CC0** (public
+  domain). Animations: `Walk`, `Gallop`, `Idle`, `Idle_2`, `Eating`, `Attack`,
+  `Death`, `Jump_ToIdle`, `Idle_HitReact_Left/Right` (also duplicated with an
+  `AnimalArmature|` prefix — both names work, use the un-prefixed one).
+  `Walk` duration: 1.0417s.
+- **Dragon**: https://poly.pizza/m/VBvzjFIYws — Quaternius, **CC0**.
+  Animations (all prefixed `DragonArmature|`): `Dragon_Attack`,
+  `Dragon_Attack2`, `Dragon_Death`, `Dragon_Flying`, `Dragon_Hit`.
+  `Dragon_Flying` duration: 1.6667s.
