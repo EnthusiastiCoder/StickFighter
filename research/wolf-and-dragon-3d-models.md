@@ -154,3 +154,13 @@ scary dragon *and* shipped with baked flight animation. Sketchfab does
 per the license — used in a real shipped Steam game per its own reviews),
 but Sketchfab requires a logged-in account to download anything, confirmed
 again this round.
+
+Signing up via "Sign in with Google" on the now-unblocked real browser (see
+the chrome-devtools-mcp setup note elsewhere in this repo) didn't create a
+fresh account — Google reported back an email that *already* had a
+Sketchfab account (from Nov 2025), so Sketchfab asked to "connect" the two
+via that account's own password, which wasn't known. Resolved by: opening
+Sketchfab's "Lost password?" flow for that email, then reading the reset
+email directly from that same Google account's **Gmail inbox** in the same
+browser tab (already authenticated — no separate login needed), following
+the reset link, and setting a new password. Logged in normally after that.
