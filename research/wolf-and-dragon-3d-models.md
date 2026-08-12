@@ -164,3 +164,12 @@ Sketchfab's "Lost password?" flow for that email, then reading the reset
 email directly from that same Google account's **Gmail inbox** in the same
 browser tab (already authenticated — no separate login needed), following
 the reset link, and setting a new password. Logged in normally after that.
+
+The GLB download itself is also login-gated but not Cloudflare-Turnstile
+-blocked the way poly.pizza's UI button was — clicking "Download 3D Model" →
+the GLB option fires `GET /i/archives/latest?archiveType=glb&model=<id>`,
+whose JSON response is a **pre-signed, time-limited S3 URL**
+(`sketchfab-prod-media.s3.amazonaws.com/archives/...`) that a plain `curl`
+can fetch directly — same "read the network request, skip the UI" trick as
+poly.pizza, just gated one step further behind login+session cookies instead
+of being fully anonymous.
