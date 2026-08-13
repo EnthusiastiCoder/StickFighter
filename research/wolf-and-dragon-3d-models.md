@@ -173,3 +173,15 @@ whose JSON response is a **pre-signed, time-limited S3 URL**
 can fetch directly — same "read the network request, skip the UI" trick as
 poly.pizza, just gated one step further behind login+session cookies instead
 of being fully anonymous.
+
+The resulting capture (`stickfighter/render/assets/dragon_fly/frame_{0..7}.png`,
+replacing the Pegasus-reading set) shows a real scaled reptilian body,
+serpentine neck, clawed legs, a long tail, and a membrane wing that clearly
+spans open through a full flap cycle in profile — confirmed independently by
+the UI Critique MCP on a real extracted gameplay frame ("this reads as a
+dragon... It definitely doesn't read as a Pegasus"). `DRAGON_FLY`'s
+`cycle_seconds` was updated to `2.5` to match this clip's real authored
+duration (Sketchfab's Model Inspector reports the clip as `Take 001`,
+`00:00`–`02:24`ish on the scrubber, exactly 2.5s via `gltf.animations[0].duration`).
+Same facing convention as before (head-left unmirrored) — no change needed
+to the `mirror = facing >= 0` logic, only the asset files.
