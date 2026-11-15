@@ -1,0 +1,240 @@
+# StickFighter — Stickman Archery Duel + Trainable AI
+
+## Context
+
+The repo is empty (only tooling/config). The goal is to build a faithful clone of the
+*Archers 2*–style stickman archery duel from the reference screenshot — mustard-yellow
+background, black stick-figure silhouettes on floating platforms, arced arrows with white
+trails, ragdoll deaths, headshot bonuses, coin + kill HUD — **and**, as the primary motive,
+to train an AI to actually be *good* at it.
+
+"Train the AI" is the constraint that shapes the whole architecture: the game logic must be a
+**pure, deterministic, headless-runnable simulation** with no rendering dependency, so
+thousands of matches per second can be played in parallel. Everything else (pygame renderer,
+menus, shop) is a consumer of that core, never a participant in it.
+
+**Confirmed choices:** Python + pygame · pymunk for ragdolls · real-time duel with free
+movement · scripted ballistic bot first, then PPO self-play. All remaining design decisions
+were delegated to me and are recorded below as decisions, not options.
+
+---
+
+## Environment (decided)
+
+Use the **global Python 3.12** (`C:\Python312`, invoked as `py -3.12`). It is the shared
+interpreter every project venv was seeded from (`home = C:\Python312`) and already contains
+everything expensive:
+
+| Present | Version |
+|---|---|
+| torch (CUDA working) | 2.6.0+cu124, `cuda.is_available() == True` |
+| gymnasium | 1.3.0 |
+| pymunk | 7.2.0 |
+| numpy / scipy / matplotlib | 2.4.6 / 1.17.1 / 3.10.3 |
+| numba, tensorboardX, imageio, tqdm, rich | ✓ |
+| pytest, pytest-cov, ruff | ✓ |
+
+I checked every venv under `Projects\`: none has the full combo (`Machine Learning\Simulations`
+has pygame+pymunk but no torch; `Voice Moduler\.venv` has torch but no pygame/pymunk). The
+global env is the only one that is one package away from complete.
+
+**Only install: `pygame-ce`** (maintained drop-in fork; it is what your frozen requirements
+already used). One package, used by no other project → negligible blast radius on the shared env.
+
+**Deliberately NOT installing `stable-baselines3`** — `sb3[extra]` would drag opencv/pandas and
+could bump `gymnasium`/`numpy` inside a *shared* interpreter, and SB3's VecEnv API fights
+self-play leagues. We write our own PPO (~350 lines, full control over hybrid actions + league).
+
+Hardware notes that constrain defaults: 8 cores, RTX 4050 **6 GB**. Your Mario project recorded
+`--n-envs 11` blowing up OpenBLAS on this exact box → **default `--n-envs 8`**. The policy is a
+tiny MLP, so **default `--device cpu`** (GPU offload for 2×256 MLPs is usually a net loss);
+`--device auto` available and benchmarked.
+
+---
+
+## Architecture
+
+The single most important rule: **`core/` never imports pygame, torch, or gymnasium.**
+
+```
+stickfighter/
+  core/                  # PURE SIM — deterministic, headless, no rendering deps
+    constants.py         # dt=1/60, gravity, speeds, damage table, arena 960x540
+    events.py            # ArrowFired, ArrowHit, Damage, Death, RoundOver, CoinEarned
+    actions.py           # Action dataclass  <->  np.float32[5]
+    entities.py          # ArcherState, ArrowState, hitbox layout (head/torso/arms/legs)
+    arena.py             # Arena (platform AABBs, ground, spawns) + 8 layouts + random_arena(rng)
+    character.py         # kinematic platformer controller (accel, jump, AABB resolution)
+    ballistics.py        # arrow integration + swept-segment collision + solve_launch_angle()
+    rules.py             # damage/HP/headshot, coins, round & match state machine, timeout
+    match.py             # MatchSim.reset(seed) / .step(a0, a1) -> list[Event] / .snapshot()
+  render/                # pygame; READS snapshots, never mutates sim
+    theme.py draw.py effects.py hud.py ragdoll.py
+  game/                  # human-facing app
+    input.py app.py scenes/{menu,duel,practice,spectate,shop,results,settings}.py
+  ai/
+    obs.py reward.py seeding.py
+    bots/{base,ballistic,idle,wanderer}.py
+    envs/{duel_env,vec}.py
+    ppo/{policy,ppo,league,curriculum,logging,train,evaluate}.py
+  tests/
+plans/    research/    runs/ (gitignored)
+```
+
+### Why pymunk is render-only
+
+pymunk earns its keep for exactly one thing: the **death ragdoll** (6 bodies + `PivotJoint`s,
+with arrows welded in). Using it for gameplay would make character control mushy and slower.
+So gameplay is hand-rolled — a kinematic character controller and swept-segment arrow
+raycasts — which is crisper, ~10× faster, and bit-deterministic.
+
+Crucially this is **not** a two-tier "fast sim vs pretty sim" split (the option flagged as
+risky). Training and playing run *the same* `MatchSim` code. The ragdoll only ever animates an
+archer that is already dead, so it cannot influence any outcome. Note pymunk 7 renamed the
+callback API to `space.on_collision(a, b, begin=…)` — verified on the installed 7.2.0.
+
+### Control scheme (decided) — one primitive for human and AI
+
+**Drag-to-aim**, faithful to the reference: hold mouse → the archer draws the bow; the cursor's
+direction from the archer sets **angle**, its distance sets **draw power** (capped, bow visibly
+bends); release → fire. Reload cooldown ~0.45 s.
+
+This maps 1:1 onto the AI action space, so the AI plays the *exact* game a human does:
+
+`Box(5) = [move ∈ [-1,1], jump (>0 fires), aim_angle ∈ [-1,1] → [-π,π], draw ∈ [0,1], release (>0 fires)]`
+
+Pure `Box` (thresholded binaries) keeps a single Gaussian head — far simpler and more stable
+than a `Dict`/`Tuple` hybrid distribution, with no loss of expressiveness.
+
+### Observation (decided) — compact egocentric vector
+
+~56 float32, **mirrored** so one policy plays both sides (left/right symmetry ⇒ 2× data):
+self (pos, vel, grounded, facing, hp, draw, reload) · enemy (relative pos/vel, hp, facing,
+is_drawing) · up to 4 in-flight arrows (relative pos/vel, owner, est. time-to-impact) ·
+wind · arena descriptor (6 platforms as relative x/y/half-width) · clock + score diff.
+
+Vector obs over pixels because it trains 100–1000× faster and fits a 6 GB laptop GPU. The obs
+encoder is a single seam (`ai/obs.py::encode_obs`), so a pixel path stays possible later.
+
+### Reward + curriculum (this is what makes it actually converge)
+
+`+1` win · `-1` death · `±0.5 × damage/100` · `+0.15` headshot · `-0.001`/step ·
+**annealed** near-miss bonus (rewards arrows passing close to the enemy) to bootstrap the
+sparse early phase.
+
+Curriculum, auto-advancing on win-rate threshold:
+**S0** static target practice → **S1** noisy ballistic bot → **S2** sharp bot → **S3** self-play
+league (PFSP sampling over frozen checkpoints + Elo). The near-miss bonus decays to 0 by S2.
+
+### Reuse from `PlayerAI\Mario\FreshGame` (surveyed)
+
+Adapt: `callbacks.py` logging (episode stats, behavioural action entropy, per-param grad norms
+via `param.register_hook`, advantage stats) · `profiling.py` (rollout vs train time split) ·
+the `runs/<timestamp>/{checkpoints,logs,eval,best,recordings}/` layout + multi-format logger +
+`--resume` · the `--target-score/--target-streak` chunked-learn loop · `benchmark()` steps/sec
+sweep · the "cheap sim trains, pretty renderer records" eval-video split.
+
+Do **not** reuse `research_ppo_flappy/train_ppo_good.py` — it has no vectorization, no entropy
+bonus, no advantage normalization, and a broken frame-stack (same frame ×4). Nothing in that
+project has self-play, curriculum, seeding, continuous actions, or tests; all written fresh here.
+Windows: env factory closures only (pymunk objects constructed *inside* workers, never pickled),
+`if __name__ == "__main__"` guards, central `set_seed()` with per-worker offsets.
+
+---
+
+## Milestones & commits
+
+Branch per milestone off `main` (currently clean on `main`; never commit to it directly).
+One file per commit unless files are inseparable.
+
+### M0 — Scaffolding · `chore/scaffolding`
+1. `.gitignore` (runs/, __pycache__, *.png dumps, saves/) 2. `pyproject.toml` (ruff + pytest cfg)
+3. `requirements.txt` (pinned to installed versions; pygame-ce added) 4. `README.md`
+5. `plans/stickfighter-plan.md` (this plan, per CLAUDE.md) 6. `stickfighter/__init__.py` packages
+
+### M1 — Core sim · `feat/core-sim`  ← the load-bearing milestone
+One commit each: `constants.py` · `events.py` · `actions.py` · `entities.py` · `arena.py` ·
+`character.py` · `ballistics.py` · `rules.py` · `match.py`, then one per test file.
+
+**Tests:** `test_ballistics.py` — `solve_launch_angle()` round-trip: solved angle, simulated
+forward, lands within ε of target (with and without wind); no tunnelling at max arrow speed.
+`test_character.py` — jump apex height, platform landing, wall/ledge resolution.
+`test_match.py` — **determinism** (same seed + action tape ⇒ identical state hash), headshot
+instakill, damage falloff by speed, timeout ends round. `test_arena.py` — all 8 layouts valid,
+spawns not intersecting geometry.
+
+**Acceptance:** `MatchSim` plays a full match headless with zero rendering imports;
+`pytest` green; a 10 000-step determinism replay is bit-identical; ≥ 20 000 sim steps/s single core.
+
+### M2 — Renderer + playable game · `feat/renderer`
+`theme.py` (BG `#EFC94C`, ink `#111`, blood `#8B1A1A`, white HUD) · `draw.py` (stick figure with
+run cycle, bow bending with draw, nocked arrow, fletched arrows, dotted white trail) ·
+`effects.py` (blood spray, floating `+1 💀`, screen shake, hit flash, stuck-arrow decals) ·
+`hud.py` (coins, centred kill counter, wind indicator, draw-power arc, pause) · `ragdoll.py`
+(pymunk) · `input.py` (drag→Action, WASD/arrows) · `app.py` (scene stack, fixed-timestep
+accumulator) · one commit per scene.
+
+**Acceptance:** playable human-vs-idle duel at 60 fps; a rendered frame is visually faithful to
+the reference screenshot; renderer mutates no sim state (asserted by a snapshot-hash test).
+
+### M3 — Bots + Gym env · `feat/ai-env`
+`bots/base.py` (Policy protocol) · `bots/ballistic.py` (analytic solver + target-lead
+prediction + aim-noise/reaction-delay/dodge knobs → difficulty tiers) · `bots/idle.py` ·
+`bots/wanderer.py` · `obs.py` · `reward.py` · `envs/duel_env.py` (frame-skip 2 ⇒ 30 Hz
+decisions) · `envs/vec.py` (SubprocVecEnv + `benchmark()`).
+
+**Tests:** `gymnasium.utils.env_checker` passes; **mirror symmetry** (P1's obs of a mirrored
+state ≡ P0's obs); reward-term sanity; bot beats `idle` > 95 %.
+
+**Acceptance:** `--benchmark` reports ≥ 8 000 env-steps/s aggregate at 8 workers; the sharp
+ballistic bot is a genuinely hard human opponent.
+
+### M4 — PPO + self-play · `feat/ppo-selfplay`
+`seeding.py` · `policy.py` (2×256 tanh actor-critic, state-independent `log_std`, orthogonal
+init, running obs normalization) · `ppo.py` (GAE, clip, value clip, adv norm, grad clip, lr +
+entropy schedules, checkpoint/resume with step counter) · `league.py` (snapshot pool, PFSP,
+Elo) · `curriculum.py` · `logging.py` · `train.py` (CLI + `runs/<ts>/…` + `--resume`) ·
+`evaluate.py` (win-rate vs bot ladder & past checkpoints, Elo table, GIF/MP4 via the real renderer).
+
+**Tests:** GAE against hand-computed values; PPO solves S0 target practice to a known reward
+threshold in < 100 k steps (fast integration test, marked `slow`); checkpoint save/load
+round-trip reproduces identical actions.
+
+**Acceptance:** trained policy beats the sharp ballistic bot > 60 % over 500 matches; Elo rises
+monotonically across the league; tensorboard shows entropy not collapsing.
+
+### M5 — Content + polish · `feat/content`
+Difficulty ladder wired **to real training checkpoints** (Bronze/Silver/Gold/Legend = early →
+late snapshots) — the game's difficulty curve literally *is* the training history. Plus:
+Survival (waves), Target Practice, local 2P hotseat, AI-vs-AI Spectate (pick two checkpoints),
+coin shop (cosmetics + bow tiers, JSON save), wind, multiple arenas, settings (gore toggle),
+optional SFX.
+
+---
+
+## Verification (end-to-end)
+
+```powershell
+py -3.12 -m pip install pygame-ce            # the only install
+py -3.12 -m pytest -q                        # unit + integration suite
+py -3.12 -m stickfighter.core.match --selftest        # headless match + determinism replay
+py -3.12 -m stickfighter.game.app                    # play it
+py -3.12 -m stickfighter.ai.envs.vec --benchmark     # steps/s sweep [1,2,4,8,12]
+py -3.12 -m stickfighter.ai.ppo.train --stage 0 --total-steps 200000 --n-envs 8
+py -3.12 -m stickfighter.ai.ppo.evaluate --ckpt runs/<ts>/best --episodes 500 --record
+tensorboard --logdir runs/
+```
+
+Visual fidelity is checked by dumping a frame (`--screenshot frame.png`) and running the
+**UI Critique MCP** (`critique_ui`) against it alongside the reference screenshot, then
+iterating on `render/`. I will also record short match GIFs to confirm the arrow arcs, trails,
+and ragdolls read like the reference.
+
+## Risks
+
+- **Throughput** — if pymunk-free core still under-delivers, the lever is frame-skip and worker
+  count, *never* a second physics model (that would break train/play parity).
+- **Sparse reward** — mitigated by the S0→S3 curriculum and the annealed near-miss bonus; if
+  self-play stalls, fall back to longer S2 and a wider league.
+- **Shared global env** — one install (`pygame-ce`) only; `requirements.txt` pins the versions
+  actually present so drift is detectable.

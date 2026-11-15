@@ -3,3 +3,18 @@ CLAUDE.md
 .claude/
 .mcp.json
 prompts/
+
+# StickFighter
+__pycache__/
+*.pyc
+runs/
+.venv-train/
+saves/
+save.json
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+*.mp4
+*.gif
+frame*.png
+*_log.jsonl

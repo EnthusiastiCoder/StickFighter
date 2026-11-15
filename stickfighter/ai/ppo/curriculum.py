@@ -1,0 +1,93 @@
+"""Curriculum: S0 static practice -> S1 noisy bot -> S2 sharp bot -> S3
+self-play league, auto-advancing on a rolling win-rate threshold. The
+near-miss reward bonus is annealed to zero by S2, since a well-aimed miss
+stops being useful shaping signal once the agent can reliably land hits.
+
+REHEARSAL_PROB exists to avoid catastrophic forgetting: measured directly on
+a real training run, a policy that beat IdleBot 60% of the time right after
+clearing S0 had fallen to a 0% win rate against it by the time training
+reached S2 -- a strict linear curriculum gives the network zero incentive to
+retain a skill it no longer trains against. Mixing in occasional matches
+against already-cleared stages' opponents is the standard fix (curriculum
+learning with rehearsal).
+"""
+
+import random
+from collections.abc import Callable
+from dataclasses import dataclass, field
+
+from stickfighter.ai.bots.ballistic import EASY, HARD, BallisticBot
+from stickfighter.ai.bots.base import Policy
+from stickfighter.ai.bots.idle import IdleBot
+
+SELFPLAY_STAGE_NAME = "S3_selfplay"
+REHEARSAL_PROB = 0.25  # chance a non-selfplay match uses an earlier-cleared stage's opponent
+
+
+@dataclass(frozen=True)
+class Stage:
+    name: str
+    opponent_factory: Callable[[], Policy] | None  # None for the self-play stage
+    near_miss_scale: float
+    advance_win_rate: float
+    min_matches: int  # matches required at this stage before it can advance
+
+
+def _easy_bot() -> Policy:
+    return BallisticBot(EASY)
+
+
+def _hard_bot() -> Policy:
+    return BallisticBot(HARD)
+
+
+STAGES: tuple[Stage, ...] = (
+    Stage("S0_static", IdleBot, near_miss_scale=1.0, advance_win_rate=0.90, min_matches=50),
+    Stage("S1_noisy_bot", _easy_bot, near_miss_scale=0.5, advance_win_rate=0.75, min_matches=100),
+    Stage("S2_sharp_bot", _hard_bot, near_miss_scale=0.0, advance_win_rate=0.60, min_matches=150),
+    Stage(SELFPLAY_STAGE_NAME, None, near_miss_scale=0.0, advance_win_rate=1.1, min_matches=10**9),
+)
+
+
+@dataclass
+class Curriculum:
+    window: int = 50
+    stage_idx: int = 0
+    results: list[bool] = field(default_factory=list)
+    matches_this_stage: int = 0
+
+    @property
+    def stage(self) -> Stage:
+        return STAGES[self.stage_idx]
+
+    def opponent_stage(self, rng: random.Random | None = None) -> Stage:
+        """The stage whose opponent the next match should use: usually the
+        current stage, but occasionally (REHEARSAL_PROB) an earlier-cleared
+        one, so old skills do not silently rot as training moves on."""
+        rng = rng or random
+        if self.stage_idx > 0 and rng.random() < REHEARSAL_PROB:
+            return STAGES[rng.randrange(self.stage_idx)]
+        return self.stage
+
+    @property
+    def win_rate(self) -> float:
+        return sum(self.results) / len(self.results) if self.results else 0.0
+
+    def record_match(self, trainee_won: bool) -> bool:
+        """Returns True if the curriculum just advanced to a new stage."""
+        self.results.append(trainee_won)
+        if len(self.results) > self.window:
+            self.results.pop(0)
+        self.matches_this_stage += 1
+
+        if self.stage_idx >= len(STAGES) - 1:
+            return False
+        if self.matches_this_stage < self.stage.min_matches:
+            return False
+        if self.win_rate < self.stage.advance_win_rate:
+            return False
+
+        self.stage_idx += 1
+        self.results.clear()
+        self.matches_this_stage = 0
+        return True

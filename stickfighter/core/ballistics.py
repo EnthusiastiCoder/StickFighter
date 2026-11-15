@@ -1,0 +1,125 @@
+"""Arrow spawning/integration, swept-segment collision tests, and the inverse
+ballistics solver bots use to aim (see solve_launch_angle)."""
+
+import math
+
+from stickfighter.core import constants as C
+from stickfighter.core.entities import ArcherState, ArrowState, Circle, Rect
+
+
+def bow_origin(archer: ArcherState) -> tuple[float, float]:
+    x = archer.x + archer.facing * C.BOW_FORWARD_OFFSET
+    y = archer.top() + C.BOW_HEIGHT_OFFSET
+    return x, y
+
+
+def spawn_arrow(archer: ArcherState, owner: int, arrow_id: int) -> ArrowState:
+    speed = C.ARROW_SPEED_MIN + archer.draw * (C.ARROW_SPEED_MAX - C.ARROW_SPEED_MIN)
+    ox, oy = bow_origin(archer)
+    vx = math.cos(archer.aim_angle) * speed
+    vy = math.sin(archer.aim_angle) * speed
+    return ArrowState(id=arrow_id, x=ox, y=oy, vx=vx, vy=vy, owner=owner)
+
+
+def step_arrow(arrow: ArrowState, dt: float, wind: float) -> tuple[float, float]:
+    """Integrates the arrow one step and returns its pre-step position, so the
+    caller can run a swept-segment collision test against (prev -> new)."""
+    prev = (arrow.x, arrow.y)
+    arrow.vy += C.GRAVITY * dt
+    arrow.vx += wind * dt
+    arrow.x += arrow.vx * dt
+    arrow.y += arrow.vy * dt
+    arrow.age += dt
+    return prev
+
+
+def _closest_point_on_segment(
+    p0: tuple[float, float], p1: tuple[float, float], q: tuple[float, float]
+) -> tuple[float, float]:
+    ax, ay = p0
+    bx, by = p1
+    qx, qy = q
+    dx, dy = bx - ax, by - ay
+    len_sq = dx * dx + dy * dy
+    if len_sq < 1e-9:
+        return p0
+    t = max(0.0, min(1.0, ((qx - ax) * dx + (qy - ay) * dy) / len_sq))
+    return ax + t * dx, ay + t * dy
+
+
+def segment_hits_circle(
+    p0: tuple[float, float], p1: tuple[float, float], circle: Circle, extra_radius: float = 0.0
+) -> tuple[float, float] | None:
+    closest = _closest_point_on_segment(p0, p1, (circle.cx, circle.cy))
+    r = circle.r + extra_radius
+    if (closest[0] - circle.cx) ** 2 + (closest[1] - circle.cy) ** 2 <= r * r:
+        return closest
+    return None
+
+
+def segment_hits_rect(
+    p0: tuple[float, float], p1: tuple[float, float], rect: Rect, extra: float = 0.0
+) -> tuple[float, float] | None:
+    """Liang-Barsky segment-vs-AABB clipping; returns the entry point, or the
+    segment start if it begins inside the (padded) rect."""
+    x0, y0 = p0
+    x1, y1 = p1
+    left, right = rect.left - extra, rect.right + extra
+    top, bottom = rect.top - extra, rect.bottom + extra
+    dx, dy = x1 - x0, y1 - y0
+    t0, t1 = 0.0, 1.0
+    for p, q in ((-dx, x0 - left), (dx, right - x0), (-dy, y0 - top), (dy, bottom - y0)):
+        if p == 0.0:
+            if q < 0.0:
+                return None
+            continue
+        t = q / p
+        if p < 0.0:
+            if t > t1:
+                return None
+            t0 = max(t0, t)
+        else:
+            if t < t0:
+                return None
+            t1 = min(t1, t)
+    if t0 > t1:
+        return None
+    return x0 + t0 * dx, y0 + t0 * dy
+
+
+def solve_launch_angle(
+    dx: float, dy: float, speed: float, gravity: float = C.GRAVITY, prefer_low: bool = True
+) -> float | None:
+    """Inverse projectile motion (y-down, gravity positive-downward): the
+    launch angle that sends a shot at `speed` through the relative offset
+    (dx, dy). Substituting T = tan(theta) into the trajectory equation turns
+    it into a quadratic in T, which is solved directly rather than searched.
+    Two solutions normally exist (a flat arc and a lobbed one); prefer_low
+    picks the flatter one. Returns None if the target is out of range.
+    """
+    if speed <= 0.0:
+        return None
+    if abs(dx) < 1e-6:
+        # 0.5*g*t^2 + vy*t - dy = 0 must have a real root for some t > 0.
+        vy = -speed if dy < 0.0 else speed
+        disc = vy * vy + 2.0 * gravity * dy
+        if disc < 0.0:
+            return None
+        return -math.pi / 2.0 if dy < 0.0 else math.pi / 2.0
+
+    qa = gravity * dx * dx / (2.0 * speed * speed)
+    qb = dx
+    qc = qa - dy
+    disc = qb * qb - 4.0 * qa * qc
+    if disc < 0.0:
+        return None
+    sqrt_disc = math.sqrt(disc)
+    t1 = (-qb + sqrt_disc) / (2.0 * qa)
+    t2 = (-qb - sqrt_disc) / (2.0 * qa)
+    lo, hi = sorted((t1, t2), key=abs)
+    tan_theta = lo if prefer_low else hi
+
+    theta = math.atan(tan_theta)
+    if dx < 0.0:
+        theta += math.pi
+    return math.atan2(math.sin(theta), math.cos(theta))
